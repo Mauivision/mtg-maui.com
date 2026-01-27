@@ -1,0 +1,236 @@
+# MTG Maui League - Cursor IDE Rules
+
+## Project Overview
+This is a Next.js-based Magic: The Gathering tournament league management system featuring:
+- Real-time leaderboard with 16 players
+- Editable tournament scores
+- Medieval fantasy theme
+- Admin dashboard for tournament management
+- Prisma database with SQLite/PostgreSQL support
+
+## Code Style & Conventions
+
+### TypeScript/React
+- Use TypeScript for all new components and utilities
+- Prefer functional components with hooks over class components
+- Use proper TypeScript interfaces for component props
+- Implement proper error boundaries where needed
+
+### Naming Conventions
+- Components: PascalCase (e.g., `PlayerCard`, `LeaderboardTable`)
+- Hooks: camelCase with `use` prefix (e.g., `useTournamentData`)
+- Files: kebab-case for components, camelCase for utilities
+- Database models: PascalCase (e.g., `User`, `LeagueGame`)
+
+### Import Organization
+```typescript
+// React imports first
+import React, { useState, useEffect } from 'react';
+
+// Third-party libraries
+import { motion } from 'framer-motion';
+
+// Local components/utilities
+import { Card } from '@/components/ui/Card';
+import { useLeague } from '@/contexts/LeagueContext';
+
+// Types and interfaces
+import type { Player } from '@/types/player';
+```
+
+## Database & API Rules
+
+### Prisma Schema
+- Use descriptive field names with proper types
+- Add database indexes for frequently queried fields
+- Use relations instead of foreign key IDs where possible
+- Include proper constraints and defaults
+
+### API Routes
+- Use proper HTTP status codes
+- Implement consistent error handling
+- Validate input data with Zod schemas
+- Return consistent response formats
+
+## Component Architecture
+
+### Page Components
+- Keep pages focused on data fetching and layout
+- Extract complex logic into custom hooks
+- Use loading states and error boundaries
+- Implement proper SEO metadata
+
+### UI Components
+- Create reusable components in `/components/ui/`
+- Use consistent prop interfaces
+- Implement proper accessibility (ARIA labels, keyboard navigation)
+- Follow the medieval fantasy theme design system
+
+### Data Management
+- Use React Query for server state management
+- Implement proper loading and error states
+- Cache data appropriately to reduce API calls
+- Use optimistic updates for better UX
+
+## Performance Optimization
+
+### Code Splitting
+- Use dynamic imports for heavy components
+- Implement route-based code splitting
+- Lazy load non-critical features
+
+### Bundle Optimization
+- Minimize heavy library usage (Chart.js, framer-motion)
+- Use tree shaking where possible
+- Optimize images and assets
+
+## Testing Guidelines
+
+### Component Testing
+- Test user interactions and state changes
+- Mock API calls appropriately
+- Test error states and edge cases
+
+### API Testing
+- Test all CRUD operations
+- Verify proper error responses
+- Test authentication and authorization
+
+## Deployment & Environment
+
+### Environment Variables
+- Use `.env.local` for local development
+- Never commit sensitive data
+- Document required environment variables
+
+### Vercel Deployment
+- Use simplified `vercel.json` configuration
+- Set appropriate function timeouts
+- Configure proper build commands
+
+## Medieval Theme Guidelines
+
+### Color Palette
+- Primary: Amber/Gold (#f59e0b, #d97706)
+- Secondary: Slate/Stone (#64748b, #475569)
+- Accent: Red for warnings/errors (#dc2626)
+- Success: Green (#16a34a)
+
+### Typography
+- Use Cinzel font for headings (medieval feel)
+- Inter font for body text (modern readability)
+- Proper font hierarchy and spacing
+
+### Icon Usage
+- Use react-icons/fa for consistent iconography
+- Medieval-themed icons where appropriate (crowns, shields, etc.)
+- Consistent icon sizing and colors
+
+## Security Best Practices
+
+### Authentication
+- Use NextAuth.js for secure authentication
+- Implement proper session management
+- Validate user permissions on protected routes
+
+### Data Validation
+- Validate all user inputs on client and server
+- Use Zod for runtime type validation
+- Sanitize database inputs to prevent injection
+
+### API Security
+- Implement rate limiting where appropriate
+- Use proper CORS configuration
+- Validate API keys and tokens
+
+## File Organization
+
+### Directory Structure
+```
+src/
+├── app/                    # Next.js app router pages
+│   ├── api/               # API routes
+│   ├── admin/             # Admin pages
+│   ├── leaderboard/       # Leaderboard pages
+│   └── ...
+├── components/            # Reusable components
+│   ├── ui/               # Base UI components
+│   ├── admin/            # Admin-specific components
+│   ├── leaderboard/      # Leaderboard components
+│   └── ...
+├── contexts/             # React contexts
+├── hooks/                # Custom hooks
+├── lib/                  # Utilities and configurations
+├── styles/               # Global styles
+└── types/                # TypeScript type definitions
+
+prisma/                   # Database schema and migrations
+public/                   # Static assets
+```
+
+### File Naming
+- Pages: `page.tsx`, `layout.tsx`, `loading.tsx`
+- Components: `ComponentName.tsx`
+- Hooks: `useHookName.ts`
+- Utilities: `utilityName.ts`
+- Types: `typeName.ts`
+
+## Commit Message Guidelines
+
+### Format
+```
+[type]: Brief description of changes
+
+Detailed explanation if needed
+
+- Bullet points for specific changes
+- Reference issue numbers if applicable
+```
+
+### Types
+- `feat:` New features
+- `fix:` Bug fixes
+- `docs:` Documentation updates
+- `style:` Code style changes
+- `refactor:` Code refactoring
+- `test:` Testing related changes
+- `chore:` Maintenance tasks
+
+## Development Workflow
+
+### Local Development
+1. Install dependencies: `npm install`
+2. Start dev server: `npm run dev`
+3. Open http://localhost:3003
+4. Make changes and test locally
+
+### Database Management
+1. Generate Prisma client: `npx prisma generate`
+2. Create migrations: `npx prisma migrate dev`
+3. View database: `npx prisma studio`
+
+### Testing
+1. Run tests: `npm test`
+2. Check coverage: `npm run test:coverage`
+3. Lint code: `npm run lint`
+
+## Magic: The Gathering Specific Rules
+
+### Tournament Formats
+- Support Commander, Draft, and Standard formats
+- Implement proper scoring systems for each format
+- Include format-specific validation rules
+
+### Player Experience
+- Focus on medieval fantasy theme immersion
+- Provide clear tournament progression
+- Implement achievement systems
+- Create engaging UI interactions
+
+### Admin Features
+- Easy tournament setup and management
+- Real-time score updates
+- Comprehensive reporting and analytics
+- Bulk operations for efficiency
+
+Remember: This is a tournament management system for Magic: The Gathering players. Keep the medieval fantasy theme consistent and ensure all features enhance the competitive gaming experience!

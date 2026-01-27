@@ -1,0 +1,205 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+
+# Misc
+.DS_Store
+*.pem
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*.local
+.env.production
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs
+*.log
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+prisma/dev.db
+
+# Server
+server/dist/
+server/node_modules/
+server/.env
+
+# Client
+client/dist/
+client/node_modules/
+client/.env
+
+# Cache directories
+.cache/
+.npm/
+.eslintcache
+
+# Temporary files
+tmp/
+temp/
+
+# Production files
+*.min.js
+*.min.css
+
+# Miscellaneous
+*.bak
+*.tmp
+*.temp
+
+# Deployment artifacts
+*.zip
+*.tar.gz
+deployment/
+dist/
+mtg-maui-*.zip
+*-deployment*.zip
+*-deploy.zip
+
+# Large files
+*.db-journal
+*.db-wal
+
+# Temporary scripts
+populate-*.js
+test-*.html
+check-*.js
+
+# Documentation (keep organized in docs/)
+# Note: All docs should be in docs/ folder, not root
+
+# Build artifacts
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Package manager
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Build artifacts
+.next/
+out/
+dist/
+build/
+
+# Cache directories
+.cache/
+.npm/
+.eslintcache
+.parcel-cache/
+.turbo/
+
+# Environment files (keep .env.example)
+.env
+.env*.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.log
+
+# Deployment artifacts
+*.zip
+*.tar.gz
+deployment/
+mtg-maui-*.zip
+*-deployment*.zip
+*-deploy.zip
+
+# Database files (keep schema, ignore data)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+prisma/dev.db
+prisma/*.db
+
+# Large media files (if any)
+*.mov
+*.mp4
+*.avi 

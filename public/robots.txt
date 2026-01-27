@@ -1,0 +1,22 @@
+# Robots.txt for MTG Maui League
+
+User-agent: *
+Allow: /
+
+# Allow all important pages
+Allow: /
+Allow: /leaderboard
+Allow: /character-sheets
+Allow: /bulletin
+Allow: /wizards
+Allow: /coming-soon
+
+# Disallow admin areas (though they require auth)
+Disallow: /admin
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://mtg-maui.com/sitemap.xml
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1

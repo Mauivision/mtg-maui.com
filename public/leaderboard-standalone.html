@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTG Maui League - Leaderboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            min-height: 100vh;
+        }
+        .medieval-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .medieval-gold {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .medieval-silver {
+            background: linear-gradient(45deg, #c0c0c0, #e8e8e8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .medieval-bronze {
+            background: linear-gradient(45deg, #cd7f32, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .editable:hover {
+            background: rgba(255, 215, 0, 0.1);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="text-white">
+    <!-- Header -->
+    <header class="py-8 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-5xl font-bold medieval-gold mb-4">🏰 MTG Maui League</h1>
+            <p class="text-xl text-gray-300">Tournament Rankings & Leaderboard</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 pb-12">
+        <!-- Navigation Tabs -->
+        <div class="flex justify-center mb-8">
+            <div class="bg-slate-800/50 rounded-lg p-1 flex space-x-1">
+                <button id="liveTab" class="px-6 py-3 rounded-md font-medium transition-all bg-amber-600 text-white">🔴 Live Rankings</button>
+                <button id="editTab" class="px-6 py-3 rounded-md font-medium transition-all text-gray-300 hover:text-white">✏️ Edit Scores</button>
+            </div>
+        </div>
+
+        <!-- Live Rankings Tab -->
+        <div id="liveTabContent" class="space-y-6">
+            <!-- Leaderboard -->
+            <div class="medieval-card rounded-lg p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-white">🏆 Current Standings</h2>
+                    <div class="text-sm text-gray-400">Last updated: <span id="lastUpdate">Just now</span></div>
+                </div>
+
+                <div class="space-y-3" id="leaderboardList">
+                    <!-- Players will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="medieval-card rounded-lg p-6">
+                <h3 class="text-xl font-bold text-white mb-4">⚡ Recent Activity</h3>
+                <div class="space-y-3" id="activityFeed">
+                    <div class="flex items-center space-x-3 p-3 bg-slate-700/30 rounded">
+                        <span class="text-2xl">🏆</span>
+                        <div>
+                            <p class="text-white font-medium">DragonMaster claimed victory in Commander!</p>
+                            <p class="text-sm text-gray-400">2 minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-slate-700/30 rounded">
+                        <span class="text-2xl">📈</span>
+                        <div>
+                            <p class="text-white font-medium">SpellSlinger reached a 5-win streak!</p>
+                            <p class="text-sm text-gray-400">5 minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-slate-700/30 rounded">
+                        <span class="text-2xl">🥉</span>
+                        <div>
+                            <p class="text-white font-medium">CardShark moved up to rank #3!</p>
+                            <p class="text-sm text-gray-400">8 minutes ago</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Scores Tab -->
+        <div id="editTabContent" class="hidden space-y-6">
+            <div class="medieval-card rounded-lg p-6">
+                <h2 class="text-2xl font-bold text-white mb-4">✏️ Edit Player Scores</h2>
+                <p class="text-gray-300 mb-6">Click on any score to edit it. Changes are saved automatically.</p>
+
+                <div class="space-y-3" id="editLeaderboardList">
+                    <!-- Editable players will be loaded here -->
+                </div>
+
+                <div class="mt-6 p-4 bg-amber-900/20 border border-amber-600/30 rounded">
+                    <p class="text-amber-300 text-sm">
+                        💡 <strong>Tip:</strong> Double-click any number to edit scores, win/loss records, or other stats.
+                        Your changes will be saved to local storage and persist across sessions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-700 mt-12 py-8 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <p class="text-gray-400">© 2024 MTG Maui League. Built for Magic: The Gathering tournaments.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Player data
+        let players = [
+            { id: 1, name: 'DragonMaster', commander: 'The Ur-Dragon', points: 0, wins: 0, losses: 0, winRate: 0, rank: 1 },
+            { id: 2, name: 'SpellSlinger', commander: 'Jace, the Mind Sculptor', points: 0, wins: 0, losses: 0, winRate: 0, rank: 2 },
+            { id: 3, name: 'CardShark', commander: 'Thrasios, Triton Hero', points: 0, wins: 0, losses: 0, winRate: 0, rank: 3 },
+            { id: 4, name: 'ManaBurn', commander: 'Chandra, Torch of Defiance', points: 0, wins: 0, losses: 0, winRate: 0, rank: 4 },
+            { id: 5, name: 'ArtifactLord', commander: 'Urza, Lord High Artificer', points: 0, wins: 0, losses: 0, winRate: 0, rank: 5 },
+            { id: 6, name: 'GraveDigger', commander: 'Meren of Clan Nel Toth', points: 0, wins: 0, losses: 0, winRate: 0, rank: 6 },
+            { id: 7, name: 'AngelWings', commander: 'Kaalia of the Vast', points: 0, wins: 0, losses: 0, winRate: 0, rank: 7 },
+            { id: 8, name: 'ZombieKing', commander: 'Chainer, Dementia Master', points: 0, wins: 0, losses: 0, winRate: 0, rank: 8 },
+            { id: 9, name: 'VampireLord', commander: 'Edgar Markov', points: 0, wins: 0, losses: 0, winRate: 0, rank: 9 },
+            { id: 10, name: 'FishKing', commander: 'Aesi, Tyrant of Gyre Strait', points: 0, wins: 0, losses: 0, winRate: 0, rank: 10 },
+            { id: 11, name: 'TreeBeard', commander: 'Marath, Will of the Wild', points: 0, wins: 0, losses: 0, winRate: 0, rank: 11 },
+            { id: 12, name: 'WizardHat', commander: 'Mizzix of the Izmagnus', points: 0, wins: 0, losses: 0, winRate: 0, rank: 12 },
+            { id: 13, name: 'JudgeHammer', commander: 'Grand Arbiter Augustin IV', points: 0, wins: 0, losses: 0, winRate: 0, rank: 13 },
+            { id: 14, name: 'KrakenLord', commander: 'Kumena, Tyrant of Orazca', points: 0, wins: 0, losses: 0, winRate: 0, rank: 14 },
+            { id: 15, name: 'GoblinKing', commander: 'Krenko, Mob Boss', points: 0, wins: 0, losses: 0, winRate: 0, rank: 15 },
+            { id: 16, name: 'MaskMaster', commander: 'Estrid, the Masked', points: 0, wins: 0, losses: 0, winRate: 0, rank: 16 }
+        ];
+
+        // Load saved data from localStorage
+        function loadSavedData() {
+            const saved = localStorage.getItem('mtg-maui-leaderboard');
+            if (saved) {
+                players = JSON.parse(saved);
+                updateWinRates();
+                renderLeaderboards();
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('mtg-maui-leaderboard', JSON.stringify(players));
+        }
+
+        // Update win rates
+        function updateWinRates() {
+            players.forEach(player => {
+                const totalGames = player.wins + player.losses;
+                player.winRate = totalGames > 0 ? Math.round((player.wins / totalGames) * 100) : 0;
+            });
+        }
+
+        // Sort players by points, then wins, then win rate
+        function sortPlayers() {
+            players.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.wins !== a.wins) return b.wins - a.wins;
+                return b.winRate - a.winRate;
+            });
+
+            // Update ranks
+            players.forEach((player, index) => {
+                player.rank = index + 1;
+            });
+        }
+
+        // Get rank icon
+        function getRankIcon(rank) {
+            switch(rank) {
+                case 1: return '👑';
+                case 2: return '🥈';
+                case 3: return '🥉';
+                default: return `#${rank}`;
+            }
+        }
+
+        // Get rank color class
+        function getRankColorClass(rank) {
+            switch(rank) {
+                case 1: return 'medieval-gold';
+                case 2: return 'medieval-silver';
+                case 3: return 'medieval-bronze';
+                default: return 'text-white';
+            }
+        }
+
+        // Render live leaderboard
+        function renderLiveLeaderboard() {
+            const container = document.getElementById('leaderboardList');
+            container.innerHTML = '';
+
+            players.forEach(player => {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'flex items-center justify-between p-4 bg-slate-700/30 rounded-lg border border-slate-600 hover:bg-slate-700/50 transition-all';
+                playerCard.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="text-2xl font-bold ${getRankColorClass(player.rank)} min-w-[60px]">
+                            ${getRankIcon(player.rank)}
+                        </div>
+                        <div class="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-full flex items-center justify-center text-white font-bold">
+                            ${player.name.charAt(0)}
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold">${player.name}</h3>
+                            <p class="text-gray-400 text-sm">${player.commander}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-6 text-right">
+                        <div>
+                            <div class="text-xl font-bold text-amber-400">${player.points}</div>
+                            <div class="text-xs text-gray-400">Points</div>
+                        </div>
+                        <div>
+                            <div class="text-xl font-bold text-green-400">${player.winRate}%</div>
+                            <div class="text-xs text-gray-400">Win Rate</div>
+                        </div>
+                        <div>
+                            <div class="text-xl font-bold text-white">${player.wins}W-${player.losses}L</div>
+                            <div class="text-xs text-gray-400">Record</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(playerCard);
+            });
+        }
+
+        // Render editable leaderboard
+        function renderEditableLeaderboard() {
+            const container = document.getElementById('editLeaderboardList');
+            container.innerHTML = '';
+
+            players.forEach(player => {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'flex items-center justify-between p-4 bg-slate-700/30 rounded-lg border border-slate-600';
+                playerCard.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="text-2xl font-bold ${getRankColorClass(player.rank)} min-w-[60px]">
+                            ${getRankIcon(player.rank)}
+                        </div>
+                        <div class="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-full flex items-center justify-center text-white font-bold">
+                            ${player.name.charAt(0)}
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold">${player.name}</h3>
+                            <p class="text-gray-400 text-sm">${player.commander}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-6 text-right">
+                        <div>
+                            <div class="text-xl font-bold text-amber-400 editable p-2 rounded" data-field="points" data-player="${player.id}">${player.points}</div>
+                            <div class="text-xs text-gray-400">Points</div>
+                        </div>
+                        <div>
+                            <div class="text-xl font-bold text-white">${player.wins}W-${player.losses}L</div>
+                            <div class="text-xs text-gray-400">Record</div>
+                            <div class="flex space-x-1 mt-1">
+                                <button class="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs" onclick="updateRecord(${player.id}, 1, 0)">+W</button>
+                                <button class="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs" onclick="updateRecord(${player.id}, 0, 1)">+L</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(playerCard);
+            });
+
+            // Add event listeners for editable fields
+            document.querySelectorAll('.editable').forEach(element => {
+                element.addEventListener('dblclick', function() {
+                    const field = this.dataset.field;
+                    const playerId = parseInt(this.dataset.player);
+                    makeEditable(this, field, playerId);
+                });
+            });
+        }
+
+        // Make field editable
+        function makeEditable(element, field, playerId) {
+            const currentValue = element.textContent;
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.value = currentValue;
+            input.className = 'bg-slate-800 border border-amber-500 rounded px-2 py-1 text-white text-center w-20';
+
+            element.innerHTML = '';
+            element.appendChild(input);
+            input.focus();
+            input.select();
+
+            input.addEventListener('blur', () => saveEdit(element, input, field, playerId));
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') saveEdit(element, input, field, playerId);
+                if (e.key === 'Escape') cancelEdit(element, currentValue);
+            });
+        }
+
+        // Save edit
+        function saveEdit(element, input, field, playerId) {
+            const newValue = parseInt(input.value) || 0;
+            const player = players.find(p => p.id === playerId);
+            if (player) {
+                player[field] = newValue;
+                updateWinRates();
+                sortPlayers();
+                saveData();
+                renderLeaderboards();
+            }
+        }
+
+        // Cancel edit
+        function cancelEdit(element, originalValue) {
+            element.textContent = originalValue;
+        }
+
+        // Update win/loss record
+        function updateRecord(playerId, winsToAdd, lossesToAdd) {
+            const player = players.find(p => p.id === playerId);
+            if (player) {
+                player.wins += winsToAdd;
+                player.losses += lossesToAdd;
+                updateWinRates();
+                sortPlayers();
+                saveData();
+                renderLeaderboards();
+            }
+        }
+
+        // Render all leaderboards
+        function renderLeaderboards() {
+            renderLiveLeaderboard();
+            renderEditableLeaderboard();
+        }
+
+        // Tab switching
+        document.getElementById('liveTab').addEventListener('click', function() {
+            document.getElementById('liveTabContent').classList.remove('hidden');
+            document.getElementById('editTabContent').classList.add('hidden');
+            this.classList.add('bg-amber-600', 'text-white');
+            this.classList.remove('text-gray-300');
+            document.getElementById('editTab').classList.remove('bg-amber-600', 'text-white');
+            document.getElementById('editTab').classList.add('text-gray-300');
+        });
+
+        document.getElementById('editTab').addEventListener('click', function() {
+            document.getElementById('editTabContent').classList.remove('hidden');
+            document.getElementById('liveTabContent').classList.add('hidden');
+            this.classList.add('bg-amber-600', 'text-white');
+            this.classList.remove('text-gray-300');
+            document.getElementById('liveTab').classList.remove('bg-amber-600', 'text-white');
+            document.getElementById('liveTab').classList.add('text-gray-300');
+        });
+
+        // Initialize
+        loadSavedData();
+        renderLeaderboards();
+
+        // Update timestamp
+        function updateTimestamp() {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateTimestamp, 1000);
+    </script>
+</body>
+</html>

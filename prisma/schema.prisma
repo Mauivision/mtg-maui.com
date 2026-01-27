@@ -1,0 +1,403 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                String             @id @default(cuid())
+  name              String?
+  email             String             @unique
+  password          String
+  emailVerified     DateTime?
+  image             String?
+  accounts          Account[]
+  sessions          Session[]
+  decks             Deck[]
+  tournaments       Tournament[]
+  gameResults       GameResult[]
+  collection        Collection[]
+  leagueMembers     LeagueMembership[]
+  leagueGames       LeagueGame[]
+  draftEvents       DraftEvent[]
+  draftParticipants DraftParticipant[]
+  roles             UserRole[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Deck {
+  id        String     @id @default(cuid())
+  name      String
+  format    String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cards     DeckCard[]
+}
+
+model DeckCard {
+  id       String @id @default(cuid())
+  deckId   String
+  cardId   String
+  quantity Int
+  deck     Deck   @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  card     Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([deckId, cardId])
+}
+
+model Tournament {
+  id           String                  @id @default(cuid())
+  name         String
+  format       String
+  startDate    DateTime
+  endDate      DateTime
+  maxPlayers   Int
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+  creatorId    String
+  creator      User                    @relation(fields: [creatorId], references: [id])
+  participants TournamentParticipant[]
+  matches      Match[]
+}
+
+model TournamentParticipant {
+  id           String     @id @default(cuid())
+  tournamentId String
+  userId       String
+  joinedAt     DateTime   @default(now())
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+}
+
+model Match {
+  id           String     @id @default(cuid())
+  tournamentId String
+  player1Id    String
+  player2Id    String
+  winnerId     String?
+  round        Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+}
+
+model Card {
+  id         String       @id @default(cuid())
+  name       String
+  manaCost   String?
+  cmc        Int
+  type       String
+  text       String?
+  power      String?
+  toughness  String?
+  loyalty    Int?
+  imageUrl   String?
+  setCode    String
+  setName    String?
+  rarity     String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  deckCards  DeckCard[]
+  collection Collection[]
+}
+
+model GameResult {
+  id        String   @id @default(cuid())
+  gameType  String
+  players   String // JSON string for SQLite compatibility
+  winner    String?
+  duration  Int? // in minutes
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Collection {
+  id        String   @id @default(cuid())
+  userId    String
+  cardId    String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cardId])
+}
+
+model NewsletterSubscription {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  subscribedAt   DateTime  @default(now())
+  isActive       Boolean   @default(true)
+  unsubscribedAt DateTime?
+}
+
+// League System Models
+model League {
+  id               String             @id @default(cuid())
+  name             String
+  description      String?
+  format           String // commander, draft, etc.
+  startDate        DateTime
+  endDate          DateTime?
+  status           String // upcoming, active, completed
+  maxPlayers       Int
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  memberships      LeagueMembership[]
+  games            LeagueGame[]
+  allowedCardPools CardPool[]
+  decks            LeagueDeck[]
+  scoringRules     ScoringRule[]
+}
+
+model LeagueMembership {
+  id              String       @id @default(cuid())
+  leagueId        String
+  userId          String
+  joinedAt        DateTime     @default(now())
+  active          Boolean      @default(true)
+  league          League       @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registeredDecks LeagueDeck[]
+
+  @@unique([leagueId, userId])
+}
+
+// Game types: "commander" or "draft"
+// Tournament phases: "swiss", "top8", "quarterfinals", "semifinals", "finals"
+
+model LeagueGame {
+  id              String  @id @default(cuid())
+  leagueId        String?
+  gameType        String // "commander" or "draft"
+  tournamentPhase String? // "swiss", "top8", "quarterfinals", "semifinals", "finals"
+  round           Int? // Round number in tournament
+  tableNumber     Int? // Physical table number
+
+  date     DateTime @default(now())
+  duration Int? // in minutes
+
+  // Players - stored as JSON for flexibility
+  players    String // JSON: array of player IDs
+  placements String // JSON: array of {playerId, place, points, commander?, deck?}
+
+  // Game-specific data
+  commanderObjectives String? // JSON: {goldRoll: number, silverRolls: number[], claims: {...}}
+  draftInfo           String? // JSON: {winner: playerId, turns: number, etc.}
+
+  notes      String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  recordedBy String
+  recorder   User             @relation(fields: [recordedBy], references: [id])
+  league     League?          @relation(fields: [leagueId], references: [id], onDelete: SetNull)
+  gameDecks  LeagueGameDeck[]
+}
+
+model LeagueDeck {
+  id            String           @id @default(cuid())
+  leagueId      String
+  membershipId  String
+  name          String
+  commander     String? // Commander card name (can be card ID or name)
+  colorIdentity String // JSON array of colors
+  cards         String // JSON: array of {cardId, quantity}
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  membership    LeagueMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  league        League           @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  gameResults   LeagueGameDeck[]
+
+  @@index([leagueId, membershipId])
+}
+
+model LeagueGameDeck {
+  id        String     @id @default(cuid())
+  gameId    String
+  deckId    String
+  playerId  String
+  placement Int
+  points    Int
+  createdAt DateTime   @default(now())
+  game      LeagueGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  deck      LeagueDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, playerId])
+}
+
+model ScoringRule {
+  id          String   @id @default(cuid())
+  leagueId    String?
+  gameType    String // "commander" or "draft"
+  name        String // e.g., "Gold Objective", "Silver Objective", "Placement Bonus"
+  points      Int
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  league League? @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+
+  @@unique([leagueId, gameType, name])
+}
+
+// Draft System Models
+model DraftEvent {
+  id              String             @id @default(cuid())
+  name            String
+  format          String // draft, sealed, etc.
+  date            DateTime           @default(now())
+  status          String // upcoming, in_progress, completed
+  maxParticipants Int
+  creatorId       String
+  creator         User               @relation(fields: [creatorId], references: [id])
+  pods            DraftPod[]
+  participants    DraftParticipant[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model DraftPod {
+  id           String             @id @default(cuid())
+  draftEventId String
+  name         String
+  status       String // not_started, drafting, completed
+  currentRound Int                @default(0)
+  totalRounds  Int
+  startTime    DateTime?
+  endTime      DateTime?
+  draftEvent   DraftEvent         @relation(fields: [draftEventId], references: [id], onDelete: Cascade)
+  participants DraftParticipant[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+}
+
+model DraftParticipant {
+  id               String            @id @default(cuid())
+  draftEventId     String
+  draftPodId       String
+  userId           String
+  seatNumber       Int
+  registeredDeck   String? // JSON: deck configuration
+  status           String // registered, checked_in, dropped, completed
+  checkInTime      DateTime?
+  dropTime         DateTime?
+  draftEvent       DraftEvent        @relation(fields: [draftEventId], references: [id], onDelete: Cascade)
+  draftPod         DraftPod          @relation(fields: [draftPodId], references: [id], onDelete: Cascade)
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  draftPickResults DraftPickResult[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@unique([draftPodId, seatNumber])
+  @@unique([draftEventId, userId])
+}
+
+model DraftPickResult {
+  id                 String           @id @default(cuid())
+  draftParticipantId String
+  round              Int
+  pickNumber         Int
+  cardId             String
+  timestamp          DateTime         @default(now())
+  participant        DraftParticipant @relation(fields: [draftParticipantId], references: [id], onDelete: Cascade)
+
+  @@index([draftParticipantId, round])
+}
+
+// Card Pool Management for Limited Formats
+model CardPool {
+  id           String   @id @default(cuid())
+  leagueId     String
+  name         String
+  description  String?
+  cardIds      String // JSON: array of allowed card IDs
+  maxCardLimit Int? // Optional per-card limit
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  league       League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+}
+
+// Site Content Management
+model Event {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  date            DateTime
+  time            String? // e.g., "2:00 PM"
+  location        String?
+  participants    Int      @default(0)
+  maxParticipants Int
+  imageUrl        String?
+  status          String   @default("upcoming") // upcoming, ongoing, completed
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model News {
+  id          String   @id @default(cuid())
+  title       String
+  excerpt     String?
+  content     String? // Full content if needed
+  category    String // Updates, Announcements, Community, etc.
+  author      String? // Author name
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Role-Based Access Control
+model Role {
+  id          String     @id @default(cuid())
+  name        String     @unique // "admin", "moderator", "player", etc.
+  description String?
+  permissions String // JSON: array of permission strings
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  users       UserRole[]
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([userId])
+}

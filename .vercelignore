@@ -1,0 +1,55 @@
+# Documentation files
+docs/
+*.md
+!README.md
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/__tests__/
+
+# Development files
+.cursor/
+.vscode/
+.idea/
+
+# Build artifacts
+.next/
+out/
+dist/
+
+# Dependencies
+node_modules/
+
+# Database files
+prisma/dev.db
+*.sqlite
+*.sqlite3
+
+# Large files and archives
+*.zip
+*.tar.gz
+deployment/
+
+# Temporary files
+populate-*.js
+test-*.html
+check-*.js
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Git
+.git/
+.gitignore
+
+# Scripts that aren't needed for deployment
+scripts/deploy-*.js
+scripts/generate-*.js
+
+# Other config files not needed in production
+jest.config.js
+jest.setup.js
+tsconfig.node.json
