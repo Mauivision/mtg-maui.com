@@ -509,7 +509,56 @@ export default function WizardsControlPage() {
     }
   };
 
-  // TODO: wire up event edit form → PUT /api/admin/events, then setEditingEvent(null) + fetchEvents()
+  const updateEvent = async () => {
+    if (!editingEvent || !eventForm.title || !eventForm.date) {
+      toast.error('Title and date are required');
+      return;
+    }
+
+    try {
+      const event = events.find(e => e.id === editingEvent);
+      if (!event) {
+        toast.error('Event not found');
+        return;
+      }
+
+      const response = await fetch('/api/admin/events', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          id: editingEvent,
+          title: eventForm.title,
+          description: eventForm.description,
+          date: eventForm.date,
+          time: eventForm.time,
+          location: eventForm.location,
+          maxParticipants: eventForm.maxParticipants,
+          participants: event.participants,
+          status: event.status,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Event updated successfully');
+        setShowAddEventModal(false);
+        setEditingEvent(null);
+        setEventForm({
+          title: '',
+          description: '',
+          date: '',
+          time: '',
+          location: '',
+          maxParticipants: 32,
+        });
+        fetchEvents();
+      } else {
+        toast.error('Failed to update event');
+      }
+    } catch {
+      toast.error('Failed to update event');
+    }
+  };
 
   const deleteEvent = async (eventId: string) => {
     if (!confirm('Are you sure you want to delete this event?')) return;
@@ -558,7 +607,38 @@ export default function WizardsControlPage() {
     }
   };
 
-  // TODO: wire up news edit form → PUT /api/admin/news, then setEditingNews(null) + fetchNews()
+  const updateNews = async () => {
+    if (!editingNews || !newsForm.title || !newsForm.category) {
+      toast.error('Title and category are required');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/admin/news', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          id: editingNews,
+          title: newsForm.title,
+          excerpt: newsForm.excerpt,
+          category: newsForm.category,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('News updated successfully');
+        setShowAddNewsModal(false);
+        setEditingNews(null);
+        setNewsForm({ title: '', excerpt: '', category: 'Updates' });
+        fetchNews();
+      } else {
+        toast.error('Failed to update news');
+      }
+    } catch {
+      toast.error('Failed to update news');
+    }
+  };
 
   const deleteNews = async (newsId: string) => {
     if (!confirm('Are you sure you want to delete this news item?')) return;
@@ -1194,9 +1274,21 @@ export default function WizardsControlPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() =>
-                                setEditingEvent(editingEvent === event.id ? null : event.id)
-                              }
+                              onClick={() => {
+                                const eventToEdit = events.find(e => e.id === event.id);
+                                if (eventToEdit) {
+                                  setEventForm({
+                                    title: eventToEdit.title,
+                                    description: eventToEdit.description || '',
+                                    date: new Date(eventToEdit.date).toISOString().split('T')[0],
+                                    time: eventToEdit.time || '',
+                                    location: eventToEdit.location || '',
+                                    maxParticipants: eventToEdit.maxParticipants,
+                                  });
+                                  setEditingEvent(event.id);
+                                  setShowAddEventModal(true);
+                                }
+                              }}
                             >
                               <FaEdit className="w-4 h-4" />
                             </Button>
@@ -1263,9 +1355,18 @@ export default function WizardsControlPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() =>
-                                setEditingNews(editingNews === item.id ? null : item.id)
-                              }
+                              onClick={() => {
+                                const newsToEdit = news.find(n => n.id === item.id);
+                                if (newsToEdit) {
+                                  setNewsForm({
+                                    title: newsToEdit.title,
+                                    excerpt: newsToEdit.excerpt || '',
+                                    category: newsToEdit.category,
+                                  });
+                                  setEditingNews(item.id);
+                                  setShowAddNewsModal(true);
+                                }
+                              }}
                             >
                               <FaEdit className="w-4 h-4 mr-2" />
                               Edit
@@ -1820,11 +1921,22 @@ export default function WizardsControlPage() {
           </div>
         </Modal>
 
-        {/* Add Event Modal */}
+        {/* Add/Edit Event Modal */}
         <Modal
           isOpen={showAddEventModal}
-          onClose={() => setShowAddEventModal(false)}
-          title="Add New Event"
+          onClose={() => {
+            setShowAddEventModal(false);
+            setEditingEvent(null);
+            setEventForm({
+              title: '',
+              description: '',
+              date: '',
+              time: '',
+              location: '',
+              maxParticipants: 32,
+            });
+          }}
+          title={editingEvent ? 'Edit Event' : 'Add New Event'}
         >
           <div className="space-y-4">
             <div>
@@ -1889,19 +2001,39 @@ export default function WizardsControlPage() {
               />
             </div>
             <div className="flex gap-4">
-              <Button onClick={addEvent}>Add Event</Button>
-              <Button variant="outline" onClick={() => setShowAddEventModal(false)}>
+              <Button onClick={editingEvent ? updateEvent : addEvent}>
+                {editingEvent ? 'Update Event' : 'Add Event'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowAddEventModal(false);
+                  setEditingEvent(null);
+                  setEventForm({
+                    title: '',
+                    description: '',
+                    date: '',
+                    time: '',
+                    location: '',
+                    maxParticipants: 32,
+                  });
+                }}
+              >
                 Cancel
               </Button>
             </div>
           </div>
         </Modal>
 
-        {/* Add News Modal */}
+        {/* Add/Edit News Modal */}
         <Modal
           isOpen={showAddNewsModal}
-          onClose={() => setShowAddNewsModal(false)}
-          title="Add News Item"
+          onClose={() => {
+            setShowAddNewsModal(false);
+            setEditingNews(null);
+            setNewsForm({ title: '', excerpt: '', category: 'Updates' });
+          }}
+          title={editingNews ? 'Edit News Item' : 'Add News Item'}
         >
           <div className="space-y-4">
             <div>
@@ -1937,8 +2069,17 @@ export default function WizardsControlPage() {
               />
             </div>
             <div className="flex gap-4">
-              <Button onClick={addNews}>Add News</Button>
-              <Button variant="outline" onClick={() => setShowAddNewsModal(false)}>
+              <Button onClick={editingNews ? updateNews : addNews}>
+                {editingNews ? 'Update News' : 'Add News'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowAddNewsModal(false);
+                  setEditingNews(null);
+                  setNewsForm({ title: '', excerpt: '', category: 'Updates' });
+                }}
+              >
                 Cancel
               </Button>
             </div>
