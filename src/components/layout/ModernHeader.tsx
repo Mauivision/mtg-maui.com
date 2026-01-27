@@ -77,18 +77,6 @@ export const ModernHeader: React.FC = () => {
                 </AdventureLink>
               );
             })}
-            {/* Admin link */}
-            <Link
-              href="/admin"
-              className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                pathname === '/admin'
-                  ? 'text-amber-400 bg-amber-500/10 border border-amber-500/30'
-                  : 'text-slate-300 hover:text-amber-300 hover:bg-slate-800/80'
-              }`}
-            >
-              <FaCog className="w-4 h-4" />
-              <span>Admin</span>
-            </Link>
           </nav>
 
           {/* Auth Actions */}
@@ -137,13 +125,6 @@ export const ModernHeader: React.FC = () => {
           >
             <FaMagic className="w-4 h-4" />
             <span>Wizards Control</span>
-          </Link>
-          <Link
-            href="/admin"
-            className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-slate-300 hover:text-amber-300 hover:bg-slate-800/80"
-          >
-            <FaCog className="w-4 h-4" />
-            <span>Admin</span>
           </Link>
         </nav>
       </div>
