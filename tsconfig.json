@@ -33,5 +33,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", ".next", "out", "dist", "build", "deployment", "prisma"]
+  "exclude": ["node_modules", ".next", "out", "dist", "build", "deployment", "prisma", "mcp-image-generator"]
 }

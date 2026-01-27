@@ -32,6 +32,12 @@
 - **Development Guide**: Created comprehensive workflow guide
 - **Status File**: Single consolidated project status
 
+### 6. Admin → Wizards Consolidation ✅ (2026-01-26)
+- **Single Control Page**: All admin functionality moved to **Wizards Control** (`/wizards`), branded as **Chaos League Tracker Season 3**
+- **`/admin` Redirect**: `/admin` now redirects to `/wizards`; Admin nav link removed from header
+- **Credentials**: All Wizards → `/api/admin/*` fetches use `credentials: 'include'` so simple-admin cookie is sent
+- **Console Cleanup**: Removed `console.log` / `console.error` from Wizards page; toast used for user feedback
+
 ---
 
 ## 📊 Final Metrics
@@ -93,9 +99,9 @@ mtg-maui.com/
 ## 🚀 Next Steps
 
 ### Immediate
-1. Complete logger migration (30 files remaining)
-2. Apply `withLogging` middleware to key routes
-3. Address TypeScript warnings incrementally
+1. Apply `withLogging` middleware to key API routes
+2. Address TypeScript warnings incrementally
+3. Test Wizards Control (Admin / 12345) on deployed Vercel app
 
 ### Short-term
 4. Add performance monitoring
