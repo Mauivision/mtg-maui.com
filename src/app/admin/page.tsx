@@ -10,6 +10,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { useLeague } from '@/contexts/LeagueContext';
+import { usePageContent } from '@/contexts/PageContentContext';
 import {
   FaCog,
   FaUsers,
@@ -30,6 +31,7 @@ import {
   FaRedo,
   FaCalculator,
   FaSignOutAlt,
+  FaFileAlt,
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { EditableLeaderboardTable } from '@/components/admin/EditableLeaderboardTable';
@@ -66,6 +68,7 @@ type TabType =
   | 'bulk'
   | 'scoring'
   | 'seasons'
+  | 'pages'
   | 'settings';
 
 interface Player {
@@ -112,6 +115,7 @@ interface Pairing {
 export default function AdminPage() {
   const router = useRouter();
   const { currentLeague, loading: leagueLoading } = useLeague();
+  const { refresh: refreshPageContent } = usePageContent();
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [loading, setLoading] = useState(true);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -128,6 +132,9 @@ export default function AdminPage() {
   const [news, setNews] = useState<News[]>([]);
   const [pairings, setPairings] = useState<Pairing[]>([]);
   const [drafts, setDrafts] = useState<any[]>([]);
+  const [pageContentList, setPageContentList] = useState<Array<{ id: string; path: string; title: string | null; description: string | null; config: Record<string, unknown>; updatedAt: string }>>([]);
+  const [pageContentEdit, setPageContentEdit] = useState<{ path: string; title: string; description: string; configJson: string } | null>(null);
+  const [pageContentSaving, setPageContentSaving] = useState(false);
 
   // Modal states
   const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
@@ -234,6 +241,46 @@ export default function AdminPage() {
     setIsAdmin(false);
   };
 
+  const savePageContent = async () => {
+    if (!pageContentEdit) return;
+    setPageContentSaving(true);
+    try {
+      let config: Record<string, unknown> = {};
+      try {
+        config = JSON.parse(pageContentEdit.configJson || '{}');
+      } catch {
+        toast.error('Invalid JSON in config');
+        setPageContentSaving(false);
+        return;
+      }
+      const res = await fetch('/api/admin/pages', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          path: pageContentEdit.path,
+          title: pageContentEdit.title || null,
+          description: pageContentEdit.description || null,
+          config,
+        }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        toast.error(d.error || 'Failed to save');
+        setPageContentSaving(false);
+        return;
+      }
+      toast.success('Page content saved');
+      setPageContentEdit(null);
+      await fetchPages();
+      await refreshPageContent();
+    } catch {
+      toast.error('Failed to save page content');
+    } finally {
+      setPageContentSaving(false);
+    }
+  };
+
   const fetchPlayers = useCallback(async () => {
     if (!currentLeague) return;
     const response = await fetch(`/api/admin/players?leagueId=${currentLeague.id}`);
@@ -293,6 +340,20 @@ export default function AdminPage() {
     }
   }, []);
 
+  const fetchPages = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/pages', { credentials: 'include' });
+      if (response.ok) {
+        const data = await response.json();
+        setPageContentList(data.pages || []);
+      } else {
+        toast.error('Failed to fetch page content');
+      }
+    } catch {
+      toast.error('Failed to fetch page content');
+    }
+  }, []);
+
   const fetchGames = useCallback(async () => {
     if (!currentLeague) return;
     try {
@@ -348,6 +409,12 @@ export default function AdminPage() {
       fetchData();
     }
   }, [checkingAuth, isAdmin, currentLeague, leagueLoading, activeTab, fetchData]);
+
+  useEffect(() => {
+    if (!checkingAuth && isAdmin && activeTab === 'pages') {
+      fetchPages();
+    }
+  }, [checkingAuth, isAdmin, activeTab, fetchPages]);
 
   // Player management
   const addPlayer = async () => {
@@ -712,6 +779,7 @@ export default function AdminPage() {
     { id: 'drafts' as TabType, label: 'Drafts', icon: FaDice },
     { id: 'scoring' as TabType, label: 'Scoring Rules', icon: FaTrophy },
     { id: 'seasons' as TabType, label: 'Seasons', icon: FaCalendar },
+    { id: 'pages' as TabType, label: 'Page Content', icon: FaFileAlt },
     { id: 'settings' as TabType, label: 'Settings', icon: FaCog },
   ];
 
@@ -1537,6 +1605,94 @@ export default function AdminPage() {
             {/* Seasons Tab */}
             {activeTab === 'seasons' && currentLeague && (
               <SeasonManager leagueId={currentLeague.id} />
+            )}
+
+            {/* Page Content Tab — control titles, nav labels, hero, footer, etc. per page */}
+            {activeTab === 'pages' && (
+              <div className="space-y-6">
+                <Card className="bg-slate-800/90 border-slate-700 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="text-white">Page Content</CardTitle>
+                    <CardDescription className="text-gray-300">
+                      Edit titles, nav labels, hero text, footer blurb, and other per-page info. Changes appear on Home, Leaderboard, Bulletin, header, and footer.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {pageContentEdit ? (
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-lg font-semibold text-white">Edit: {pageContentEdit.path}</h3>
+                          <Button variant="outline" size="sm" onClick={() => setPageContentEdit(null)}>
+                            Back to list
+                          </Button>
+                        </div>
+                        <div>
+                          <Label className="text-gray-300">Title</Label>
+                          <Input
+                            value={pageContentEdit.title}
+                            onChange={e => setPageContentEdit({ ...pageContentEdit, title: e.target.value })}
+                            className="bg-slate-900 border-slate-600 mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-gray-300">Description</Label>
+                          <Input
+                            value={pageContentEdit.description}
+                            onChange={e => setPageContentEdit({ ...pageContentEdit, description: e.target.value })}
+                            className="bg-slate-900 border-slate-600 mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-gray-300">Config (JSON)</Label>
+                          <textarea
+                            value={pageContentEdit.configJson}
+                            onChange={e => setPageContentEdit({ ...pageContentEdit, configJson: e.target.value })}
+                            className="w-full min-h-[200px] px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white font-mono text-sm mt-1"
+                            spellCheck={false}
+                          />
+                          <p className="text-gray-500 text-xs mt-1">
+                            e.g. navLabel, heroSubtitle, heroHeadline, heroTagline, footerBlurb, exploreTitle, exploreSubtitle, features (array of &#123; title, desc, href, cta &#125;)
+                          </p>
+                        </div>
+                        <Button onClick={savePageContent} disabled={pageContentSaving}>
+                          {pageContentSaving ? 'Saving…' : 'Save'}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {pageContentList.map(p => (
+                          <div
+                            key={p.path}
+                            className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-900/80 border border-slate-700 hover:border-amber-500/40"
+                          >
+                            <div>
+                              <span className="font-medium text-white">{p.path}</span>
+                              {p.title && <span className="text-gray-400 ml-2">— {p.title}</span>}
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                setPageContentEdit({
+                                  path: p.path,
+                                  title: p.title ?? '',
+                                  description: p.description ?? '',
+                                  configJson: JSON.stringify(p.config, null, 2),
+                                })
+                              }
+                            >
+                              Edit
+                            </Button>
+                          </div>
+                        ))}
+                        {pageContentList.length === 0 && (
+                          <p className="text-gray-400">No page content. Run seed to add defaults.</p>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {/* Settings Tab */}

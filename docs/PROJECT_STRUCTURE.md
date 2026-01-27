@@ -198,6 +198,14 @@ Your MTG Maui League project is now:
 - **`GET /api/admin/dashboard`** – Stats (users, games, leagues, events, db size, uptime). Db size from SQLite `prisma/dev.db` file size; other DBs → `N/A`.
 - **`GET /api/admin/dashboard/activity`** – Recent users, games, leagues, events. Uses `logger` for errors.
 
+### **Page content & app layout (control of other pages’ information)**
+- **`PageContent`** (Prisma) – Per-path editable content: `path`, `title`, `description`, `config` (JSON). Seeded for `/`, `/leaderboard`, `/bulletin`, `/rules`, etc.
+- **`GET /api/pages`** – Public API: returns all page content for the frontend. **`GET/PUT /api/admin/pages`** – Admin CRUD for page content.
+- **`PageContentContext`** – Fetches `/api/pages`, exposes `getPage(path)`, `getConfig(path)`, `refresh()`. Used by layout (header/footer), home, leaderboard, bulletin.
+- **Layout:** `Providers` → `LeagueProvider` → `PageContentProvider` → `children`. **Header** nav labels and **footer** blurb/quick links come from page config (`navLabel`, `footerBlurb`).
+- **Admin → Page Content tab** – List pages, edit `title`, `description`, and `config` (JSON). Config can include `navLabel`, `heroSubtitle`, `heroHeadline`, `heroTagline`, `footerBlurb`, `exploreTitle`, `exploreSubtitle`, `features` (home), etc. Saving updates DB and calls `refresh()` so the app reflects changes immediately.
+- **Pages using page content:** Home (hero, features, explore), Leaderboard (title, description), Bulletin (title, description), Header (nav labels), Footer (blurb, quick-link labels).
+
 ### **Components**
 - **`LeagueStatus`** – Fetches `/api/leagues/status`, shows league stats.
 - **`EditableLeaderboardTable`** – Fetches league leaderboard, double‑click to edit, save via `/api/admin/leaderboard/update`.

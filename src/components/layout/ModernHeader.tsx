@@ -1,9 +1,8 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   FaHome,
   FaTrophy,
@@ -18,6 +17,7 @@ import {
 } from 'react-icons/fa';
 import { Button } from '@/components/ui/Button';
 import { AdventureLink } from '@/components/layout/AdventureLink';
+import { usePageContent } from '@/contexts/PageContentContext';
 
 const navigation = [
   { name: 'Home', href: '/', icon: FaHome },
@@ -31,8 +31,14 @@ const navigation = [
   { name: 'Wizards Control', href: '/wizards', icon: FaMagic, admin: true },
 ];
 
+function navLabel(getConfig: (path: string) => Record<string, unknown>, href: string, fallback: string): string {
+  const c = getConfig(href);
+  return (typeof c?.navLabel === 'string' ? c.navLabel : fallback) || fallback;
+}
+
 export const ModernHeader: React.FC = () => {
   const pathname = usePathname();
+  const { getConfig } = usePageContent();
 
   return (
     <header className="bg-slate-950/90 border-b border-slate-800/80 shadow-xl sticky top-0 z-50 backdrop-blur-md">
@@ -51,13 +57,14 @@ export const ModernHeader: React.FC = () => {
             </span>
           </Link>
 
-          {/* Navigation */}
+          {/* Navigation — labels editable via Admin > Page Content */}
           <nav className="hidden md:flex space-x-2">
             {navigation.map(item => {
               const Icon = item.icon;
+              const label = navLabel(getConfig, item.href, item.name);
               return (
                 <AdventureLink
-                  key={item.name}
+                  key={item.href}
                   href={item.href}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     pathname === item.href
@@ -66,7 +73,7 @@ export const ModernHeader: React.FC = () => {
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  <span>{item.name}</span>
+                  <span>{label}</span>
                 </AdventureLink>
               );
             })}
@@ -108,9 +115,10 @@ export const ModernHeader: React.FC = () => {
             .map(item => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
+              const label = navLabel(getConfig, item.href, item.name);
               return (
                 <Link
-                  key={item.name}
+                  key={item.href}
                   href={item.href}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
@@ -119,7 +127,7 @@ export const ModernHeader: React.FC = () => {
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  <span>{item.name}</span>
+                  <span>{label}</span>
                 </Link>
               );
             })}

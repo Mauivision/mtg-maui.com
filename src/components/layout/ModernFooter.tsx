@@ -3,13 +3,29 @@
 import React from 'react';
 import Link from 'next/link';
 import { FaGithub, FaTwitter, FaDiscord, FaYoutube } from 'react-icons/fa';
+import { usePageContent } from '@/contexts/PageContentContext';
+
+const footerQuickLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/rules', label: 'Tournament Rules' },
+  { href: '/bulletin', label: 'Bulletin Board' },
+  { href: '/coming-soon', label: 'Coming Soon' },
+];
 
 export const ModernFooter: React.FC = () => {
+  const { getConfig } = usePageContent();
+  const homeConfig = getConfig('/') as { footerBlurb?: string } | undefined;
+  const footerBlurb =
+    typeof homeConfig?.footerBlurb === 'string'
+      ? homeConfig.footerBlurb
+      : "Enter the arena. Hawaii's premier Magic: The Gathering league — Commander, Draft, real rankings, real players.";
+
   return (
     <footer className="bg-slate-950/95 border-t border-slate-800/80 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand — Arena aesthetic, match header */}
+          {/* Brand — blurb editable via Admin > Page Content (home) */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2.5 mb-4">
               <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-600 to-amber-800 border border-amber-500/40 flex items-center justify-center shadow-lg">
@@ -17,10 +33,7 @@ export const ModernFooter: React.FC = () => {
               </div>
               <span className="text-xl font-bold text-white">Maui League</span>
             </div>
-            <p className="text-slate-400 mb-4 max-w-md">
-              Enter the arena. Hawaii&apos;s premier Magic: The Gathering league — Commander, Draft,
-              real rankings, real players.
-            </p>
+            <p className="text-slate-400 mb-4 max-w-md">{footerBlurb}</p>
             <div className="flex space-x-4">
               <a
                 href="#"
@@ -53,41 +66,21 @@ export const ModernFooter: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links — labels from Admin > Page Content */}
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-slate-400 hover:text-amber-400 transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/leaderboard"
-                  className="text-slate-400 hover:text-amber-400 transition-colors"
-                >
-                  Leaderboard
-                </Link>
-              </li>
-              <li>
-                <Link href="/rules" className="text-slate-400 hover:text-amber-400 transition-colors">
-                  Tournament Rules
-                </Link>
-              </li>
-              <li>
-                <Link href="/bulletin" className="text-slate-400 hover:text-amber-400 transition-colors">
-                  Bulletin Board
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/coming-soon"
-                  className="text-slate-400 hover:text-amber-400 transition-colors"
-                >
-                  Coming Soon
-                </Link>
-              </li>
+              {footerQuickLinks.map(({ href, label }) => {
+                const c = getConfig(href) as { navLabel?: string } | undefined;
+                const displayLabel = typeof c?.navLabel === 'string' ? c.navLabel : label;
+                return (
+                  <li key={href}>
+                    <Link href={href} className="text-slate-400 hover:text-amber-400 transition-colors">
+                      {displayLabel}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 

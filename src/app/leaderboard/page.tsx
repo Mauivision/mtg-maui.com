@@ -25,6 +25,7 @@ import {
 import { RealtimeLeaderboard } from '@/components/leaderboard/RealtimeLeaderboard';
 import { EditableLeaderboardTable } from '@/components/admin/EditableLeaderboardTable';
 import { LeagueStatus } from '@/components/league/LeagueStatus';
+import { usePageContent } from '@/contexts/PageContentContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { LeaderboardFilters } from '@/components/leaderboard/LeaderboardFilters';
 import dynamic from 'next/dynamic';
@@ -48,6 +49,8 @@ const defaultScoringRules = {
 
 export default function LeaderboardPage() {
   const { currentLeague, loading: leagueLoading } = useLeague();
+  const { getPage } = usePageContent();
+  const leaderboardPage = getPage('/leaderboard');
   const [leaderboard, setLeaderboard] = useState<TraditionalLeaderboardEntry[]>([]);
   const [allLeaderboardData, setAllLeaderboardData] = useState<TraditionalLeaderboardEntry[]>([]); // Store all data for filtering
   const [scoringRules, setScoringRules] = useState<ScoringRules>(defaultScoringRules);
@@ -445,11 +448,10 @@ export default function LeaderboardPage() {
         {/* Hero — Arena */}
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 animate-fade-in">
-            🏆 League <span className="text-gradient-arena">Leaderboard</span>
+            🏆 {leaderboardPage?.title ?? 'League Leaderboard'}
           </h1>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-6 animate-fade-in-delayed">
-            Track your progress and see how you stack up. Real-time rankings and comprehensive
-            statistics.
+            {leaderboardPage?.description ?? 'Track your progress and see how you stack up. Real-time rankings and comprehensive statistics.'}
           </p>
         </div>
 

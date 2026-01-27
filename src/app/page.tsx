@@ -6,29 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { FaTrophy, FaUsers, FaCalendar, FaArrowRight, FaDice, FaNewspaper } from 'react-icons/fa';
 import { CastleGate } from '@/components/ui/CastleGate';
+import { usePageContent } from '@/contexts/PageContentContext';
 
-const features = [
-  {
-    title: 'Leaderboard',
-    desc: 'Track your progress and see how you rank against other players.',
-    href: '/leaderboard',
-    icon: FaTrophy,
-    cta: 'View Rankings',
-  },
-  {
-    title: 'Character Sheets',
-    desc: 'View your D&D-style character progression and achievements.',
-    href: '/character-sheets',
-    icon: FaUsers,
-    cta: 'View Sheets',
-  },
-  {
-    title: 'Rules',
-    desc: 'Learn about tournament formats, scoring, and house rules.',
-    href: '/rules',
-    icon: FaCalendar,
-    cta: 'Read Rules',
-  },
+const iconByHref: Record<string, React.ComponentType<{ className?: string }>> = {
+  '/leaderboard': FaTrophy,
+  '/character-sheets': FaUsers,
+  '/rules': FaCalendar,
+};
+
+const defaultFeatures = [
+  { title: 'Leaderboard', desc: 'Track your progress and see how you rank against other players.', href: '/leaderboard', cta: 'View Rankings' },
+  { title: 'Character Sheets', desc: 'View your D&D-style character progression and achievements.', href: '/character-sheets', cta: 'View Sheets' },
+  { title: 'Rules', desc: 'Learn about tournament formats, scoring, and house rules.', href: '/rules', cta: 'Read Rules' },
 ];
 
 const statConfig = [
@@ -38,10 +27,28 @@ const statConfig = [
 ];
 
 export default function HomePage() {
+  const { getConfig } = usePageContent();
+  const homeConfig = getConfig('/') as {
+    heroSubtitle?: string;
+    heroHeadline?: string;
+    heroTagline?: string;
+    exploreTitle?: string;
+    exploreSubtitle?: string;
+    features?: Array<{ title: string; desc: string; href: string; cta: string }>;
+  } | undefined;
   const [stats, setStats] = useState<Record<string, number>>({ totalUsers: 0, totalLeagues: 0, totalGames: 0 });
   const [events, setEvents] = useState<Array<{ id: string; title: string; date: string; location?: string; status: string }>>([]);
   const [news, setNews] = useState<Array<{ id: string; title: string; excerpt?: string; category: string; publishedAt: string }>>([]);
   const [loading, setLoading] = useState(true);
+
+  const heroSubtitle = homeConfig?.heroSubtitle ?? "Hawaii's Premier MTG League";
+  const heroHeadline = homeConfig?.heroHeadline ?? 'Enter the Arena';
+  const heroTagline = homeConfig?.heroTagline ?? 'Commander. Draft. Real rankings. Real players. The ultimate Magic league experience.';
+  const exploreTitle = homeConfig?.exploreTitle ?? 'Explore the League';
+  const exploreSubtitle = homeConfig?.exploreSubtitle ?? 'Climb the ranks, track your journey, and master the rules.';
+  const features = Array.isArray(homeConfig?.features) && homeConfig.features.length > 0
+    ? homeConfig.features
+    : defaultFeatures;
 
   useEffect(() => {
     const load = async () => {
@@ -89,13 +96,21 @@ export default function HomePage() {
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center static-page-content">
             <p className="text-amber-400/90 text-sm uppercase tracking-[0.2em] mb-4 animate-fade-in-up">
-              Hawaii&apos;s Premier MTG League
+              {heroSubtitle}
             </p>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              Enter the <span className="text-gradient-arena">Arena</span>
+              {heroHeadline.includes('Arena') ? (
+                <>
+                  {heroHeadline.replace('Arena', '').trim()}
+                  {' '}
+                  <span className="text-gradient-arena">Arena</span>
+                </>
+              ) : (
+                heroHeadline
+              )}
             </h1>
             <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              Commander. Draft. Real rankings. Real players. The ultimate Magic league experience.
+              {heroTagline}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
@@ -226,19 +241,17 @@ export default function HomePage() {
         </section>
         )}
 
-        {/* Features — Explore the League */}
+        {/* Features — editable via Admin > Page Content (home) */}
         <section className="py-20 bg-slate-950/50">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-center text-white mb-4">Explore the League</h2>
-            <p className="text-slate-400 text-center max-w-xl mx-auto mb-12">
-              Climb the ranks, track your journey, and master the rules.
-            </p>
+            <h2 className="text-3xl font-bold text-center text-white mb-4">{exploreTitle}</h2>
+            <p className="text-slate-400 text-center max-w-xl mx-auto mb-12">{exploreSubtitle}</p>
             <div className="grid md:grid-cols-3 gap-8">
               {features.map((f, i) => {
-                const Icon = f.icon;
+                const Icon = iconByHref[f.href] ?? FaTrophy;
                 return (
                   <Card
-                    key={i}
+                    key={f.href + i}
                     className="card-arena group transition-all duration-300 hover:-translate-y-1"
                   >
                     <CardHeader>

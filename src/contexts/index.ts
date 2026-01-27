@@ -5,3 +5,4 @@
 
 export { useAuth, AuthProvider } from './AuthContext';
 export { useLeague, LeagueProvider } from './LeagueContext';
+export { usePageContent, PageContentProvider } from './PageContentContext';

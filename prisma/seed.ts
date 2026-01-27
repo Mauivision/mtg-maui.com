@@ -51,85 +51,36 @@ async function main() {
     users.map(u => ({ id: u.id, name: u.name, email: u.email }))
   );
 
-  // Create sample cards
-  const cards = await Promise.all([
-    prisma.card.upsert({
-      where: { name: 'Lightning Bolt' },
-      update: {},
-      create: {
-        name: 'Lightning Bolt',
-        manaCost: '{R}',
-        cmc: 1,
-        type: 'Instant',
-        text: 'Lightning Bolt deals 3 damage to any target.',
-        power: null,
-        toughness: null,
-        loyalty: null,
-        imageUrl:
-          'https://cards.scryfall.io/normal/front/c/e/ce711943-c1a1-43a0-8b89-8d169cfb8e06.jpg',
-        setCode: '2x2',
-        setName: 'Double Masters 2022',
-        rarity: 'Common',
+  // Create sample cards (Card has no unique on name; use findFirst + create)
+  const cardData = [
+    { name: 'Lightning Bolt', manaCost: '{R}', cmc: 1, type: 'Instant', text: 'Lightning Bolt deals 3 damage to any target.', power: null, toughness: null, loyalty: null, imageUrl: 'https://cards.scryfall.io/normal/front/c/e/ce711943-c1a1-43a0-8b89-8d169cfb8e06.jpg', setCode: '2x2', setName: 'Double Masters 2022', rarity: 'Common' },
+    { name: 'Counterspell', manaCost: '{U}{U}', cmc: 2, type: 'Instant', text: 'Counter target spell.', power: null, toughness: null, loyalty: null, imageUrl: 'https://cards.scryfall.io/normal/front/8/4/8493131c-0a7b-4fd6-a2a7-0bf12f67d382.jpg', setCode: 'mh2', setName: 'Modern Horizons 2', rarity: 'Common' },
+    { name: 'Black Lotus', manaCost: '{0}', cmc: 0, type: 'Artifact', text: '{T}, Sacrifice Black Lotus: Add three mana of any one color.', power: null, toughness: null, loyalty: null, imageUrl: 'https://cards.scryfall.io/normal/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg', setCode: '2ed', setName: 'Unlimited Edition', rarity: 'Rare' },
+    { name: 'Serra Angel', manaCost: '{3}{W}{W}', cmc: 5, type: 'Creature - Angel', text: 'Flying, vigilance', power: '4', toughness: '4', loyalty: null, imageUrl: 'https://cards.scryfall.io/normal/front/9/8/9805884b-23e1-4c24-82c6-4b4a697d8234.jpg', setCode: 'dmu', setName: 'Dominaria United', rarity: 'Uncommon' },
+  ];
+  const cards: { id: string; name: string }[] = [];
+  for (const c of cardData) {
+    let card = await prisma.card.findFirst({ where: { name: c.name } });
+    if (!card) {
+      card = await prisma.card.create({
+      data: {
+        name: c.name,
+        manaCost: c.manaCost,
+        cmc: c.cmc,
+        type: c.type,
+        text: c.text,
+        power: c.power,
+        toughness: c.toughness,
+        loyalty: c.loyalty,
+        imageUrl: c.imageUrl,
+        setCode: c.setCode,
+        setName: c.setName,
+        rarity: c.rarity,
       },
-    }),
-    prisma.card.upsert({
-      where: { name: 'Counterspell' },
-      update: {},
-      create: {
-        name: 'Counterspell',
-        manaCost: '{U}{U}',
-        cmc: 2,
-        type: 'Instant',
-        text: 'Counter target spell.',
-        power: null,
-        toughness: null,
-        loyalty: null,
-        imageUrl:
-          'https://cards.scryfall.io/normal/front/8/4/8493131c-0a7b-4fd6-a2a7-0bf12f67d382.jpg',
-        setCode: 'mh2',
-        setName: 'Modern Horizons 2',
-        rarity: 'Common',
-      },
-    }),
-    prisma.card.upsert({
-      where: { name: 'Black Lotus' },
-      update: {},
-      create: {
-        name: 'Black Lotus',
-        manaCost: '{0}',
-        cmc: 0,
-        type: 'Artifact',
-        text: '{T}, Sacrifice Black Lotus: Add three mana of any one color.',
-        power: null,
-        toughness: null,
-        loyalty: null,
-        imageUrl:
-          'https://cards.scryfall.io/normal/front/b/d/bd8fa327-dd41-4737-8f19-2cf5eb1f7cdd.jpg',
-        setCode: '2ed',
-        setName: 'Unlimited Edition',
-        rarity: 'Rare',
-      },
-    }),
-    prisma.card.upsert({
-      where: { name: 'Serra Angel' },
-      update: {},
-      create: {
-        name: 'Serra Angel',
-        manaCost: '{3}{W}{W}',
-        cmc: 5,
-        type: 'Creature - Angel',
-        text: 'Flying, vigilance',
-        power: '4',
-        toughness: '4',
-        loyalty: null,
-        imageUrl:
-          'https://cards.scryfall.io/normal/front/9/8/9805884b-23e1-4c24-82c6-4b4a697d8234.jpg',
-        setCode: 'dmu',
-        setName: 'Dominaria United',
-        rarity: 'Uncommon',
-      },
-    }),
-  ]);
+    });
+    }
+    cards.push(card);
+  }
 
   console.log(
     'Created cards:',
@@ -170,25 +121,29 @@ async function main() {
     { id: deck2.id, name: deck2.name, userId: deck2.userId },
   ]);
 
-  // Create sample tournament
+  // Create sample tournament (endDate required)
+  const start = new Date();
+  const end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000);
   const tournament = await prisma.tournament.create({
     data: {
       name: 'Friday Night Magic',
       format: 'standard',
-      startDate: new Date(),
+      startDate: start,
+      endDate: end,
       maxPlayers: 16,
       creatorId: users[0].id,
       participants: {
         create: [{ userId: users[1].id }, { userId: users[2].id }, { userId: users[3].id }],
       },
     },
+    include: { participants: true },
   });
 
   console.log('Created tournament:', {
     id: tournament.id,
     name: tournament.name,
     format: tournament.format,
-    participants: tournament.participants?.length || 0,
+    participants: tournament.participants.length,
   });
 
   // Create sample matches
@@ -300,6 +255,25 @@ async function main() {
   } else {
     console.log('Default league already exists:', existingLeague.id);
   }
+
+  // Default editable page content (Admin can change via Page Content tab)
+  const defaultPages: Array<{ path: string; title: string | null; description: string | null; config: string }> = [
+    { path: '/', title: 'MTG Maui League', description: "Hawaii's Premier MTG Tournament Platform", config: JSON.stringify({ navLabel: 'Home', heroSubtitle: "Hawaii's Premier MTG League", heroHeadline: 'Enter the Arena', heroTagline: 'Commander. Draft. Real rankings. Real players. The ultimate Magic league experience.', footerBlurb: "Enter the arena. Hawaii's premier Magic: The Gathering league — Commander, Draft, real rankings, real players.", exploreTitle: 'Explore the League', exploreSubtitle: 'Climb the ranks, track your journey, and master the rules.', features: [{ title: 'Leaderboard', desc: 'Track your progress and see how you rank against other players.', href: '/leaderboard', cta: 'View Rankings' }, { title: 'Character Sheets', desc: 'View your D&D-style character progression and achievements.', href: '/character-sheets', cta: 'View Sheets' }, { title: 'Rules', desc: 'Learn about tournament formats, scoring, and house rules.', href: '/rules', cta: 'Read Rules' }] }) },
+    { path: '/leaderboard', title: 'League Leaderboard', description: 'Track your progress and see how you stack up. Real-time rankings and comprehensive statistics.', config: JSON.stringify({ navLabel: 'Leaderboard' }) },
+    { path: '/bulletin', title: 'Bulletin Board', description: 'News, events, and announcements', config: JSON.stringify({ navLabel: 'Bulletin Board' }) },
+    { path: '/rules', title: 'Tournament Rules', description: 'Official rules and scoring', config: JSON.stringify({ navLabel: 'Rules' }) },
+    { path: '/commander', title: 'Commander Scoring', description: 'Commander game scoring system', config: JSON.stringify({ navLabel: 'Commander' }) },
+    { path: '/character-sheets', title: 'Character Sheets', description: 'D&D-style progression', config: JSON.stringify({ navLabel: 'Character Sheets' }) },
+    { path: '/coming-soon', title: 'Coming Soon', description: 'Upcoming features', config: JSON.stringify({ navLabel: 'Coming Soon' }) },
+  ];
+  for (const p of defaultPages) {
+    await prisma.pageContent.upsert({
+      where: { path: p.path },
+      update: { title: p.title, description: p.description, config: p.config },
+      create: { path: p.path, title: p.title, description: p.description, config: p.config },
+    });
+  }
+  console.log('Seeded default page content');
 
   console.log('Database seeded successfully!');
 }

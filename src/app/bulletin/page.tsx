@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { FaBullhorn, FaCalendar, FaUser, FaNewspaper } from 'react-icons/fa';
+import { usePageContent } from '@/contexts/PageContentContext';
 
 type BulletinItem = {
   id: string;
@@ -17,6 +18,8 @@ type BulletinItem = {
 };
 
 export default function BulletinBoardPage() {
+  const { getPage } = usePageContent();
+  const pageInfo = getPage('/bulletin');
   const [items, setItems] = useState<BulletinItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
@@ -93,10 +96,10 @@ export default function BulletinBoardPage() {
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 animate-fade-in flex items-center justify-center gap-3">
             <FaBullhorn className="w-8 h-8 text-amber-400" />
-            <span className="text-gradient-arena">Bulletin Board</span>
+            <span className="text-gradient-arena">{pageInfo?.title ?? 'Bulletin Board'}</span>
           </h1>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto animate-fade-in-delayed">
-            Upcoming events, news, and fun Magic articles. Editable via Admin & Wizard Control.
+            {pageInfo?.description ?? 'Upcoming events, news, and fun Magic articles. Editable via Admin & Wizard Control.'}
           </p>
         </div>
 

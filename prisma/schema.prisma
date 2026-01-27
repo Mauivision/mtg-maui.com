@@ -379,6 +379,16 @@ model News {
   updatedAt   DateTime @updatedAt
 }
 
+/// Editable per-page content. Admin controls titles, descriptions, nav labels, etc.
+model PageContent {
+  id          String   @id @default(cuid())
+  path        String   @unique // "/", "/leaderboard", "/bulletin", etc.
+  title       String?
+  description String?
+  config      String?  // JSON: navLabel, heroSubtitle, features, footerBlurb, etc.
+  updatedAt   DateTime @updatedAt
+}
+
 // Role-Based Access Control
 model Role {
   id          String     @id @default(cuid())
