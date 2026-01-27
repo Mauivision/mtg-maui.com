@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAdmin } from '@/lib/auth-helpers';
+import { requireAdminOrSimple } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 
@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 // Export all data
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'all';
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
 // Import data
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const formData = await request.formData();
     const file = formData.get('file') as File;

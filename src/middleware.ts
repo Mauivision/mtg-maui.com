@@ -19,7 +19,6 @@ export const config = {
     '/profile/:path*',
     '/players/:path*',
     '/stats/:path*',
-    '/admin/:path*',
-    '/wizards/:path*',
+    // /admin and /wizards use simple Admin/12345 login; not NextAuth
   ],
 };

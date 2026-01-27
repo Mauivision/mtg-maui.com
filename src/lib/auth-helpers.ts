@@ -1,6 +1,10 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest } from 'next/server';
 import { authOptions } from '@/lib/auth-config';
+import {
+  verifySimpleAdminCookie,
+  SIMPLE_ADMIN_COOKIE_NAME,
+} from '@/lib/simple-admin-auth';
 
 /**
  * Get the authenticated user from the server session
@@ -108,4 +112,51 @@ export async function requireAdmin() {
   }
 
   return user;
+}
+
+const SIMPLE_ADMIN_USER = {
+  id: 'simple-admin',
+  email: 'admin@mtg-maui.local',
+  name: 'Admin',
+};
+
+/**
+ * Require admin access via either NextAuth session or simple-admin cookie.
+ * Use this in admin API routes. Pass the request so the cookie can be checked.
+ */
+export async function requireAdminOrSimple(request: NextRequest) {
+  const cookie = request.cookies.get(SIMPLE_ADMIN_COOKIE_NAME)?.value;
+  if (cookie && verifySimpleAdminCookie(cookie)) {
+    return SIMPLE_ADMIN_USER;
+  }
+
+  return requireAdmin();
+}
+
+const ADMIN_EMAIL = 'admin@mtg-maui.com';
+
+/**
+ * Resolve User id for create operations when using simple-admin.
+ * Returns the Admin user id (admin@mtg-maui.com) or null if not found.
+ * Run prisma seed to ensure this user exists.
+ */
+export async function getAdminUserIdForCreates(): Promise<string | null> {
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    const u = await prisma.user.findUnique({
+      where: { email: ADMIN_EMAIL },
+      select: { id: true },
+    });
+    return u?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Use when creating games/pairings/drafts with simple-admin; prefers real admin user id. */
+export async function resolveRecordedByUserId(user: { id: string }): Promise<string> {
+  if (user.id !== 'simple-admin') return user.id;
+  const adminId = await getAdminUserIdForCreates();
+  if (adminId) return adminId;
+  throw new Error('Admin user not found. Run: npm run prisma:seed');
 }

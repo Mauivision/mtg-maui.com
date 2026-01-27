@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAdmin } from '@/lib/auth-helpers';
+import { requireAdminOrSimple, resolveRecordedByUserId } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 
@@ -8,7 +8,7 @@ import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
     const { searchParams } = new URL(request.url);
     const leagueId = searchParams.get('leagueId');
     const gameType = searchParams.get('gameType');
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAdmin();
+    const user = await requireAdminOrSimple(request);
     const body = await request.json();
     const {
       leagueId,
@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    const recordedBy = await resolveRecordedByUserId(user);
     const game = await prisma.leagueGame.create({
       data: {
         leagueId,
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
         placements: JSON.stringify(placements),
         commanderObjectives: goldObjective ? JSON.stringify(goldObjective) : null,
         notes,
-        recordedBy: user.id,
+        recordedBy,
       },
     });
 
@@ -161,7 +162,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
     const body = await request.json();
     const {
       id,
@@ -259,7 +260,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
     const { searchParams } = new URL(request.url);
     const gameId = searchParams.get('id');
 

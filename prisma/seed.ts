@@ -1,17 +1,20 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  const adminPasswordHash = bcrypt.hashSync('12345', 10);
+
   // Create sample users
   const users = await Promise.all([
     prisma.user.upsert({
       where: { email: 'admin@mtg-maui.com' },
-      update: {},
+      update: { name: 'Admin', password: adminPasswordHash },
       create: {
-        name: 'MTG Maui Admin',
+        name: 'Admin',
         email: 'admin@mtg-maui.com',
-        password: '$2a$10$rOZ8Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z', // hashed password
+        password: adminPasswordHash,
       },
     }),
     prisma.user.upsert({

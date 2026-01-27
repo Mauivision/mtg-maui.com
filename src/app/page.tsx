@@ -1,17 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { FaTrophy, FaUsers, FaCalendar, FaArrowRight, FaDice } from 'react-icons/fa';
+import { FaTrophy, FaUsers, FaCalendar, FaArrowRight, FaDice, FaNewspaper } from 'react-icons/fa';
 import { CastleGate } from '@/components/ui/CastleGate';
-
-const stats = [
-  { label: 'Active Players', value: '127', icon: FaUsers, color: 'from-blue-600/80 to-blue-800/80 border-blue-500/40' },
-  { label: 'Tournaments', value: '8', icon: FaTrophy, color: 'from-amber-600/80 to-amber-800/80 border-amber-500/40' },
-  { label: 'Games Played', value: '342', icon: FaCalendar, color: 'from-emerald-600/80 to-emerald-800/80 border-emerald-500/40' },
-];
 
 const features = [
   {
@@ -37,14 +31,50 @@ const features = [
   },
 ];
 
+const statConfig = [
+  { key: 'totalUsers' as const, label: 'Active Players', icon: FaUsers, color: 'from-blue-600/80 to-blue-800/80 border-blue-500/40' },
+  { key: 'totalLeagues' as const, label: 'Tournaments', icon: FaTrophy, color: 'from-amber-600/80 to-amber-800/80 border-amber-500/40' },
+  { key: 'totalGames' as const, label: 'Games Played', icon: FaCalendar, color: 'from-emerald-600/80 to-emerald-800/80 border-emerald-500/40' },
+];
+
 export default function HomePage() {
+  const [stats, setStats] = useState<Record<string, number>>({ totalUsers: 0, totalLeagues: 0, totalGames: 0 });
+  const [events, setEvents] = useState<Array<{ id: string; title: string; date: string; location?: string; status: string }>>([]);
+  const [news, setNews] = useState<Array<{ id: string; title: string; excerpt?: string; category: string; publishedAt: string }>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [sRes, eRes, nRes] = await Promise.all([
+          fetch('/api/stats'),
+          fetch('/api/events'),
+          fetch('/api/news'),
+        ]);
+        if (sRes.ok) {
+          const d = await sRes.json();
+          setStats({ totalUsers: d.totalUsers ?? 0, totalLeagues: d.totalLeagues ?? 0, totalGames: d.totalGames ?? 0 });
+        }
+        if (eRes.ok) {
+          const d = await eRes.json();
+          setEvents(Array.isArray(d.events) ? d.events.slice(0, 5) : []);
+        }
+        if (nRes.ok) {
+          const d = await nRes.json();
+          setNews(Array.isArray(d.news) ? d.news.slice(0, 5) : []);
+        }
+      } catch {
+        /* ignore */
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
   return (
     <div className="min-h-screen static-page">
-      <CastleGate
-        onGateOpen={() => {
-          // Gate animation complete - no logging needed
-        }}
-      >
+      <CastleGate onGateOpen={() => {}}>
         {/* Hero — Enter the Arena */}
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
           <div
@@ -62,8 +92,7 @@ export default function HomePage() {
               Hawaii&apos;s Premier MTG League
             </p>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              Enter the{' '}
-              <span className="text-gradient-arena">Arena</span>
+              Enter the <span className="text-gradient-arena">Arena</span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               Commander. Draft. Real rankings. Real players. The ultimate Magic league experience.
@@ -71,48 +100,107 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <Link href="/leaderboard">
-                <Button
-                  size="lg"
-                  variant="primary"
-                  ripple
-                  glow
-                  className="bg-gradient-to-r from-amber-600 to-amber-700 text-white border border-amber-500/30 hover:from-amber-500 hover:to-amber-600 shadow-lg shadow-amber-950/30"
-                >
+                <Button size="lg" variant="primary" ripple glow className="bg-gradient-to-r from-amber-600 to-amber-700 text-white border border-amber-500/30 hover:from-amber-500 hover:to-amber-600 shadow-lg shadow-amber-950/30">
                   <FaTrophy className="w-5 h-5 mr-2" />
                   View Leaderboard
                 </Button>
               </Link>
               <Link href="/character-sheets">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  ripple
-                  className="border-2 border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:border-amber-400"
-                >
+                <Button variant="outline" size="lg" ripple className="border-2 border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:border-amber-400">
                   Character Sheets
                 </Button>
               </Link>
             </div>
 
-            {/* Mana-style stat orbs */}
+            {/* Mana-style stat orbs — editable via Admin */}
             <div className="grid grid-cols-3 gap-6 max-w-xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-              {stats.map((stat, i) => {
-                const Icon = stat.icon;
-                return (
-                  <div key={i} className="flex flex-col items-center">
-                    <div className={`mana-orb bg-gradient-to-br ${stat.color}`}>
-                      <Icon className="w-6 h-6 text-white/90" />
-                    </div>
-                    <div className="text-2xl font-bold text-white mt-3">{stat.value}</div>
-                    <div className="text-xs text-slate-400 uppercase tracking-wider">{stat.label}</div>
+              {statConfig.map(({ key, label, icon: Icon, color }, i) => (
+                <div key={i} className="flex flex-col items-center">
+                  <div className={`mana-orb bg-gradient-to-br ${color}`}>
+                    <Icon className="w-6 h-6 text-white/90" />
                   </div>
-                );
-              })}
+                  <div className="text-2xl font-bold text-white mt-3">{loading ? '—' : String(stats[key] ?? 0)}</div>
+                  <div className="text-xs text-slate-400 uppercase tracking-wider">{label}</div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Chaos Draft — Event card */}
+        {/* Upcoming Events — editable via Admin / Wizards */}
+        {events.length > 0 && (
+          <section className="py-16 relative">
+            <div className="absolute inset-0 bg-slate-950/80" />
+            <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-2xl font-bold text-amber-400 mb-6">Upcoming Events</h2>
+              <div className="space-y-4">
+                {events.map((ev) => (
+                  <Link key={ev.id} href="/bulletin">
+                    <Card className="card-arena bg-slate-800/80 border-slate-600 hover:border-amber-500/40 transition-colors">
+                      <CardContent className="py-4 flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-amber-600/20 border border-amber-500/40 flex items-center justify-center">
+                            <FaCalendar className="w-6 h-6 text-amber-400" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-white">{ev.title}</div>
+                            <div className="text-sm text-slate-400">
+                              {ev.date && new Date(ev.date).toLocaleDateString()}
+                              {ev.location ? ` · ${ev.location}` : ''}
+                            </div>
+                          </div>
+                        </div>
+                        <span className="text-amber-400 text-sm">Details <FaArrowRight className="inline w-3 h-3 ml-1" /></span>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+              <div className="mt-4 text-center">
+                <Link href="/bulletin">
+                  <Button variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">
+                    All events & news
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Recent News — editable via Admin; fun Magic articles */}
+        {news.length > 0 && (
+          <section className="py-16 relative">
+            <div className="absolute inset-0 bg-slate-950/50" />
+            <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-2xl font-bold text-amber-400 mb-6">Recent News & Articles</h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {news.map((n) => (
+                  <Link key={n.id} href="/bulletin">
+                    <Card className="card-arena bg-slate-800/80 border-slate-600 hover:border-amber-500/40 transition-colors h-full">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-white text-lg flex items-center gap-2">
+                          <FaNewspaper className="w-4 h-4 text-amber-400" />
+                          {n.title}
+                        </CardTitle>
+                        <p className="text-slate-400 text-sm">{n.excerpt || n.category}</p>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+              <div className="mt-4 text-center">
+                <Link href="/bulletin">
+                  <Button variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">
+                    View all
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Chaos Draft — fallback when no events */}
+        {events.length === 0 && (
         <section className="py-16 relative">
           <div className="absolute inset-0 bg-slate-950/80" />
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -124,26 +212,19 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-red-100">Chaos Draft</h2>
-                    <p className="text-red-300/80 text-sm">Pack Opening · Dec 27 · Tournament · Feb 1</p>
+                    <p className="text-red-300/80 text-sm">Pack Opening · Tournament</p>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-4 text-sm">
-                  <span className="px-3 py-1.5 rounded-lg bg-red-900/50 border border-red-500/30 text-red-200 font-semibold">
-                    $25 Entry
-                  </span>
-                  <span className="px-3 py-1.5 rounded-lg bg-amber-900/30 border border-amber-500/30 text-amber-200 font-semibold">
-                    $500 Prize Pool
-                  </span>
-                  <Link href="/bulletin">
-                    <Button variant="outline" size="sm" className="border-red-500/50 text-red-300 hover:bg-red-500/10">
-                      Details <FaArrowRight className="w-3 h-3 ml-1 inline" />
-                    </Button>
-                  </Link>
-                </div>
+                <Link href="/bulletin">
+                  <Button variant="outline" size="sm" className="border-red-500/50 text-red-300 hover:bg-red-500/10">
+                    Details <FaArrowRight className="w-3 h-3 ml-1 inline" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
         </section>
+        )}
 
         {/* Features — Explore the League */}
         <section className="py-20 bg-slate-950/50">

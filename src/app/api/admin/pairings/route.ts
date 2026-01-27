@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAdmin, getAuthenticatedUser } from '@/lib/auth-helpers';
+import { requireAdminOrSimple, resolveRecordedByUserId } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 
@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 // Get commander game pairings (upcoming games/pods)
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const { searchParams } = new URL(request.url);
     const leagueId = searchParams.get('leagueId');
@@ -71,8 +71,7 @@ export async function GET(request: NextRequest) {
 // Create a new pairing (scheduled game)
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
-
+    const user = await requireAdminOrSimple(request);
     const body = await request.json();
     const { leagueId, gameType, date, players, tableNumber, round, tournamentPhase, notes } = body;
 
@@ -83,9 +82,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get authenticated user for recordedBy
-    const user = await getAuthenticatedUser();
-    const recordedBy = user.id;
+    const recordedBy = await resolveRecordedByUserId(user);
 
     // Create game with empty placements (to be filled after game is played)
     const game = await prisma.leagueGame.create({
@@ -116,7 +113,7 @@ export async function POST(request: NextRequest) {
 // Update a pairing
 export async function PUT(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const body = await request.json();
     const { id, date, players, tableNumber, round, tournamentPhase, notes } = body;
@@ -150,7 +147,7 @@ export async function PUT(request: NextRequest) {
 // Delete a pairing
 export async function DELETE(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const { searchParams } = new URL(request.url);
     const pairingId = searchParams.get('id');

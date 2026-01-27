@@ -296,6 +296,7 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
       const response = await fetch('/api/admin/leaderboard/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ leagueId, updates: changes }),
       });
 

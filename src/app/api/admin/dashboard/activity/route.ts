@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAdmin } from '@/lib/auth-helpers';
+import { requireAdminOrSimple } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 
 
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     // Get recent activity from various sources
     const [recentUsers, recentGames, recentLeagues, recentEvents] = await Promise.all([

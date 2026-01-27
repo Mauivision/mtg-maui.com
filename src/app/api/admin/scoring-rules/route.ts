@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAdmin } from '@/lib/auth-helpers';
+import { requireAdminOrSimple } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
@@ -28,7 +28,7 @@ const updateScoringRuleSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
     const { searchParams } = new URL(request.url);
     const parsed = querySchema.safeParse({
       leagueId: searchParams.get('leagueId'),
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
     const body = await request.json();
     const parsed = createScoringRuleSchema.safeParse(body);
     if (!parsed.success) {
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
     const body = await request.json();
     const parsed = updateScoringRuleSchema.safeParse(body);
     if (!parsed.success) {
@@ -134,7 +134,7 @@ const deleteScoringRuleSchema = z.object({
 
 export async function DELETE(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
     const { searchParams } = new URL(request.url);
     const parsed = deleteScoringRuleSchema.safeParse({ id: searchParams.get('id') });
     if (!parsed.success) {

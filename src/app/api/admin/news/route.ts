@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAdmin } from '@/lib/auth-helpers';
+import { requireAdminOrSimple } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 
@@ -8,7 +8,7 @@ import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const news = await prisma.news.findMany({
       orderBy: { publishedAt: 'desc' },
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const body = await request.json();
     const { title, excerpt, content, category, author } = body;
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const body = await request.json();
     const { id, title, excerpt, content, category, author, publishedAt } = body;
@@ -94,7 +94,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const { searchParams } = new URL(request.url);
     const newsId = searchParams.get('id');

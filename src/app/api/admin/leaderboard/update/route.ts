@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAdmin } from '@/lib/auth-helpers';
+import { requireAdminOrSimple, resolveRecordedByUserId } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 
@@ -16,7 +16,7 @@ interface LeaderboardUpdate {
 
 export async function POST(request: NextRequest) {
   try {
-    const adminUser = await requireAdmin();
+    const adminUser = await requireAdminOrSimple(request);
 
     const body = await request.json();
     const { leagueId, updates }: { leagueId: string; updates: LeaderboardUpdate[] } = body;
@@ -28,12 +28,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const adminUserId = adminUser.id;
-
-    if (!adminUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+    const recordedBy = await resolveRecordedByUserId(adminUser);
     const results = [];
 
     for (const update of updates) {
@@ -106,7 +101,7 @@ export async function POST(request: NextRequest) {
               players: JSON.stringify([update.playerId]),
               placements: JSON.stringify([adjustmentPlacement]),
               notes: `Admin adjustment: Points=${pointsDiff > 0 ? `+${pointsDiff}` : pointsDiff}, Wins=${winsDiff > 0 ? `+${winsDiff}` : winsDiff}`,
-              recordedBy: adminUserId,
+              recordedBy,
             },
           });
         }

@@ -1,79 +1,91 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { FaBullhorn, FaCalendar, FaUser, FaEye, FaThumbsUp, FaComment } from 'react-icons/fa';
+import { FaBullhorn, FaCalendar, FaUser, FaNewspaper } from 'react-icons/fa';
 
-const announcements = [
-  {
-    id: 1,
-    title: 'Season 2 Registration Now Open!',
-    content: `We're excited to announce that registration for Season 2 of the MTG Maui League is now open! This season will feature new formats, exciting prizes, and more opportunities to compete.`,
-    author: 'League Admin',
-    date: '2024-03-01',
-    category: 'Announcements',
-    priority: 'high',
-    views: 245,
-    likes: 18,
-    comments: 5,
-    tags: ['season', 'registration', 'commander'],
-  },
-  {
-    id: 2,
-    title: 'New Scoring System Update',
-    content: `We've implemented a new scoring system for Commander games to better reflect the strategic depth and outcomes of each match.`,
-    author: 'Tournament Director',
-    date: '2024-02-28',
-    category: 'Updates',
-    priority: 'medium',
-    views: 189,
-    likes: 23,
-    comments: 12,
-    tags: ['scoring', 'rules', 'commander'],
-  },
-  {
-    id: 3,
-    title: 'Community Spotlight: Deck of the Month',
-    content: `Congratulations to DragonMaster for winning February's Deck of the Month award! Their innovative deck showcased excellent card selection and strategic depth.`,
-    author: 'Community Manager',
-    date: '2024-02-25',
-    category: 'Community',
-    priority: 'low',
-    views: 156,
-    likes: 31,
-    comments: 8,
-    tags: ['community', 'spotlight', 'deck'],
-  },
-];
-
-const categories = ['All', 'Announcements', 'Updates', 'Community', 'Events'];
+type BulletinItem = {
+  id: string;
+  type: 'news' | 'event';
+  title: string;
+  content: string;
+  author: string;
+  date: string;
+  category: string;
+};
 
 export default function BulletinBoardPage() {
+  const [items, setItems] = useState<BulletinItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const filteredAnnouncements = announcements.filter(announcement => {
-    const matchesCategory =
-      selectedCategory === 'All' || announcement.category === selectedCategory;
-    const matchesSearch =
-      announcement.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      announcement.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      announcement.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesCategory && matchesSearch;
-  });
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [nRes, eRes] = await Promise.all([fetch('/api/news'), fetch('/api/events')]);
+        const list: BulletinItem[] = [];
 
-  const getPriorityBadge = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return <Badge className="bg-red-900/50 text-red-200">High Priority</Badge>;
-      case 'medium':
-        return <Badge className="bg-amber-900/50 text-amber-200">Important</Badge>;
-      default:
-        return null;
-    }
-  };
+        if (nRes.ok) {
+          const { news } = (await nRes.json()) as { news?: Array<{ id: string; title: string; excerpt?: string; content?: string; category: string; author?: string; publishedAt: string }> };
+          (news || []).forEach((n) => {
+            list.push({
+              id: `news-${n.id}`,
+              type: 'news',
+              title: n.title,
+              content: n.excerpt || n.content || '',
+              author: n.author || 'League',
+              date: n.publishedAt,
+              category: n.category || 'News',
+            });
+          });
+        }
+
+        if (eRes.ok) {
+          const { events } = (await eRes.json()) as { events?: Array<{ id: string; title: string; description?: string; date: string; time?: string; location?: string; status: string }> };
+          (events || []).forEach((ev) => {
+            list.push({
+              id: `event-${ev.id}`,
+              type: 'event',
+              title: ev.title,
+              content: ev.description || '',
+              author: 'Events',
+              date: ev.date,
+              category: 'Events',
+            });
+          });
+        }
+
+        list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setItems(list);
+      } catch {
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const categories = useMemo(() => {
+    const cats = new Set<string>(['All']);
+    items.forEach((i) => cats.add(i.category));
+    return Array.from(cats);
+  }, [items]);
+
+  const filtered = useMemo(() => {
+    return items.filter((item) => {
+      const matchCat = selectedCategory === 'All' || item.category === selectedCategory;
+      const matchSearch =
+        !searchTerm ||
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchCat && matchSearch;
+    });
+  }, [items, selectedCategory, searchTerm]);
 
   return (
     <div className="min-h-screen static-page">
@@ -84,7 +96,7 @@ export default function BulletinBoardPage() {
             <span className="text-gradient-arena">Bulletin Board</span>
           </h1>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto animate-fade-in-delayed">
-            Stay updated with the latest announcements, rule changes, and tournament information.
+            Upcoming events, news, and fun Magic articles. Editable via Admin & Wizard Control.
           </p>
         </div>
 
@@ -93,28 +105,28 @@ export default function BulletinBoardPage() {
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex flex-wrap gap-2">
-                  {categories.map(category => (
+                  {categories.map((cat) => (
                     <Button
-                      key={category}
-                      variant={selectedCategory === category ? 'default' : 'outline'}
+                      key={cat}
+                      variant={selectedCategory === cat ? 'default' : 'outline'}
                       size="sm"
-                      onClick={() => setSelectedCategory(category)}
+                      onClick={() => setSelectedCategory(cat)}
                       className={
-                        selectedCategory === category
+                        selectedCategory === cat
                           ? 'bg-amber-600 hover:bg-amber-700 border-amber-500/30'
                           : 'border-slate-600 text-slate-300 hover:border-amber-500/40 hover:text-amber-300'
                       }
                     >
-                      {category}
+                      {cat}
                     </Button>
                   ))}
                 </div>
                 <div className="flex-1 max-w-md">
                   <input
                     type="text"
-                    placeholder="Search announcements..."
+                    placeholder="Search…"
                     value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full px-4 py-2 bg-slate-800/80 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
@@ -124,10 +136,17 @@ export default function BulletinBoardPage() {
         </div>
 
         <div className="space-y-6">
-          {filteredAnnouncements.length > 0 ? (
-            filteredAnnouncements.map((announcement, index) => (
+          {loading ? (
+            <Card className="card-arena border-amber-500/20">
+              <CardContent className="p-12 text-center">
+                <div className="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-slate-400">Loading…</p>
+              </CardContent>
+            </Card>
+          ) : filtered.length > 0 ? (
+            filtered.map((item, index) => (
               <div
-                key={announcement.id}
+                key={item.id}
                 className="animate-fade-in-up"
                 style={{ animationDelay: `${0.15 + index * 0.08}s`, opacity: 0 }}
               >
@@ -136,53 +155,37 @@ export default function BulletinBoardPage() {
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <CardTitle className="text-xl text-white">{announcement.title}</CardTitle>
-                          {getPriorityBadge(announcement.priority)}
+                          <CardTitle className="text-xl text-white">{item.title}</CardTitle>
+                          <Badge variant="outline" className="border-amber-500/50 text-amber-300">
+                            {item.type === 'event' ? (
+                              <span className="flex items-center gap-1">
+                                <FaCalendar className="w-3 h-3" /> Events
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1">
+                                <FaNewspaper className="w-3 h-3" /> {item.category}
+                              </span>
+                            )}
+                          </Badge>
                         </div>
                         <CardDescription className="flex items-center gap-4 text-sm text-slate-400">
                           <span className="flex items-center gap-1">
                             <FaUser className="w-4 h-4" />
-                            {announcement.author}
+                            {item.author}
                           </span>
                           <span className="flex items-center gap-1">
                             <FaCalendar className="w-4 h-4" />
-                            {new Date(announcement.date).toLocaleDateString()}
+                            {new Date(item.date).toLocaleDateString()}
                           </span>
-                          <Badge variant="outline" className="border-amber-500/50 text-amber-300">
-                            {announcement.category}
-                          </Badge>
                         </CardDescription>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-slate-300 mb-4">{announcement.content}</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {announcement.tags.map(tag => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="text-xs bg-slate-700/80 text-slate-300 border-slate-600"
-                        >
-                          #{tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-6 text-sm text-slate-500 border-t border-slate-700 pt-4">
-                      <span className="flex items-center gap-1">
-                        <FaEye className="w-4 h-4" />
-                        {announcement.views} views
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <FaThumbsUp className="w-4 h-4" />
-                        {announcement.likes} likes
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <FaComment className="w-4 h-4" />
-                        {announcement.comments} comments
-                      </span>
-                    </div>
-                  </CardContent>
+                  {item.content && (
+                    <CardContent>
+                      <p className="text-slate-300">{item.content}</p>
+                    </CardContent>
+                  )}
                 </Card>
               </div>
             ))
@@ -190,8 +193,10 @@ export default function BulletinBoardPage() {
             <Card className="card-arena border-amber-500/20">
               <CardContent className="p-12 text-center">
                 <FaBullhorn className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-white mb-2">No announcements found</h3>
-                <p className="text-slate-400">Try adjusting your search terms or category filter.</p>
+                <h3 className="text-lg font-medium text-white mb-2">No items found</h3>
+                <p className="text-slate-400">
+                  Add news and events in Admin & Wizard Control (/admin) to see them here.
+                </p>
               </CardContent>
             </Card>
           )}

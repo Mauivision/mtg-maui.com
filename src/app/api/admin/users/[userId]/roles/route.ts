@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAdmin } from '@/lib/auth-helpers';
+import { requireAdminOrSimple } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
@@ -10,7 +10,7 @@ const roleSchema = z.object({ roleId: z.string().min(1, 'Role ID is required') }
 
 export async function POST(request: NextRequest, { params }: { params: { userId: string } }) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
     const { userId } = params;
     const body = await request.json();
     const parsed = roleSchema.safeParse(body);
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest, { params }: { params: { userId:
 // Remove role from user
 export async function DELETE(request: NextRequest, { params }: { params: { userId: string } }) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const { userId } = params;
     const { searchParams } = new URL(request.url);

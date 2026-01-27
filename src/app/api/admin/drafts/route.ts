@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAdmin, getAuthenticatedUser } from '@/lib/auth-helpers';
+import { requireAdminOrSimple, resolveRecordedByUserId } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 
 
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const drafts = await prisma.draftEvent.findMany({
       include: {
@@ -40,7 +40,8 @@ export async function GET(_request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    const user = await requireAdminOrSimple(request);
+    const creatorId = await resolveRecordedByUserId(user);
 
     const body = await request.json();
     const { name, format, date, maxParticipants } = body;
@@ -52,16 +53,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get authenticated user for creatorId
-    const user = await getAuthenticatedUser();
-
     const draft = await prisma.draftEvent.create({
       data: {
         name,
         format,
         date: new Date(date),
         maxParticipants: maxParticipants || 16,
-        creatorId: user.id,
+        creatorId,
         status: 'upcoming',
       },
     });
@@ -78,7 +76,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const body = await request.json();
     const { id, name, format, date, maxParticipants, status } = body;
@@ -111,7 +109,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireAdminOrSimple(request);
 
     const { searchParams } = new URL(request.url);
     const draftId = searchParams.get('id');

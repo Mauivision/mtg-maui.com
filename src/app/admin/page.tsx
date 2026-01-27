@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/Label';
 import { useLeague } from '@/contexts/LeagueContext';
 import {
   FaCog,
@@ -28,6 +29,7 @@ import {
   FaMagic,
   FaRedo,
   FaCalculator,
+  FaSignOutAlt,
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { EditableLeaderboardTable } from '@/components/admin/EditableLeaderboardTable';
@@ -49,6 +51,7 @@ const AdminDashboard = dynamic(
 import { BulkOperations } from '@/components/admin/BulkOperations';
 import { AdvancedSearch } from '@/components/admin/AdvancedSearch';
 import { ScoringRulesManager } from '@/components/admin/ScoringRulesManager';
+import { SeasonManager } from '@/components/admin/SeasonManager';
 
 type TabType =
   | 'dashboard'
@@ -62,6 +65,7 @@ type TabType =
   | 'leaderboard'
   | 'bulk'
   | 'scoring'
+  | 'seasons'
   | 'settings';
 
 interface Player {
@@ -112,6 +116,10 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Data states
   const [players, setPlayers] = useState<Player[]>([]);
@@ -172,36 +180,59 @@ export default function AdminPage() {
     maxParticipants: 16,
   });
 
-  // Check admin status on mount
+  // Check admin status on mount (simple-admin cookie or NextAuth)
   useEffect(() => {
     const checkAdmin = async () => {
       try {
-        const response = await fetch('/api/auth/check-admin');
+        const response = await fetch('/api/auth/check-admin', { credentials: 'include' });
         if (response.ok) {
           const { isAdmin: adminStatus } = await response.json();
-          setIsAdmin(adminStatus);
-          // Temporarily allow access for database population
-          // if (!adminStatus) {
-          //   router.push('/');
-          //   toast.error('Admin access required');
-          // }
+          setIsAdmin(!!adminStatus);
         } else {
-          // Temporarily allow access for database population
-          // router.push('/auth/signin');
-          setIsAdmin(true); // Allow access for now
+          setIsAdmin(false);
         }
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-        // Temporarily allow access for database population
-        // router.push('/auth/signin');
-        setIsAdmin(true); // Allow access for now
+      } catch {
+        setIsAdmin(false);
       } finally {
         setCheckingAuth(false);
       }
     };
 
     checkAdmin();
-  }, [router]);
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    setIsLoggingIn(true);
+    try {
+      const res = await fetch('/api/auth/simple-admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ username: loginUsername.trim(), password: loginPassword }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setIsAdmin(true);
+        setLoginUsername('');
+        setLoginPassword('');
+      } else {
+        setLoginError(data.error || 'Invalid username or password');
+      }
+    } catch {
+      setLoginError('Login failed');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/simple-admin-logout', { method: 'POST', credentials: 'include' });
+    } catch {}
+    setIsAdmin(false);
+  };
 
   const fetchPlayers = useCallback(async () => {
     if (!currentLeague) return;
@@ -680,6 +711,7 @@ export default function AdminPage() {
     { id: 'bulk' as TabType, label: 'Bulk Operations', icon: FaMagic },
     { id: 'drafts' as TabType, label: 'Drafts', icon: FaDice },
     { id: 'scoring' as TabType, label: 'Scoring Rules', icon: FaTrophy },
+    { id: 'seasons' as TabType, label: 'Seasons', icon: FaCalendar },
     { id: 'settings' as TabType, label: 'Settings', icon: FaCog },
   ];
 
@@ -692,7 +724,81 @@ export default function AdminPage() {
   }
 
   if (!isAdmin) {
-    return null; // Will redirect
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-fixed"
+        style={{
+          backgroundImage: 'url(/images/medieval-background.jpg)',
+          backgroundBlendMode: 'overlay',
+          backgroundColor: 'rgba(15, 23, 42, 0.9)',
+        }}
+      >
+        <Card className="w-full max-w-md bg-slate-800/95 border-slate-600 shadow-2xl">
+          <CardHeader>
+            <CardTitle className="text-2xl text-amber-400 text-center">
+              Admin & Wizard Control
+            </CardTitle>
+            <CardDescription className="text-center text-slate-400">
+              Sign in with username <strong>Admin</strong> and password <strong>12345</strong>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={loginUsername}
+                  onChange={e => {
+                    setLoginUsername(e.target.value);
+                    setLoginError('');
+                  }}
+                  placeholder="Admin"
+                  className="bg-slate-900 border-slate-600"
+                  autoComplete="username"
+                  disabled={isLoggingIn}
+                />
+              </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={loginPassword}
+                  onChange={e => {
+                    setLoginPassword(e.target.value);
+                    setLoginError('');
+                  }}
+                  placeholder="••••••••"
+                  className="bg-slate-900 border-slate-600"
+                  autoComplete="current-password"
+                  disabled={isLoggingIn}
+                />
+              </div>
+              {loginError && (
+                <p className="text-sm text-red-400">{loginError}</p>
+              )}
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-full"
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                    Signing in…
+                  </span>
+                ) : (
+                  'Sign in'
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (leagueLoading || !currentLeague) {
@@ -722,12 +828,17 @@ export default function AdminPage() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">⚙️ Admin Dashboard</h1>
-          <p className="text-xl text-gray-200 max-w-2xl mx-auto">
-            Manage players, events, news, drafts, and commander game pairings for the MTG Maui
-            League.
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div className="text-center sm:text-left">
+            <h1 className="text-4xl font-bold text-white mb-2">⚙️ Admin & Wizard Control</h1>
+            <p className="text-gray-200">
+              Edit players, scores, games, events, news. Changes appear on Leaderboard, Home, and Bulletin.
+            </p>
+          </div>
+          <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2 shrink-0">
+            <FaSignOutAlt className="w-4 h-4" />
+            Log out
+          </Button>
         </div>
 
         {/* Tab Navigation */}
@@ -1421,6 +1532,11 @@ export default function AdminPage() {
             {/* Scoring Rules Tab */}
             {activeTab === 'scoring' && currentLeague && (
               <ScoringRulesManager leagueId={currentLeague.id} />
+            )}
+
+            {/* Seasons Tab */}
+            {activeTab === 'seasons' && currentLeague && (
+              <SeasonManager leagueId={currentLeague.id} />
             )}
 
             {/* Settings Tab */}
