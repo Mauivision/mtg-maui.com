@@ -4,7 +4,11 @@
 
 A medieval fantasy-themed Next.js application for managing MTG tournaments with real-time leaderboards, editable scores, and comprehensive tournament features.
 
-## 🚀 **[READY TO DEPLOY → See docs/DEPLOY_NOW.md](./docs/DEPLOY_NOW.md)**
+## 🚀 Deploy to Vercel
+
+- **GitHub**: [Mauivision/mtg-maui.com](https://github.com/Mauivision/mtg-maui.com)
+- **Vercel**: Import the repo → add env vars → Deploy. Custom domain: **www.mtg-maui.com**
+- **Guides**: [docs/VERCEL_QUICKSTART.md](./docs/VERCEL_QUICKSTART.md) · [docs/DEPLOY_MTG_MAUI_TO_VERCEL.md](./docs/DEPLOY_MTG_MAUI_TO_VERCEL.md)
 
 ---
 
@@ -113,47 +117,40 @@ npx prisma db seed         # Seed test data
 
 ## 🚀 Deployment
 
-### **Vercel (Recommended)**
-1. Go to [vercel.com](https://vercel.com)
-2. Import your GitHub repository
-3. Auto-deploy with one click
-4. See full guide: `docs/VERCEL_DEPLOYMENT.md`
+### **Vercel (recommended)**
+1. [vercel.com](https://vercel.com) → **New Project** → **Import Git Repository**
+2. Select **Mauivision/mtg-maui.com**
+3. Add **Environment Variables**: `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `DATABASE_URL`
+4. **Deploy**. Then add **www.mtg-maui.com** (and mtg-maui.com) under **Settings → Domains** and point HostGator DNS to Vercel.
 
-### **Environment Variables**
+See [docs/VERCEL_QUICKSTART.md](./docs/VERCEL_QUICKSTART.md) and [docs/DEPLOY_MTG_MAUI_TO_VERCEL.md](./docs/DEPLOY_MTG_MAUI_TO_VERCEL.md).
+
+### **Environment variables**
 ```env
-NODE_ENV=production
+NEXTAUTH_URL=https://www.mtg-maui.com
 NEXTAUTH_SECRET=your_random_secret_here
-NEXTAUTH_URL=https://your-app.vercel.app
-DATABASE_URL=your_database_url_here
+DATABASE_URL=your_postgres_or_placeholder_url
 ```
-
-### **Other Options**
-- **Netlify**: Good alternative with free tier
-- **Railway**: Full-stack hosting with database
-- **Traditional Hosting**: Use standalone HTML version
 
 ---
 
 ## 📚 Documentation
 
-All documentation is now organized in the `/docs` folder:
-
-- **Deployment**: `docs/DEPLOYMENT_GUIDE.md`
-- **Vercel Setup**: `docs/VERCEL_DEPLOYMENT.md`
-- **Admin Features**: `docs/ADMIN_FEATURES_SUMMARY.md`
-- **Setup Guide**: `docs/SETUP_GUIDE.md`
-- **Testing**: `docs/TESTING_CHECKLIST.md`
+- **Vercel + custom domain**: [docs/VERCEL_QUICKSTART.md](./docs/VERCEL_QUICKSTART.md) · [docs/DEPLOY_MTG_MAUI_TO_VERCEL.md](./docs/DEPLOY_MTG_MAUI_TO_VERCEL.md)
+- **Project structure**: [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md)
+- **Development workflow**: [docs/DEVELOPMENT_WORKFLOW.md](./docs/DEVELOPMENT_WORKFLOW.md)
 
 ---
 
 ## 🛠️ Development Scripts
 
 ```bash
-npm run dev              # Start development server
+npm run dev              # Start development server (port 3003)
 npm run build            # Build for production
 npm run start            # Start production server
 npm run lint             # Lint code
-npm test                 # Run tests
+npm run verify           # Type-check + lint + build
+npm run deploy           # Deploy to Vercel (npx vercel --prod)
 npm run prisma:studio    # Open Prisma Studio
 ```
 
@@ -198,7 +195,7 @@ npm run prisma:studio    # Open Prisma Studio
 
 ## 📦 Tech Stack
 
-- **Framework**: Next.js 15.3.3 (React 18.2.0)
+- **Framework**: Next.js 15.3.8 (React 18.2.0)
 - **Database**: Prisma with SQLite/PostgreSQL
 - **Authentication**: NextAuth.js
 - **Styling**: Tailwind CSS
