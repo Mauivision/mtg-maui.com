@@ -12,6 +12,7 @@ import { WebsiteStructuredData, OrganizationStructuredData } from '@/components/
 import { WebVitals } from '@/components/analytics/WebVitals';
 import { ErrorReporter } from '@/components/analytics/ErrorReporter';
 import { SkipLinks } from '@/components/ui/SkipLinks';
+import { siteImages } from '@/lib/site-images';
 import './globals.css';
 
 const inter = Inter({
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
     siteName: 'MTG Maui League',
     images: [
       {
-        url: '/images/og-image.jpg',
+        url: siteImages.ogImage,
         width: 1200,
         height: 630,
         alt: 'MTG Maui League - Magic: The Gathering Tournament Platform',
@@ -76,7 +77,7 @@ export const metadata: Metadata = {
     title: "MTG Maui League - Hawaii's Premier MTG Tournament Platform",
     description:
       'Compete in professional Magic: The Gathering tournaments. Join Commander and Draft leagues with real-time scoring.',
-    images: ['/images/og-image.jpg'],
+    images: [siteImages.ogImage],
   },
   robots: {
     index: true,

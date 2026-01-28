@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { siteImages } from '@/lib/site-images';
 
 export const metadata: Metadata = {
   title: 'Analytics - MTG Maui League',
@@ -14,7 +15,7 @@ export default function AnalyticsPage() {
       <section
         className="relative py-20 bg-cover bg-center bg-fixed overflow-hidden"
         style={{
-          backgroundImage: 'url(/images/medieval-background.jpg)',
+          backgroundImage: `url(${siteImages.backgrounds.analytics})`,
           backgroundBlendMode: 'overlay',
           backgroundColor: 'rgba(10, 12, 18, 0.85)',
         }}

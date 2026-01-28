@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { FaTrophy, FaUsers, FaCalendar, FaArrowRight, FaDice, FaNewspaper } from 'react-icons/fa';
+import { FaTrophy, FaUsers, FaCalendar, FaArrowRight, FaDice, FaNewspaper, FaLaugh, FaImage } from 'react-icons/fa';
 import { CastleGate } from '@/components/ui/CastleGate';
 import { usePageContent } from '@/contexts/PageContentContext';
+import { siteImages } from '@/lib/site-images';
 
 const iconByHref: Record<string, React.ComponentType<{ className?: string }>> = {
   '/leaderboard': FaTrophy,
@@ -37,8 +38,9 @@ export default function HomePage() {
     features?: Array<{ title: string; desc: string; href: string; cta: string }>;
   } | undefined;
   const [stats, setStats] = useState<Record<string, number>>({ totalUsers: 0, totalLeagues: 0, totalGames: 0 });
-  const [events, setEvents] = useState<Array<{ id: string; title: string; date: string; location?: string; status: string }>>([]);
+  const [events, setEvents] = useState<Array<{ id: string; title: string; date: string; location?: string; status: string; imageUrl?: string | null }>>([]);
   const [news, setNews] = useState<Array<{ id: string; title: string; excerpt?: string; category: string; publishedAt: string }>>([]);
+  const [memes, setMemes] = useState<Array<{ id: string; title: string; imageUrl?: string; category: string; publishedAt: string }>>([]);
   const [loading, setLoading] = useState(true);
 
   const heroSubtitle = homeConfig?.heroSubtitle ?? "Hawaii's Premier MTG League";
@@ -87,7 +89,7 @@ export default function HomePage() {
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: 'url(/images/medieval-background.jpg)',
+              backgroundImage: `url(${siteImages.heroBackground})`,
               backgroundBlendMode: 'overlay',
               backgroundColor: 'rgba(10, 12, 18, 0.85)',
             }}
@@ -149,27 +151,38 @@ export default function HomePage() {
             <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-2xl font-bold text-amber-400 mb-6">Upcoming Events</h2>
               <div className="space-y-4">
-                {events.map((ev) => (
-                  <Link key={ev.id} href="/bulletin">
-                    <Card className="card-arena bg-slate-800/80 border-slate-600 hover:border-amber-500/40 transition-colors">
-                      <CardContent className="py-4 flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-amber-600/20 border border-amber-500/40 flex items-center justify-center">
-                            <FaCalendar className="w-6 h-6 text-amber-400" />
-                          </div>
-                          <div>
-                            <div className="font-semibold text-white">{ev.title}</div>
-                            <div className="text-sm text-slate-400">
+                {events.map((ev, idx) => {
+                  const eventImg = ev.imageUrl || siteImages.eventPlaceholders[idx % siteImages.eventPlaceholders.length];
+                  return (
+                    <Link key={ev.id} href="/bulletin">
+                      <Card className="card-arena bg-slate-800/80 border-slate-600 hover:border-amber-500/40 transition-colors overflow-hidden">
+                        <CardContent className="p-0 flex flex-wrap sm:flex-nowrap">
+                          <div className="relative w-full sm:w-32 h-28 sm:h-auto min-h-[7rem] sm:min-w-[8rem] flex-shrink-0 bg-slate-700">
+                            <img
+                              src={eventImg}
+                              alt=""
+                              className="absolute inset-0 w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-slate-900/60 to-transparent sm:from-slate-900/40" />
+                            <div className="absolute left-3 bottom-2 flex items-center gap-2 text-amber-400/90 text-sm">
+                              <FaCalendar className="w-4 h-4" />
                               {ev.date && new Date(ev.date).toLocaleDateString()}
-                              {ev.location ? ` · ${ev.location}` : ''}
                             </div>
                           </div>
-                        </div>
-                        <span className="text-amber-400 text-sm">Details <FaArrowRight className="inline w-3 h-3 ml-1" /></span>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
+                          <div className="py-4 px-4 flex flex-wrap items-center justify-between gap-4 flex-1">
+                            <div>
+                              <div className="font-semibold text-white">{ev.title}</div>
+                              <div className="text-sm text-slate-400">
+                                {ev.location ? ` · ${ev.location}` : ''}
+                              </div>
+                            </div>
+                            <span className="text-amber-400 text-sm">Details <FaArrowRight className="inline w-3 h-3 ml-1" /></span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  );
+                })}
               </div>
               <div className="mt-4 text-center">
                 <Link href="/bulletin">
@@ -182,34 +195,99 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* Recent News — editable via Admin; fun Magic articles */}
-        {news.length > 0 && (
-          <section className="py-16 relative">
-            <div className="absolute inset-0 bg-slate-950/50" />
-            <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-2xl font-bold text-amber-400 mb-6">Recent News & Articles</h2>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {news.map((n) => (
-                  <Link key={n.id} href="/bulletin">
-                    <Card className="card-arena bg-slate-800/80 border-slate-600 hover:border-amber-500/40 transition-colors h-full">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-white text-lg flex items-center gap-2">
-                          <FaNewspaper className="w-4 h-4 text-amber-400" />
-                          {n.title}
-                        </CardTitle>
-                        <p className="text-slate-400 text-sm">{n.excerpt || n.category}</p>
-                      </CardHeader>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-              <div className="mt-4 text-center">
-                <Link href="/bulletin">
-                  <Button variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">
-                    View all
-                  </Button>
-                </Link>
-              </div>
+        {/* News & Memes Section — Exciting community content */}
+        {(news.length > 0 || memes.length > 0) && (
+          <section className="py-20 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-slate-950/80" />
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {/* News Section */}
+              {news.length > 0 && (
+                <div className="mb-16">
+                  <div className="flex items-center gap-3 mb-8">
+                    <FaNewspaper className="w-6 h-6 text-amber-400" />
+                    <h2 className="text-3xl font-bold text-amber-400">Latest News & Updates</h2>
+                  </div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {news.map((n, i) => (
+                      <Link 
+                        key={n.id} 
+                        href="/bulletin"
+                        className="group block animate-fade-in-up"
+                        style={{ animationDelay: `${i * 100}ms` }}
+                      >
+                        <Card className="card-arena bg-slate-800/90 border-slate-600 hover:border-amber-500/60 hover:-translate-y-2 transition-all duration-300 h-full shadow-lg hover:shadow-amber-950/30">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-white text-lg flex items-center gap-2 group-hover:text-amber-300 transition-colors">
+                              <FaNewspaper className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                              {n.title}
+                            </CardTitle>
+                            <p className="text-slate-400 text-sm mt-2 line-clamp-2">{n.excerpt || n.category}</p>
+                            <p className="text-slate-500 text-xs mt-2">
+                              {new Date(n.publishedAt).toLocaleDateString()}
+                            </p>
+                          </CardHeader>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="mt-6 text-center">
+                    <Link href="/bulletin">
+                      <Button variant="outline" size="md" ripple glow className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:border-amber-400">
+                        View All News <FaArrowRight className="w-4 h-4 ml-2 inline group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Memes Section */}
+              {memes.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-8">
+                    <FaLaugh className="w-6 h-6 text-purple-400" />
+                    <h2 className="text-3xl font-bold text-purple-400">Community Memes & Fun</h2>
+                  </div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {memes.map((m, i) => (
+                      <Link 
+                        key={m.id} 
+                        href="/bulletin"
+                        className="group block animate-fade-in-up"
+                        style={{ animationDelay: `${(news.length + i) * 100}ms` }}
+                      >
+                        <Card className="card-arena bg-gradient-to-br from-purple-900/20 to-pink-900/20 border-purple-500/30 hover:border-purple-400/60 hover:-translate-y-2 transition-all duration-300 h-full shadow-lg hover:shadow-purple-950/30 overflow-hidden">
+                          {m.imageUrl && (
+                            <div className="relative h-48 overflow-hidden">
+                              <img 
+                                src={m.imageUrl} 
+                                alt={m.title}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
+                            </div>
+                          )}
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-white text-lg flex items-center gap-2 group-hover:text-purple-300 transition-colors">
+                              <FaLaugh className="w-4 h-4 text-purple-400 group-hover:scale-110 transition-transform" />
+                              {m.title}
+                            </CardTitle>
+                            <p className="text-slate-400 text-xs mt-2">
+                              {new Date(m.publishedAt).toLocaleDateString()}
+                            </p>
+                          </CardHeader>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="mt-6 text-center">
+                    <Link href="/bulletin">
+                      <Button variant="outline" size="md" ripple glow className="border-purple-500/50 text-purple-400 hover:bg-purple-500/10 hover:border-purple-400">
+                        View All Memes <FaArrowRight className="w-4 h-4 ml-2 inline group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -281,6 +359,30 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* League moments — gallery from public/images */}
+        {siteImages.gallery.length > 0 && (
+          <section className="py-16 bg-slate-950/30 border-t border-slate-800/60">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-2xl font-bold text-center text-white mb-2">League Moments</h2>
+              <p className="text-slate-400 text-center max-w-xl mx-auto mb-8">Photos and highlights from the community.</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                {siteImages.gallery.slice(0, 5).map((src, i) => (
+                  <div
+                    key={i}
+                    className="aspect-[4/3] rounded-xl overflow-hidden border border-slate-700/60 hover:border-amber-500/40 transition-colors"
+                  >
+                    <img
+                      src={src}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </CastleGate>
     </div>
   );

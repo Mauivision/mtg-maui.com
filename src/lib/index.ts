@@ -30,3 +30,6 @@ export { logger } from './logger';
 
 // API Middleware
 export * from './api-middleware';
+
+// Site images config
+export { siteImages, type SiteImages } from './site-images';

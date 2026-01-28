@@ -33,6 +33,7 @@ import {
   FaFileAlt,
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { siteImages } from '@/lib/site-images';
 import { EditableLeaderboardTable } from '@/components/admin/EditableLeaderboardTable';
 import dynamic from 'next/dynamic';
 
@@ -875,7 +876,7 @@ export default function WizardsControlPage() {
     <div
       className="min-h-screen py-8 bg-cover bg-center bg-fixed"
       style={{
-        backgroundImage: 'url(/images/medieval-background.jpg)',
+        backgroundImage: `url(${siteImages.backgrounds.wizards})`,
         backgroundBlendMode: 'overlay',
         backgroundColor: 'rgba(139, 69, 19, 0.75)',
       }}

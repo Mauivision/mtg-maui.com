@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { siteImages } from '@/lib/site-images';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { FaClock, FaCalendar, FaUsers, FaMapMarkerAlt, FaStar, FaRocket } from 'react-icons/fa';
@@ -147,7 +148,7 @@ export default function ComingSoonPage() {
       <div
         className="relative py-8 bg-cover bg-center bg-fixed"
         style={{
-          backgroundImage: 'url(/images/medieval-background.jpg)',
+          backgroundImage: `url(${siteImages.backgrounds.comingSoon})`,
           backgroundBlendMode: 'overlay',
           backgroundColor: 'rgba(10, 12, 18, 0.85)',
         }}

@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { TournamentBracket } from '@/components/tournament/TournamentBracket';
+import { siteImages } from '@/lib/site-images';
 import { notFound } from 'next/navigation';
 
 interface BracketPageProps {
@@ -33,7 +34,7 @@ export default function TournamentBracketPage({ params }: BracketPageProps) {
       <section
         className="relative py-16 bg-cover bg-center bg-fixed overflow-hidden"
         style={{
-          backgroundImage: 'url(/images/medieval-background.jpg)',
+          backgroundImage: `url(${siteImages.backgrounds.bracket})`,
           backgroundBlendMode: 'overlay',
           backgroundColor: 'rgba(10, 12, 18, 0.85)',
         }}

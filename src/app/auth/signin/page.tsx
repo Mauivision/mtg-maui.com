@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { toast } from 'react-hot-toast';
+import { siteImages } from '@/lib/site-images';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -53,7 +54,7 @@ export default function SignInPage() {
     <div
       className="min-h-screen bg-cover bg-center bg-fixed flex items-center justify-center p-4"
       style={{
-        backgroundImage: 'url(/images/medieval-background.jpg)',
+        backgroundImage: `url(${siteImages.backgrounds.auth})`,
         backgroundBlendMode: 'overlay',
         backgroundColor: 'rgba(139, 69, 19, 0.8)',
       }}
