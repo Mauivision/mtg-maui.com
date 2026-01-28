@@ -451,3 +451,34 @@ body {
 .stat-orb-emerald {
   @apply bg-gradient-to-br from-emerald-600/80 to-emerald-800/80 border-emerald-500/40 shadow-lg hover:border-emerald-400/60;
 }
+
+/* Enhanced button animations */
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) translateY(-100%);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%);
+  }
+}
+
+.animate-shine {
+  animation: shine 1s ease-in-out;
+}
+
+@keyframes ripple {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+  }
+}
+
+.animate-ripple {
+  animation: ripple 0.6s ease-out;
+}

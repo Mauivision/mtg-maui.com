@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
-import { FaFilter, FaDownload, FaSort } from 'react-icons/fa';
+import { FaFilter, FaDownload, FaSort, FaRedo } from 'react-icons/fa';
 
 interface LeaderboardFiltersProps {
   gameType: 'all' | 'commander' | 'draft';
@@ -24,6 +24,7 @@ interface LeaderboardFiltersProps {
   availableCommanders: string[];
   onExportCSV: () => void;
   onExportPDF: () => void;
+  onRefresh?: () => void;
 }
 
 export function LeaderboardFilters({
@@ -38,6 +39,7 @@ export function LeaderboardFilters({
   availableCommanders,
   onExportCSV,
   onExportPDF,
+  onRefresh,
 }: LeaderboardFiltersProps) {
   return (
     <div className="bg-slate-800/90 border border-slate-700 rounded-lg p-4 mb-6 backdrop-blur-sm">
@@ -118,8 +120,19 @@ export function LeaderboardFilters({
           </Select>
         </div>
 
-        {/* Export Buttons */}
+        {/* Refresh & Export Buttons */}
         <div className="flex items-center gap-2 ml-auto">
+          {onRefresh && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onRefresh}
+              className="border-green-600 text-green-400 hover:bg-green-600 hover:text-white"
+            >
+              <FaRedo className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"

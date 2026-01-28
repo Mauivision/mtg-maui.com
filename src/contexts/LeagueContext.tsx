@@ -82,12 +82,18 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
         status: 'active',
       };
 
-      // Try to create via API, but if it fails, just use the default locally
+      // Try to create via API (name, format, startDate required)
       try {
         const response = await fetch('/api/leagues', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(defaultLeague),
+          body: JSON.stringify({
+            name: 'MTG Maui League',
+            description: 'Default league for MTG Maui',
+            format: 'commander',
+            startDate: new Date().toISOString().split('T')[0],
+            maxPlayers: 50,
+          }),
         });
 
         if (response.ok) {
@@ -95,12 +101,10 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
           setLeagues([data.league]);
           setCurrentLeagueState(data.league);
         } else {
-          // Use default locally if API fails
           setLeagues([defaultLeague]);
           setCurrentLeagueState(defaultLeague);
         }
       } catch {
-        // Use default locally if API fails
         setLeagues([defaultLeague]);
         setCurrentLeagueState(defaultLeague);
       }

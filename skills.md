@@ -1,7 +1,32 @@
 # 🎨 Visual Enhancement Skills & Patterns
 
 ## Overview
-This document outlines the visual enhancement patterns, animations, and interactive elements used throughout the MTG Maui League application.
+This document outlines the visual enhancement patterns, animations, and interactive elements used throughout the MTG Maui League application. It also defines **Sequential Thinking & Execution** as core skills for building and shipping features.
+
+---
+
+## 🧠 Sequential Thinking & Execution (Building Skills)
+
+Apply these when planning, implementing, or debugging features. They complement the project rules in `.cursorrules`.
+
+### Sequential Thinking
+- **Reason step-by-step**: For complex tasks, spell out reasoning explicitly—e.g., "Step 1: …", "Step 2: …".
+- **State assumptions and decisions**: Note what you assume, what options you consider, and why you chose an approach.
+- **When to use**: Planning architecture, debugging failures, designing APIs, refactoring, or explaining changes to others.
+
+### Sequential Execution
+- **Order tasks explicitly**: Break work into a clear sequence (A → B → C). Respect dependencies—do not start B until A is done or verified.
+- **Use todo lists**: For multi-step work, maintain a task list (e.g., TodoWrite); track pending, in-progress, and completed items.
+- **Verify before advancing**: Complete or verify each step before moving on. Run builds, linters, or tests when relevant.
+- **When to use**: New features, migrations, cross-file refactors, or any work spanning multiple components or APIs.
+
+### Quick Patterns
+| Situation | Apply |
+|-----------|--------|
+| New feature (e.g., "Add commander per game") | Todo list → implement step-by-step → verify each step → build |
+| Bug fix | Reproduce → hypothesize → fix → verify → lint/build |
+| Refactor across files | List affected modules → order by dependency → change one at a time → test |
+| API design | List requirements → design contract → implement route → add validation → document |
 
 ---
 
@@ -414,5 +439,5 @@ interface StaggeredRevealProps {
 
 ---
 
-**Last Updated**: 2026-01-27
-**Version**: 2.0.0
+**Last Updated**: 2026-01-26
+**Version**: 2.1.0

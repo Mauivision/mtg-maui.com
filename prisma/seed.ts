@@ -172,19 +172,17 @@ async function main() {
     { id: match2.id, players: `${users[2].name} vs ${users[3].name}`, winner: users[3].name },
   ]);
 
-  // Create sample newsletter subscriptions
+  // Create sample newsletter subscriptions (upsert to allow re-seed)
   await Promise.all([
-    prisma.newsletterSubscription.create({
-      data: {
-        email: 'subscriber1@example.com',
-        name: 'Newsletter Subscriber 1',
-      },
+    prisma.newsletterSubscription.upsert({
+      where: { email: 'subscriber1@example.com' },
+      update: { name: 'Newsletter Subscriber 1', isActive: true },
+      create: { email: 'subscriber1@example.com', name: 'Newsletter Subscriber 1' },
     }),
-    prisma.newsletterSubscription.create({
-      data: {
-        email: 'subscriber2@example.com',
-        name: 'Newsletter Subscriber 2',
-      },
+    prisma.newsletterSubscription.upsert({
+      where: { email: 'subscriber2@example.com' },
+      update: { name: 'Newsletter Subscriber 2', isActive: true },
+      create: { email: 'subscriber2@example.com', name: 'Newsletter Subscriber 2' },
     }),
   ]);
 

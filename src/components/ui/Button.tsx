@@ -46,7 +46,7 @@ export const Button: React.FC<ButtonProps> = ({
   const rippleIdRef = useRef(0);
 
   const baseClasses =
-    'relative inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 overflow-hidden';
+    'relative inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 overflow-hidden transform-gpu will-change-transform';
 
   const variantClasses = {
     primary:
@@ -141,16 +141,20 @@ export const Button: React.FC<ButtonProps> = ({
         </span>
       )}
 
+      {/* Enhanced shine effect on hover */}
+      {isHovered && !isDisabled && (
+        <>
+          <span className="absolute inset-0 -translate-x-full translate-y-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shine pointer-events-none" />
+          {/* Pulse glow effect */}
+          <span className="absolute inset-0 rounded-lg bg-white/5 animate-pulse pointer-events-none" />
+        </>
+      )}
+
       {/* Content */}
-      <span className="relative z-10 flex items-center justify-center">
+      <span className="relative z-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
         {loading && <LoadingSpinner size="sm" className="mr-2" />}
         {children}
       </span>
-
-      {/* Shine effect on hover */}
-      {isHovered && !isDisabled && (
-        <span className="absolute inset-0 -translate-x-full translate-y-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shine pointer-events-none" />
-      )}
     </button>
   );
 };

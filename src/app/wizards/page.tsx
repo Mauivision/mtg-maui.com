@@ -31,6 +31,8 @@ import {
   FaCalculator,
   FaSignOutAlt,
   FaFileAlt,
+  FaPlusCircle,
+  FaSpinner,
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { siteImages } from '@/lib/site-images';
@@ -113,7 +115,7 @@ interface Pairing {
 }
 
 export default function WizardsControlPage() {
-  const { currentLeague, loading: leagueLoading } = useLeague();
+  const { currentLeague, loading: leagueLoading, refreshLeagues } = useLeague();
   const { refresh: refreshPageContent } = usePageContent();
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [loading, setLoading] = useState(true);
@@ -166,7 +168,7 @@ export default function WizardsControlPage() {
     round: '',
     tableNumber: '',
     players: [] as string[],
-    placements: [] as Array<{ playerId: string; placement: number; points: number }>,
+    placements: [] as Array<{ playerId: string; placement: number; points: number; commander?: string }>,
     notes: '',
   });
   const [pairingForm, setPairingForm] = useState({
@@ -179,6 +181,7 @@ export default function WizardsControlPage() {
     tournamentPhase: '',
     notes: '',
   });
+  const [creatingRecords, setCreatingRecords] = useState(false);
   const [draftForm, setDraftForm] = useState({
     name: '',
     format: 'draft',
@@ -856,15 +859,48 @@ export default function WizardsControlPage() {
   // if (checkingAuth) { ... }
   // if (!isAdmin) { ... }
 
+  const handleCreateRecords = useCallback(async () => {
+    setCreatingRecords(true);
+    try {
+      const res = await fetch('/api/admin/populate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error || `HTTP ${res.status}`);
+      }
+      toast.success('League, players, and sample games created.');
+      await refreshLeagues();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to create records');
+    } finally {
+      setCreatingRecords(false);
+    }
+  }, [refreshLeagues]);
+
   if (leagueLoading || !currentLeague) {
     return (
       <div className="min-h-screen py-8 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="p-8 text-center">
-              <FaExclamationTriangle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-white mb-2">No League Available</h2>
-              <p className="text-gray-400">Please create a league first.</p>
+            <CardContent className="p-8 text-center space-y-6">
+              <FaExclamationTriangle className="w-16 h-16 text-yellow-400 mx-auto" />
+              <h2 className="text-2xl font-bold text-white">No League Available</h2>
+              <p className="text-gray-400">Create a default league with 16 players and sample games to get started.</p>
+              <Button
+                onClick={handleCreateRecords}
+                disabled={creatingRecords}
+                className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10 inline-flex items-center gap-2"
+              >
+                {creatingRecords ? (
+                  <FaSpinner className="w-4 h-4 animate-spin" />
+                ) : (
+                  <FaPlusCircle className="w-4 h-4" />
+                )}
+                Create League Tournament Records
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -1141,7 +1177,7 @@ export default function WizardsControlPage() {
                                             );
                                             if (response.ok) {
                                               const data = await response.json();
-                                              const gameData = data.games?.[0] || game;
+                                              const gameData = data.games?.find((g: { id: string }) => g.id === game.id) || game;
                                               
                                               const gamePlayers = typeof gameData.players === 'string' 
                                                 ? JSON.parse(gameData.players) 
@@ -1161,6 +1197,7 @@ export default function WizardsControlPage() {
                                                   playerId: p.playerId || p.id,
                                                   placement: p.placement || p.place || 1,
                                                   points: p.points || 0,
+                                                  commander: p.commander || '',
                                                 })),
                                                 notes: gameData.notes || '',
                                               });
@@ -2331,7 +2368,12 @@ export default function WizardsControlPage() {
                               players: [...gameForm.players, player.id],
                               placements: [
                                 ...gameForm.placements,
-                                { playerId: player.id, placement: gameForm.placements.length + 1, points: 0 },
+                                {
+                                  playerId: player.id,
+                                  placement: gameForm.placements.length + 1,
+                                  points: 0,
+                                  commander: (player as { commander?: string }).commander || '',
+                                },
                               ],
                             });
                           }
@@ -2351,8 +2393,11 @@ export default function WizardsControlPage() {
                   {gameForm.placements.map((placement, idx) => {
                     const player = players.find(p => p.id === placement.playerId);
                     return (
-                      <div key={placement.playerId} className="flex items-center gap-3 p-2 bg-slate-700/50 rounded">
-                        <span className="text-white text-sm w-32">{player?.name || 'Player'}</span>
+                      <div
+                        key={placement.playerId}
+                        className={`flex flex-wrap items-center gap-3 p-2 bg-slate-700/50 rounded ${gameForm.gameType === 'commander' ? 'gap-y-2' : ''}`}
+                      >
+                        <span className="text-white text-sm w-32 shrink-0">{player?.name || 'Player'}</span>
                         <Input
                           type="number"
                           min="1"
@@ -2377,6 +2422,18 @@ export default function WizardsControlPage() {
                           placeholder="Points"
                           className="w-24 bg-slate-700 border-slate-600 text-white"
                         />
+                        {gameForm.gameType === 'commander' && (
+                          <Input
+                            value={placement.commander ?? ''}
+                            onChange={e => {
+                              const newPlacements = [...gameForm.placements];
+                              newPlacements[idx] = { ...newPlacements[idx], commander: e.target.value };
+                              setGameForm({ ...gameForm, placements: newPlacements });
+                            }}
+                            placeholder="Commander"
+                            className="min-w-[140px] flex-1 max-w-xs bg-slate-700 border-slate-600 text-white"
+                          />
+                        )}
                       </div>
                     );
                   })}

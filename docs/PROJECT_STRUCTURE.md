@@ -206,6 +206,11 @@ Your MTG Maui League project is now:
 - **Wizards Control (Chaos League Tracker) → Page Content tab** – List pages, edit `title`, `description`, and `config` (JSON). `/admin` redirects to `/wizards`. Config can include `navLabel`, `heroSubtitle`, `heroHeadline`, `heroTagline`, `footerBlurb`, `exploreTitle`, `exploreSubtitle`, `features` (home), etc. Saving updates DB and calls `refresh()` so the app reflects changes immediately.
 - **Pages using page content:** Home (hero, features, explore), Leaderboard (title, description), Bulletin (title, description), Header (nav labels), Footer (blurb, quick-link labels).
 
+### **Editable data (tournaments, games, players, points, commanders)**
+- **Where:** **Wizards Control** ([`/wizards`](http://localhost:3003/wizards)) and **Leaderboard → Edit Scores**.
+- **What:** Players (name, email, commander), games (players, placements, points), events, news, drafts, scoring rules, page content, leaderboard (points/wins).
+- **How:** See **[docs/EDITABLE_DATA_GUIDE.md](EDITABLE_DATA_GUIDE.md)** for step‑by‑step tasks, API reference, and data flow.
+
 ### **Components**
 - **`LeagueStatus`** – Fetches `/api/leagues/status`, shows league stats.
 - **`EditableLeaderboardTable`** – Fetches league leaderboard, double‑click to edit, save via `/api/admin/leaderboard/update`.

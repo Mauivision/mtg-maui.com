@@ -196,6 +196,21 @@ Detailed explanation if needed
 - `test:` Testing related changes
 - `chore:` Maintenance tasks
 
+## Sequential Thinking & Execution (Building)
+
+Apply these when planning, implementing, or debugging features.
+
+### Sequential Thinking
+- **Reason step-by-step**: For complex tasks, spell out reasoning explicitly (e.g., "Step 1: …", "Step 2: …").
+- **State assumptions and decisions**: Note what you assume, what options you consider, and why you choose an approach.
+- **Use when**: Planning architecture, debugging failures, designing APIs, refactoring, or explaining changes.
+
+### Sequential Execution
+- **Order tasks explicitly**: Break work into a clear sequence (A → B → C). Respect dependencies—do not start B until A is done or verified.
+- **Use todo lists**: For multi-step work, maintain a task list (e.g., via TodoWrite); track pending, in-progress, and completed items.
+- **Verify before advancing**: Complete or verify each step before moving to the next. Run builds, linters, or tests when relevant.
+- **Use when**: New features, migrations, cross-file refactors, or any work spanning multiple components or APIs.
+
 ## Development Workflow
 
 ### Local Development

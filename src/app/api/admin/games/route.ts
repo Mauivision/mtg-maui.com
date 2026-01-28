@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const leagueId = searchParams.get('leagueId');
     const gameType = searchParams.get('gameType');
+    const id = searchParams.get('id');
 
     if (!leagueId) {
       return NextResponse.json({ error: 'League ID required' }, { status: 400 });
@@ -20,6 +21,7 @@ export async function GET(request: NextRequest) {
     const games = await prisma.leagueGame.findMany({
       where: {
         leagueId,
+        ...(id && { id }),
         ...(gameType && { gameType }),
       },
       include: {

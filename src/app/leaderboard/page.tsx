@@ -21,6 +21,7 @@ import {
   FaClock,
   FaDice,
   FaEdit,
+  FaRedo,
 } from 'react-icons/fa';
 import { RealtimeLeaderboard } from '@/components/leaderboard/RealtimeLeaderboard';
 import { EditableLeaderboardTable } from '@/components/admin/EditableLeaderboardTable';
@@ -64,6 +65,8 @@ export default function LeaderboardPage() {
   );
   const [dateRange, setDateRange] = useState<'all' | 'week' | 'month' | 'season'>('all');
   const [commanderFilter, setCommanderFilter] = useState<string>('all');
+  const [leaderboardTab, setLeaderboardTab] = useState<string>('realtime');
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const applyFilters = useCallback((data: TraditionalLeaderboardEntry[]) => {
     let filtered = [...data];
@@ -190,6 +193,29 @@ export default function LeaderboardPage() {
       fetchScoringRules();
     }
   }, [gameType, currentLeague, leagueLoading, fetchLeaderboard, fetchScoringRules]);
+
+  const refreshLeaderboard = useCallback(async () => {
+    if (!currentLeague) return;
+    await fetchLeaderboard();
+    await fetchScoringRules();
+    setLastUpdated(new Date());
+  }, [currentLeague, fetchLeaderboard, fetchScoringRules]);
+
+  const prevTabRef = React.useRef<string>(leaderboardTab);
+  useEffect(() => {
+    const switchedToTraditional =
+      prevTabRef.current !== 'traditional' && leaderboardTab === 'traditional';
+    prevTabRef.current = leaderboardTab;
+    if (switchedToTraditional && currentLeague) {
+      refreshLeaderboard();
+    }
+  }, [leaderboardTab, currentLeague, refreshLeaderboard]);
+
+  useEffect(() => {
+    if (leaderboardTab !== 'traditional' || !currentLeague) return;
+    const interval = setInterval(refreshLeaderboard, 60000);
+    return () => clearInterval(interval);
+  }, [leaderboardTab, currentLeague, refreshLeaderboard]);
 
   // Fetch player game history when player is selected
   const fetchPlayerGameHistory = useCallback(async () => {
@@ -459,7 +485,11 @@ export default function LeaderboardPage() {
           <LeagueStatus leagueId={currentLeague?.id} />
         </div>
 
-        <Tabs defaultValue="realtime" className="mb-8">
+        <Tabs
+          value={leaderboardTab}
+          onValueChange={(v) => setLeaderboardTab(v)}
+          className="mb-8"
+        >
           <div className="flex justify-center mb-6">
             <TabsList className="bg-slate-800/80 border border-slate-700/50 p-1.5 rounded-xl">
               <TabsTrigger value="realtime">🔴 Live Rankings</TabsTrigger>
@@ -515,11 +545,22 @@ export default function LeaderboardPage() {
               availableCommanders={availableCommanders}
               onExportCSV={handleExportCSV}
               onExportPDF={handleExportPDF}
+              onRefresh={refreshLeaderboard}
             />
 
             <Card className="card-arena border-amber-500/20">
               <CardHeader>
-                <CardTitle className="text-white">Current Standings</CardTitle>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <CardTitle className="text-white">Current Standings</CardTitle>
+                  {lastUpdated && (
+                    <span className="text-sm text-slate-400 flex items-center gap-1">
+                      <FaClock className="w-4 h-4" />
+                      Updated {lastUpdated.toLocaleTimeString()}
+                      {' · '}
+                      <span className="text-green-400">Auto-refresh 60s</span>
+                    </span>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="p-0">
                 {loading ? (
