@@ -27,6 +27,8 @@ npm run dev
 # Start dev server (port 3003)
 npm run dev
 
+# If port 3003 is in use: npm run dev:alt  (uses 3004)
+
 # Type check in watch mode
 npm run type-check:watch
 

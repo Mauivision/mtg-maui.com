@@ -44,26 +44,34 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-
       const response = await fetch('/api/leagues');
 
-      if (response.ok) {
-        const data = await response.json();
-        const fetchedLeagues = data.leagues || [];
-        setLeagues(fetchedLeagues);
-
-        if (!currentLeague && fetchedLeagues.length > 0) {
-          const activeLeague =
-            fetchedLeagues.find((l: League) => l.status === 'active') || fetchedLeagues[0];
-          setCurrentLeagueState(activeLeague);
-        }
-        if (fetchedLeagues.length === 0) {
-          setCurrentLeagueState(null);
-        }
-      } else {
+      if (!response.ok) {
         setLeagues([]);
         setCurrentLeagueState(null);
         setError('Failed to load leagues');
+        return;
+      }
+
+      const data = await response.json();
+      const fetchedLeagues: League[] = data.leagues || [];
+      setLeagues(fetchedLeagues);
+
+      const savedLeagueId = typeof window !== 'undefined' ? localStorage.getItem('currentLeagueId') : null;
+      if (savedLeagueId) {
+        const saved = fetchedLeagues.find((l) => l.id === savedLeagueId);
+        if (saved) {
+          setCurrentLeagueState(saved);
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (fetchedLeagues.length > 0) {
+        const active = fetchedLeagues.find((l) => l.status === 'active') || fetchedLeagues[0];
+        setCurrentLeagueState(active);
+      } else {
+        setCurrentLeagueState(null);
       }
     } catch (err) {
       logger.error('Error fetching leagues', err);
@@ -73,36 +81,22 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [currentLeague]);
+  }, []);
 
-  const setCurrentLeague = (league: League | null) => {
+  const setCurrentLeague = useCallback((league: League | null) => {
     setCurrentLeagueState(league);
-    // Persist to localStorage
-    if (league) {
-      localStorage.setItem('currentLeagueId', league.id);
-    } else {
-      localStorage.removeItem('currentLeagueId');
-    }
-  };
+    if (typeof window === 'undefined') return;
+    if (league) localStorage.setItem('currentLeagueId', league.id);
+    else localStorage.removeItem('currentLeagueId');
+  }, []);
 
-  const refreshLeagues = async () => {
+  const refreshLeagues = useCallback(async () => {
     await fetchLeagues();
-  };
+  }, [fetchLeagues]);
 
   useEffect(() => {
-    // Check localStorage for saved league
-    const savedLeagueId = localStorage.getItem('currentLeagueId');
-
-    if (savedLeagueId) {
-      // Try to find saved league in fetched leagues
-      const savedLeague = leagues.find(l => l.id === savedLeagueId);
-      if (savedLeague) {
-        setCurrentLeagueState(savedLeague);
-      }
-    }
-
     fetchLeagues();
-  }, [leagues, fetchLeagues]);
+  }, [fetchLeagues]);
 
   const value: LeagueContextType = {
     currentLeague,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -23,66 +23,60 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [liveUpdates, setLiveUpdates] = useState(true);
-  const [lastDataHash, setLastDataHash] = useState<string>('');
-  const [pollInterval, setPollInterval] = useState<number>(60000); // Start with 1 minute
+  const lastDataHashRef = useRef<string>('');
+  const [pollInterval, setPollInterval] = useState<number>(60000);
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState<number>(0);
 
-  // Visibility API to pause polling when tab is not visible
+  const getDataHash = useCallback((data: RealtimeLeaderboardEntry[]): string => {
+    return data.map((entry) => `${entry.id}-${entry.points}-${entry.rank}`).join('|');
+  }, []);
+
   useEffect(() => {
     setIsVisible(!document.hidden);
-    const handleVisibilityChange = () => {
-      setIsVisible(!document.hidden);
-    };
+    const handleVisibilityChange = () => setIsVisible(!document.hidden);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
-  const fetchLeaderboard = useCallback(async (force = false) => {
-    // Simple hash function for data comparison
-    const getDataHash = (data: RealtimeLeaderboardEntry[]): string => {
-      return data.map(entry => `${entry.id}-${entry.points}-${entry.rank}`).join('|');
-    };
-    // Skip fetch if tab is not visible and not forced
-    if (!isVisible && !force) return;
+  const fetchLeaderboard = useCallback(
+    async (force = false) => {
+      if (!isVisible && !force) return;
 
-    try {
-      const params = new URLSearchParams({
-        gameType,
-        limit: limit.toString(),
-        ...(leagueId && { leagueId }),
-      });
+      try {
+        const params = new URLSearchParams({
+          gameType,
+          limit: limit.toString(),
+          ...(leagueId && { leagueId }),
+        });
+        const response = await fetch(`/api/leaderboard/realtime?${params}`);
+        const data = await response.json();
+        const newEntries = data.entries || [];
+        const newDataHash = getDataHash(newEntries);
+        const prevHash = lastDataHashRef.current;
 
-      const response = await fetch(`/api/leaderboard/realtime?${params}`);
-      const data = await response.json();
-      const newEntries = data.entries || [];
-      const newDataHash = getDataHash(newEntries);
-
-      // Only update if data has changed or it's a forced refresh
-      if (force || newDataHash !== lastDataHash) {
-        setLeaderboard(newEntries);
-        setLastDataHash(newDataHash);
-        setLastUpdate(new Date());
-
-        // Adaptive polling: if data changed, poll more frequently
-        // If no changes, gradually increase interval (up to 5 minutes)
-        if (newDataHash !== lastDataHash) {
-          setPollInterval(60000);
-        } else {
-          setPollInterval((prev) => Math.min(prev * 1.2, 300000));
+        if (force || newDataHash !== prevHash) {
+          setLeaderboard(newEntries);
+          lastDataHashRef.current = newDataHash;
+          setLastUpdate(new Date());
+          if (newDataHash !== prevHash) {
+            setPollInterval(60000);
+          } else {
+            setPollInterval((p) => Math.min(p * 1.2, 300000));
+          }
         }
+        setError(null);
+        setRetryCount(0);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch leaderboard');
+        setRetryCount((r) => r + 1);
+      } finally {
+        setLoading(false);
       }
-      setError(null);
-      setRetryCount(0);
-    } catch (err) {
-      console.error('Failed to fetch leaderboard:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch leaderboard');
-      setRetryCount((prev) => prev + 1);
-    } finally {
-      setLoading(false);
-    }
-  }, [leagueId, gameType, limit, isVisible, lastDataHash]);
+    },
+    [leagueId, gameType, limit, isVisible, getDataHash]
+  );
 
   useEffect(() => {
     fetchLeaderboard(true); // Initial load

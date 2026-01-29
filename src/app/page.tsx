@@ -159,7 +159,7 @@ export default function HomePage() {
                         <CardTitle className="text-white text-lg">{p.playerName}</CardTitle>
                         <div className="flex items-center gap-2 text-amber-300 text-sm mt-1">
                           <FaBook className="w-3 h-3" />
-                          {p.commander}
+                          {p.commander || '—'}
                         </div>
                       </div>
                       <Badge className="bg-amber-900/50 text-amber-200 shrink-0">#{p.rank}</Badge>
@@ -181,7 +181,9 @@ export default function HomePage() {
                     <div className="flex justify-between">
                       <span className="text-slate-400">Win rate</span>
                       <span className="text-white">
-                        {p.gamesPlayed > 0 ? ((p.wins / p.gamesPlayed) * 100).toFixed(1) : '0'}%
+                        {p.gamesPlayed > 0 && typeof p.wins === 'number'
+                          ? ((p.wins / p.gamesPlayed) * 100).toFixed(1)
+                          : '0'}%
                       </span>
                     </div>
                   </CardContent>

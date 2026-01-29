@@ -57,6 +57,7 @@ Full checklist: [docs/DEPLOY_VERCEL_CHECKLIST.md](docs/DEPLOY_VERCEL_CHECKLIST.m
 
 ```bash
 npm run dev          # Dev server (port 3003)
+npm run dev:alt      # Dev on 3004 if 3003 in use
 npm run build        # Production build
 npm run start        # Production server
 npm run lint         # Lint

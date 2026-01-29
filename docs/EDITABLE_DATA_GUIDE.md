@@ -31,10 +31,10 @@ This guide explains **where** and **how** to add or edit league data (players, g
    - Use the tabs to manage **Players**, **Games**, **Events**, **News**, **Drafts**, **Leaderboard**, **Scoring Rules**, **Page Content**, etc.
 
 2. **Leaderboard “Edit Scores”**  
-   - Open **[/leaderboard](http://localhost:3003/leaderboard)**.  
-   - Switch to the **Edit Scores** tab.  
+   - Open **Wizards** → **Leaderboard** tab.  
    - Use the editable table to change **total points**, **wins**, etc. per player.  
-   - Save sends updates to `POST /api/admin/leaderboard/update`.
+   - Save sends updates to `POST /api/admin/leaderboard/update`.  
+   - **View** rankings on **Home** → scroll to **Leaderboard** (or `/#leaderboard`).
 
 ---
 
