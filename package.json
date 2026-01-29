@@ -1,6 +1,6 @@
 {
   "name": "mtg-maui-league",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MTG Maui League - Magic: The Gathering tournament leaderboard (chart + table), character charts, and Wizards edit panel. Next.js, Prisma, Vercel.",
   "private": true,
   "scripts": {

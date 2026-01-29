@@ -1,7 +1,6 @@
 # Vercel Deploy Checklist
 
-Use this when deploying MTG Maui League to Vercel so the site works with live editable tables and charts.  
-**Merge to one project (Vercel + GitHub):** [MERGE_VERCEL_AND_GITHUB.md](MERGE_VERCEL_AND_GITHUB.md).
+Use this when deploying MTG Maui League to Vercel. One project only — **same** repo, **same** Vercel project; push to `main` overrides production.
 
 ## 1. Database (required)
 
@@ -28,11 +27,12 @@ Optional: `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, etc. for auth when you re-enable it
 
 Ensure Project Settings → Build & Development match `vercel.json` or that overrides are off so the repo config is used.
 
-## 4. Deploy
+## 4. Deploy (override production)
 
-- Push to your connected Git branch (e.g. `main`). Vercel builds and deploys using `vercel.json`.
-- Or: Deployments → Redeploy.
-- **Optional:** In Vercel Project Settings → General, set the project name/description to match (e.g. "MTG Maui League").
+- **Same project:** Do **not** create a new Vercel project. Use your existing one (e.g. `mtg-maui-com`), connected to `Mauivision/mtg-maui.com`, branch `main`.
+- Push to `main` → Vercel builds and deploys from `vercel.json`, **overriding** production.
+- Or: Vercel → Deployments → **Redeploy** latest (use “Redeploy” on the correct deployment to override).
+- **Optional:** Project Settings → General → name/description (e.g. "MTG Maui League").
 
 ## 5. Verify
 
