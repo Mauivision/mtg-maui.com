@@ -1,7 +1,7 @@
 {
   "name": "mtg-maui-league",
   "version": "1.0.0",
-  "description": "MTG Maui League - Magic: The Gathering Tournament Platform",
+  "description": "MTG Maui League - Magic: The Gathering tournament leaderboard (chart + table), character charts, and Wizards edit panel. Next.js, Prisma, Vercel.",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3003",
@@ -19,6 +19,7 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "prisma db seed",
     "prisma:reset": "prisma migrate reset",
+    "db:reset": "prisma migrate reset --force",
     "fix:prisma": "node scripts/fix-prisma-imports.js",
     "logger:migrate": "node scripts/replace-console-with-logger.js",
     "clean": "rm -rf .next out dist",
@@ -68,7 +69,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": "18.x",
     "npm": ">=8.0.0"
   }
 }

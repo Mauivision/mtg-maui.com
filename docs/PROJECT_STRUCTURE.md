@@ -4,7 +4,7 @@
 
 ## 🎯 **Layout**
 
-- **Single home** (`/`): long-scroll with Hero, Leaderboard, Character Charts, News Feed.
+- **Single home** (`/`): long-scroll with Hero, Leaderboard (points chart + rankings table), Character Charts, News Feed.
 - **Wizards** (`/wizards`): edit panel. Old routes redirect (e.g. `/leaderboard` → `/#leaderboard`, `/admin` → `/wizards`).
 
 ---

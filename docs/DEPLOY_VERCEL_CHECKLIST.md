@@ -21,6 +21,7 @@ Optional: `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, etc. for auth when you re-enable it
 ## 3. Build settings
 
 - **Framework:** Next.js (auto-detected).
+- **Node:** 18.x (from `package.json` engines). Set in Vercel if needed: Project Settings → General → Node.js Version.
 - **Build Command:** `npx prisma migrate deploy && npm run build` (from `vercel.json`).
 - **Install Command:** `npm install`.
 
@@ -28,8 +29,9 @@ Ensure Project Settings → Build & Development match `vercel.json` or that over
 
 ## 4. Deploy
 
-- Push to your connected Git branch (e.g. `main`). Vercel builds and deploys.
+- Push to your connected Git branch (e.g. `main`). Vercel builds and deploys using `vercel.json`.
 - Or: Deployments → Redeploy.
+- **Optional:** In Vercel Project Settings → General, set the project name/description to match (e.g. "MTG Maui League").
 
 ## 5. Verify
 
@@ -42,10 +44,10 @@ Ensure Project Settings → Build & Development match `vercel.json` or that over
    Click **Edit** in the header (or open `/wizards`). If no league, click **Create League Tournament Records**. Then edit players, games, events.
 
 3. **Home:**  
-   Scroll to **Leaderboard** and **Character Charts**; they use the same data. **News Feed** shows events and news from Wizards.
+   Scroll to **Leaderboard** (points bar chart + rankings table), **Character Charts**, and **News Feed**; they use the same data from Wizards.
 
 ## 6. Live editing
 
-- **Site:** One long-scroll **home** page (Hero, Leaderboard, Character Charts, News Feed). **Wizards** (`/wizards`) is the only other page; use **Edit** in the header to open it.
+- **Site:** One long-scroll **home** page (Hero, Leaderboard with chart + table, Character Charts, News Feed). **Wizards** (`/wizards`) is the only other page; use **Edit** in the header to open it.
 - **Tables:** Edit via **Wizards** (Players, Games, Events, etc.). Leaderboard and Character Charts on the home page update when data changes.
 - All edits persist in Vercel Postgres.

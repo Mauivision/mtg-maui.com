@@ -147,149 +147,47 @@ async function createSampleGames(leagueId: string) {
     return;
   }
 
-  const playerIds = memberships.slice(0, 4).map((m) => m.userId);
+  // Create one game per group of 4 so all 16 players get scores and appear on the leaderboard
+  const pointsByPlace = [15, 8, 4, 1]; // 1st, 2nd, 3rd, 4th
+  for (let g = 0; g + 4 <= memberships.length; g += 4) {
+    const group = memberships.slice(g, g + 4);
+    const playerIds = group.map((m) => m.userId);
+    const round = Math.floor(g / 4) + 1;
 
-  // Create a sample tournament game
-  const game = await prisma.leagueGame.create({
+    const game = await prisma.leagueGame.create({
     data: {
       leagueId,
       gameType: 'commander',
       tournamentPhase: 'swiss',
-      round: 1,
-      date: new Date(),
-      recordedBy: memberships[0].userId,
+      round,
+      date: new Date(Date.now() + round * 24 * 60 * 60 * 1000),
+      recordedBy: group[0].userId,
       players: JSON.stringify(playerIds),
-      placements: JSON.stringify([
-        {
-          playerId: memberships[0].userId,
-          playerName: memberships[0].user.name,
-          place: 1,
-          points: 15, // 1st place + gold objective + 2 silver objectives
-          goldObjective: true,
-          silverObjectives: 2,
-        },
-        {
-          playerId: memberships[1].userId,
-          playerName: memberships[1].user.name,
-          place: 2,
-          points: 8, // 2nd place + 2 silver objectives
-          goldObjective: false,
-          silverObjectives: 2,
-        },
-        {
-          playerId: memberships[2].userId,
-          playerName: memberships[2].user.name,
-          place: 3,
-          points: 4, // 3rd place + 1 silver objective
-          goldObjective: false,
-          silverObjectives: 1,
-        },
-        {
-          playerId: memberships[3].userId,
-          playerName: memberships[3].user.name,
-          place: 4,
-          points: 1, // Participation points only
-          goldObjective: false,
-          silverObjectives: 0,
-        },
-      ]),
+      placements: JSON.stringify(
+        group.map((m, i) => ({
+          playerId: m.userId,
+          playerName: m.user.name,
+          place: i + 1,
+          points: pointsByPlace[i],
+        }))
+      ),
     },
   });
 
-  // Create game deck records for each participant
-  for (let i = 0; i < 4; i++) {
-    const membership = memberships[i];
-    const placements = JSON.parse(game.placements) as Array<{ place: number; points: number }>;
-    const pl = placements[i];
-    if (!pl) continue;
-
-    const deck = membership.registeredDecks[0];
-    if (!deck) {
-      logger.warn(`No deck found for membership ${membership.id}`);
-      continue;
-    }
-
-    await prisma.leagueGameDeck.create({
-      data: {
-        gameId: game.id,
-        playerId: membership.userId,
-        deckId: deck.id,
-        placement: pl.place,
-        points: pl.points,
-      },
-    });
-  }
-
-  // Create a few more games to give players more points
-  for (let round = 2; round <= 3; round++) {
-    const shuffledMemberships = [...memberships].sort(() => Math.random() - 0.5).slice(0, 4);
-    const roundPlayerIds = shuffledMemberships.map((m) => m.userId);
-
-    const game2 = await prisma.leagueGame.create({
-      data: {
-        leagueId,
-        gameType: 'commander',
-        tournamentPhase: 'swiss',
-        round,
-        date: new Date(Date.now() + round * 24 * 60 * 60 * 1000), // Different days
-        recordedBy: shuffledMemberships[0].userId,
-        players: JSON.stringify(roundPlayerIds),
-        placements: JSON.stringify([
-          {
-            playerId: shuffledMemberships[0].userId,
-            playerName: shuffledMemberships[0].user.name,
-            place: 1,
-            points: 13,
-            goldObjective: true,
-            silverObjectives: 1,
-          },
-          {
-            playerId: shuffledMemberships[1].userId,
-            playerName: shuffledMemberships[1].user.name,
-            place: 2,
-            points: 6,
-            goldObjective: false,
-            silverObjectives: 1,
-          },
-          {
-            playerId: shuffledMemberships[2].userId,
-            playerName: shuffledMemberships[2].user.name,
-            place: 3,
-            points: 3,
-            goldObjective: false,
-            silverObjectives: 0,
-          },
-          {
-            playerId: shuffledMemberships[3].userId,
-            playerName: shuffledMemberships[3].user.name,
-            place: 4,
-            points: 1,
-            goldObjective: false,
-            silverObjectives: 0,
-          },
-        ]),
-      },
-    });
-
     for (let i = 0; i < 4; i++) {
-      const membership = shuffledMemberships[i];
-      const placements = JSON.parse(game2.placements) as Array<{ place: number; points: number }>;
-      const pl = placements[i];
-      if (!pl) continue;
-
+      const membership = group[i];
       const deck = membership.registeredDecks[0];
       if (!deck) {
         logger.warn(`No deck found for membership ${membership.id}`);
         continue;
       }
-
       await prisma.leagueGameDeck.create({
         data: {
-          gameId: game2.id,
+          gameId: game.id,
           playerId: membership.userId,
           deckId: deck.id,
-          placement: pl.place,
-          points: pl.points,
+          placement: i + 1,
+          points: pointsByPlace[i],
         },
       });
     }

@@ -8,17 +8,22 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { FaTrophy, FaMedal, FaCrown, FaFire, FaBolt, FaUsers, FaExclamationTriangle, FaRedo } from 'react-icons/fa';
 import type { RealtimeLeaderboardEntry } from '@/types/leaderboard';
 
+export type RealtimeLeaderboardVariant = 'standalone' | 'embed';
+
 interface RealtimeLeaderboardProps {
   leagueId?: string;
   gameType?: 'all' | 'commander' | 'draft' | 'standard';
   limit?: number;
+  variant?: RealtimeLeaderboardVariant;
 }
 
 export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
   leagueId,
   gameType = 'all',
   limit = 10,
+  variant = 'standalone',
 }) => {
+  const isEmbed = variant === 'embed';
   const [leaderboard, setLeaderboard] = useState<RealtimeLeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
@@ -182,30 +187,53 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-2">Live Leaderboard</h2>
-          <p className="text-gray-400 text-sm">
-            Last updated: {lastUpdate.toLocaleTimeString()}
-            {error && (
-              <span className="ml-2 text-red-400 text-xs">
-                (Error: {error})
-              </span>
-            )}
-          </p>
+    <div className={isEmbed ? 'space-y-4' : 'space-y-6'}>
+      {/* Header — full in standalone, compact in embed */}
+      {!isEmbed && (
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">Live Leaderboard</h2>
+            <p className="text-gray-400 text-sm">
+              Last updated: {lastUpdate.toLocaleTimeString()}
+              {error && (
+                <span className="ml-2 text-red-400 text-xs">
+                  (Error: {error})
+                </span>
+              )}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant={liveUpdates ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setLiveUpdates(!liveUpdates)}
+              className={liveUpdates ? 'bg-green-600 hover:bg-green-700' : ''}
+            >
+              <FaBolt className="w-4 h-4 mr-2" />
+              {liveUpdates ? 'Live' : 'Paused'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setError(null);
+                setRetryCount(0);
+                fetchLeaderboard(true);
+              }}
+              className="border-amber-400 text-amber-400 hover:bg-amber-900/30"
+            >
+              <FaRedo className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant={liveUpdates ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setLiveUpdates(!liveUpdates)}
-            className={liveUpdates ? 'bg-green-600 hover:bg-green-700' : ''}
-          >
-            <FaBolt className="w-4 h-4 mr-2" />
-            {liveUpdates ? 'Live' : 'Paused'}
-          </Button>
+      )}
+      {isEmbed && (error || lastUpdate) && (
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-gray-400">
+            Updated {lastUpdate.toLocaleTimeString()}
+            {error && <span className="ml-2 text-red-400">({error})</span>}
+          </span>
           <Button
             variant="outline"
             size="sm"
@@ -216,11 +244,11 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
             }}
             className="border-amber-400 text-amber-400 hover:bg-amber-900/30"
           >
-            <FaRedo className="w-4 h-4 mr-2" />
+            <FaRedo className="w-4 h-4 mr-1" />
             Refresh
           </Button>
         </div>
-      </div>
+      )}
 
       {/* Error Banner */}
       {error && retryCount > 0 && (
@@ -246,15 +274,17 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
 
       {/* Leaderboard */}
       <Card className="bg-slate-800/50 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <FaTrophy className="w-5 h-5 text-amber-500" />
-            {gameType === 'all'
-              ? 'Overall'
-              : gameType.charAt(0).toUpperCase() + gameType.slice(1)}{' '}
-            Rankings
-          </CardTitle>
-        </CardHeader>
+        {!isEmbed && (
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <FaTrophy className="w-5 h-5 text-amber-500" />
+              {gameType === 'all'
+                ? 'Overall'
+                : gameType.charAt(0).toUpperCase() + gameType.slice(1)}{' '}
+              Rankings
+            </CardTitle>
+          </CardHeader>
+        )}
         <CardContent>
           <div className="space-y-2">
             {leaderboard.length === 0 && !loading ? (
@@ -282,7 +312,9 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
               leaderboard.map((entry, index) => (
                 <div
                   key={entry.id}
-                  className={`p-4 rounded-lg border transition-all hover:scale-102 animate-slide-up ${
+                  className={`rounded-lg border transition-all hover:scale-[1.02] animate-slide-up ${
+                    isEmbed ? 'p-3' : 'p-4'
+                  } ${
                     entry.rank <= 3
                       ? 'bg-gradient-to-r from-amber-900/20 to-orange-900/20 border-amber-600/30'
                       : 'bg-slate-700/30 border-slate-600 hover:bg-slate-700/50'
@@ -365,40 +397,42 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
         </CardContent>
       </Card>
 
-      {/* Live Activity Feed */}
-      <Card className="bg-slate-800/50 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <FaBolt className="w-5 h-5 text-green-500" />
-            Live Activity
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm text-gray-300">
-            <div className="flex items-center gap-2 p-2 bg-slate-700/30 rounded">
-              <FaTrophy className="w-4 h-4 text-yellow-400" />
-              <span>
-                <strong>DragonMaster</strong> claimed victory in Commander!
-              </span>
-              <span className="text-gray-500 ml-auto">2m ago</span>
+      {/* Live Activity Feed — only in standalone */}
+      {!isEmbed && (
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <FaBolt className="w-5 h-5 text-green-500" />
+              Live Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 text-sm text-gray-300">
+              <div className="flex items-center gap-2 p-2 bg-slate-700/30 rounded">
+                <FaTrophy className="w-4 h-4 text-yellow-400" />
+                <span>
+                  <strong>DragonMaster</strong> claimed victory in Commander!
+                </span>
+                <span className="text-gray-500 ml-auto">2m ago</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-slate-700/30 rounded">
+                <FaFire className="w-4 h-4 text-orange-400" />
+                <span>
+                  <strong>SpellSlinger</strong> reached a 5-win streak!
+                </span>
+                <span className="text-gray-500 ml-auto">5m ago</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-slate-700/30 rounded">
+                <FaMedal className="w-4 h-4 text-blue-400" />
+                <span>
+                  <strong>CardShark</strong> moved up to rank #3!
+                </span>
+                <span className="text-gray-500 ml-auto">8m ago</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 p-2 bg-slate-700/30 rounded">
-              <FaFire className="w-4 h-4 text-orange-400" />
-              <span>
-                <strong>SpellSlinger</strong> reached a 5-win streak!
-              </span>
-              <span className="text-gray-500 ml-auto">5m ago</span>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-slate-700/30 rounded">
-              <FaMedal className="w-4 h-4 text-blue-400" />
-              <span>
-                <strong>CardShark</strong> moved up to rank #3!
-              </span>
-              <span className="text-gray-500 ml-auto">8m ago</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { FaTrophy, FaUsers, FaCalendar, FaDice, FaNewspaper, FaBook } from 'reac
 import { useLeague } from '@/contexts/LeagueContext';
 import { useHomeData, useCharacterSheets } from '@/hooks';
 import { RealtimeLeaderboard } from '@/components/leaderboard/RealtimeLeaderboard';
+import { SimpleLeaderboardChart } from '@/components/leaderboard/SimpleLeaderboardChart';
 import { LeagueStatus } from '@/components/league/LeagueStatus';
 
 const sectionClass = 'scroll-mt-20 py-16 md:py-24 border-b border-slate-800/60';
@@ -66,11 +67,18 @@ export default function HomePage() {
           <div className="mb-6">
             <LeagueStatus leagueId={currentLeague?.id} refreshInterval={60_000} />
           </div>
-          <RealtimeLeaderboard
-            leagueId={currentLeague?.id ?? undefined}
-            gameType="all"
-            limit={20}
-          />
+          <div className="space-y-6">
+            <SimpleLeaderboardChart
+              leagueId={currentLeague?.id ?? undefined}
+              limit={16}
+            />
+            <RealtimeLeaderboard
+              leagueId={currentLeague?.id ?? undefined}
+              gameType="all"
+              limit={20}
+              variant="embed"
+            />
+          </div>
         </div>
       </section>
 

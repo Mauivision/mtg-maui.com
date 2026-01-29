@@ -132,6 +132,21 @@ git remote add origin https://github.com/YOUR_USERNAME/mtg-maui-league.git
 
 ---
 
+## 📄 **GitHub Pages (optional)**
+
+A minimal **static landing page** lives in `docs/index.html`. It shows “MTG Maui League” and a link to your live app.
+
+**To use it at e.g. `https://mauivision.github.io/mtg-maui.com/`:**
+
+1. GitHub repo → **Settings** → **Pages**.
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
+3. **Branch:** `main` (or default) → **Folder:** `/docs` → **Save**.
+4. After a minute, the site will be at `https://<org-or-user>.github.io/<repo>/`.
+
+**Edit the live link:** In `docs/index.html`, change the `href` in the “Open live site” button to your real Vercel URL (e.g. `https://your-app.vercel.app` or your custom domain).
+
+---
+
 ## 🎯 **Next Step: Vercel**
 
 Once your code is on GitHub:

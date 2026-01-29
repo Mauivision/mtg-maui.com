@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MTG Maui League</title>
+  <meta name="description" content="Magic: The Gathering tournament league — leaderboard, character charts, and Wizards edit panel." />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      color: #fff;
+    }
+    .tagline {
+      color: #fbbf24;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1.5rem;
+    }
+    p {
+      color: #94a3b8;
+      max-width: 28rem;
+      margin: 0 0 2rem;
+      line-height: 1.6;
+    }
+    a {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.35);
+    }
+    .muted {
+      margin-top: 2rem;
+      font-size: 0.8125rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <p class="tagline">Hawaii’s Premier MTG League</p>
+  <h1>MTG Maui League</h1>
+  <p>Magic: The Gathering tournament league — leaderboard (chart + table), character charts, and Wizards edit panel. One clean site.</p>
+  <a href="https://mtg-maui.com" id="live-link">Open live site →</a>
+  <p class="muted">© MTG Maui League</p>
+  <!-- To use your Vercel URL instead, edit the href above (e.g. https://your-app.vercel.app) -->
+</body>
+</html>
