@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -134,7 +134,7 @@ model Card {
 model GameResult {
   id        String   @id @default(cuid())
   gameType  String
-  players   String // JSON string for SQLite compatibility
+  players   String // JSON string
   winner    String?
   duration  Int? // in minutes
   createdAt DateTime @default(now())

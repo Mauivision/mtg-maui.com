@@ -123,7 +123,7 @@ This guide explains **where** and **how** to add or edit league data (players, g
 ## Data Flow (high level)
 
 ```
-Prisma (SQLite/Postgres)
+Prisma (PostgreSQL)
   ├── League, LeagueMembership, LeagueDeck   → players, commanders
   ├── LeagueGame, LeagueGameDeck             → games, placements, points
   ├── ScoringRule                            → scoring config

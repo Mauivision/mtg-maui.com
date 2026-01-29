@@ -4,7 +4,7 @@
 
 **Prisma** is the app’s **ORM** (object–relational mapping). It:
 
-- Connects to the database (SQLite locally, typically PostgreSQL in production).
+- Connects to the database (**PostgreSQL** only; see [Vercel Postgres Setup](VERCEL_POSTGRES_SETUP.md)).
 - Uses `prisma/schema.prisma` to define **models** (League, LeagueGame, ScoringRule, User, etc.).
 - Generates a **Prisma Client** used in API routes (`src/app/api/...`) to read/write data.
 - Handles migrations and seeding.
@@ -15,7 +15,7 @@ You never touch SQL directly; you use `prisma.league.findMany()`, `prisma.scorin
 
 ## Where Data Is Stored
 
-- **Database file (local):** `prisma/dev.db` (SQLite). It’s gitignored.
+- **Database:** PostgreSQL via `DATABASE_URL` (e.g. [Vercel Postgres](VERCEL_POSTGRES_SETUP.md)). No SQLite.
 - **Schema:** `prisma/schema.prisma` defines all tables and relations.
 
 ### Score auto-selection / scoring rules
@@ -39,35 +39,26 @@ You never touch SQL directly; you use `prisma.league.findMany()`, `prisma.scorin
 
 ## “Unable to open the database file” (Error code 14)
 
-This usually means:
-
-1. The DB file **doesn’t exist** yet (migrations haven’t been run), or  
-2. The process **can’t create or read** `prisma/dev.db` (wrong CWD, permissions, or path).
+This **SQLite** error appears if you previously used `file:./dev.db`. The app now uses **PostgreSQL** only.
 
 ### Fix
 
-Always run commands and the app (`npm run dev`, `next start`) from the **project root**. Then:
+1. **Provision Postgres** (e.g. [Vercel Postgres](VERCEL_POSTGRES_SETUP.md)) and set `DATABASE_URL`.
+2. From the **project root**:
+   ```bash
+   npx prisma migrate dev
+   npx prisma db seed
+   ```
+3. Restart the app (`npm run dev`). The error goes away once you’re on Postgres.
 
-```bash
-npx prisma migrate dev
-npx prisma db seed
-```
-
-- `migrate dev` creates `prisma/dev.db` (if missing) and applies migrations.  
-- `db seed` runs `prisma/seed.ts`, which creates a default **League**, **ScoringRules**, users, page content, etc.
-
-Then restart your app (`npm run dev`). The error should go away.
-
-### Production (e.g. Vercel)
-
-SQLite and a local `dev.db` file are **not** suitable for serverless/production. Use **PostgreSQL** (or another hosted DB), set `DATABASE_URL` in the environment, point the Prisma datasource to it, and run `npx prisma migrate deploy` (and optionally seed) in your deploy pipeline.
+**Vercel:** The build runs `npx prisma migrate deploy` before `npm run build`. Ensure `DATABASE_URL` is set (e.g. via Vercel Postgres); then deploy.
 
 ---
 
 ## How to “Make” the Leaderboard
 
-1. **Ensure DB exists and is seeded:**  
-   `npx prisma migrate dev` then `npx prisma db seed`.
+1. **Ensure Postgres is set up and seeded:**  
+   Set `DATABASE_URL`, then `npx prisma migrate dev` and `npx prisma db seed`. See [Vercel Postgres Setup](VERCEL_POSTGRES_SETUP.md).
 
 2. **Ensure a League exists:**  
    Seed creates “MTG Maui League”. You can also create one via `POST /api/leagues` or **Wizards → Create League Tournament Records** (see below).

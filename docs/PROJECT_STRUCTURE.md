@@ -33,9 +33,9 @@ mtg-maui-league/
 │   └── types/                       # TypeScript types
 │
 ├── 📁 prisma/                       # Database
-│   ├── schema.prisma                # Database schema
-│   ├── seed.ts                      # Database seeding
-│   └── dev.db                       # SQLite database (dev only)
+│   ├── schema.prisma                # Database schema (PostgreSQL)
+│   ├── migrations/                  # Postgres migrations
+│   └── seed.ts                      # Database seeding
 │
 ├── 📁 public/                       # Static assets
 │   ├── images/                      # Images
@@ -195,7 +195,7 @@ Your MTG Maui League project is now:
 - **Populate:** `POST /api/admin/populate` – Seeds 16 players + sample games. Placements JSON uses `place` and `points` (matches leagues leaderboard API).
 
 ### **Admin dashboard**
-- **`GET /api/admin/dashboard`** – Stats (users, games, leagues, events, db size, uptime). Db size from SQLite `prisma/dev.db` file size; other DBs → `N/A`.
+- **`GET /api/admin/dashboard`** – Stats (users, games, leagues, events, db size, uptime). Db size: N/A for Postgres; was SQLite file size when using `dev.db`.
 - **`GET /api/admin/dashboard/activity`** – Recent users, games, leagues, events. Uses `logger` for errors.
 
 ### **Page content & app layout (control of other pages’ information)**
@@ -224,7 +224,7 @@ Your MTG Maui League project is now:
 5. Ensure a league exists and is selected for **Edit Scores** to work.
 
 ### **Database**
-- **SQLite** (`prisma/dev.db`) by default. Admin dashboard `dbSize` uses `prisma/dev.db` file size; other DBs show `N/A`.
+- **PostgreSQL** via `DATABASE_URL`. See [Vercel Postgres Setup](VERCEL_POSTGRES_SETUP.md). Admin dashboard `dbSize` shows N/A for Postgres.
 
 ### **Run**
 - `npm run dev` → dev server on port 3003. If `EADDRINUSE`, stop the process using 3003 or run `next dev -p 3004`.

@@ -4,8 +4,12 @@ import { requireAdminOrSimple } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 
-/** DB size for SQLite file (dev.db). Production may use different path. */
+/** DB size: SQLite file (dev.db) when local; Postgres etc. show N/A. */
 async function getDbSize(): Promise<string> {
+  const url = process.env.DATABASE_URL ?? '';
+  if (url.startsWith('postgresql://') || url.startsWith('postgres://')) {
+    return 'N/A';
+  }
   try {
     const path = await import('path');
     const fs = await import('fs/promises');
