@@ -10,7 +10,7 @@
 ## GitHub & Vercel
 
 - **GitHub:** Default branch `main`. CI runs on push/PR to `main` (type-check, lint, build). Repo represents this build.
-- **Vercel:** Connect this repo; push to `main` triggers deploy. Build: `npx prisma migrate deploy && npm run build`. Node 18. Requires `DATABASE_URL` (Postgres) and optional `SKIP_ADMIN_AUTH=true`.
+- **Vercel:** Connect this repo; push to `main` triggers deploy. Build: `npx prisma migrate deploy && npm run build`. Node 24. Requires `DATABASE_URL` (Postgres) and optional `SKIP_ADMIN_AUTH=true`.
 
 ---
 
