@@ -43,7 +43,8 @@ Open **http://localhost:3004**. Use **Edit** in the header to open Wizards.
 2. **Env:** `DATABASE_URL` (auto from Postgres), `SKIP_ADMIN_AUTH` = `true` (no-login mode).
 3. Push to `main` → Vercel runs `vercel.json` build and deploys.
 
-Full checklist: [docs/DEPLOY_VERCEL_CHECKLIST.md](docs/DEPLOY_VERCEL_CHECKLIST.md).
+Full checklist: [docs/DEPLOY_VERCEL_CHECKLIST.md](docs/DEPLOY_VERCEL_CHECKLIST.md).  
+**Merge to one project (Vercel + GitHub):** [docs/MERGE_VERCEL_AND_GITHUB.md](docs/MERGE_VERCEL_AND_GITHUB.md).
 
 ---
 

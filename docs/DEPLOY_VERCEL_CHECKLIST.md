@@ -1,6 +1,7 @@
 # Vercel Deploy Checklist
 
-Use this when deploying MTG Maui League to Vercel so the site works with live editable tables and charts.
+Use this when deploying MTG Maui League to Vercel so the site works with live editable tables and charts.  
+**Merge to one project (Vercel + GitHub):** [MERGE_VERCEL_AND_GITHUB.md](MERGE_VERCEL_AND_GITHUB.md).
 
 ## 1. Database (required)
 
