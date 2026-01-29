@@ -1,5 +1,7 @@
 # 🔧 Development Workflow Guide
 
+**Pages & controls:** [DIRECTION_AND_CONTROLS](DIRECTION_AND_CONTROLS.md). **Offline** = local dev; **online** = Vercel.
+
 ## Quick Start
 
 ### Initial Setup

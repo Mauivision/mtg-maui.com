@@ -2,6 +2,8 @@
 
 This guide explains **where** and **how** to add or edit league data (players, games, points, commanders, events, etc.) within the project.
 
+**Pages:** Home (`/`) shows Leaderboard, Character Charts, News Feed. All editing is in **Wizards** (`/wizards`). See [DIRECTION_AND_CONTROLS](DIRECTION_AND_CONTROLS.md).
+
 ---
 
 ## Where to Edit Data
@@ -10,7 +12,7 @@ This guide explains **where** and **how** to add or edit league data (players, g
 |------|----------------|-----|
 | **Players** (name, email, commander) | Wizards Control → **Players** tab | `GET/POST/PUT/DELETE /api/admin/players` |
 | **Games** (date, players, placements, points) | Wizards Control → **Games** tab | `GET/POST/PUT/DELETE /api/admin/games` |
-| **Points / leaderboard** | Leaderboard → **Edit Scores** tab, or Wizards → **Leaderboard** tab | `POST /api/admin/leaderboard/update` |
+| **Points / leaderboard** | Wizards → **Leaderboard** tab (Edit Scores) | `POST /api/admin/leaderboard/update` |
 | **Scoring rules** (gold, silver, placement) | Wizards Control → **Scoring Rules** tab | `GET/POST/PUT/DELETE /api/admin/scoring-rules` |
 | **Events** (calendar / bulletin) | Wizards Control → **Events** tab | `GET/POST/PUT/DELETE /api/admin/events` |
 | **News** | Wizards Control → **News** tab | `GET/POST/PUT/DELETE /api/admin/news` |
@@ -132,7 +134,7 @@ Prisma (PostgreSQL)
 
         ↓  API routes (/api/admin/*, /api/leagues/*)
 
-Wizards Control (/wizards)    Leaderboard (/leaderboard)
+Wizards (/wizards)    Home (/) — Leaderboard, Character Charts, News
   ├── Players, Games, Events, …   ├── Live Rankings, Detailed Stats
   └── Leaderboard, Scoring, …     └── Edit Scores (editable table)
 ```

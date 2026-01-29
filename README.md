@@ -1,237 +1,77 @@
-# 🏰 MTG Maui League
+# MTG Maui League
 
-**Magic: The Gathering Tournament League Management System**
+**Magic: The Gathering tournament league — one long-scroll site + Wizards edit panel.**
 
-A medieval fantasy-themed Next.js application for managing MTG tournaments with real-time leaderboards, editable scores, and comprehensive tournament features.
-
-## 🚀 Deploy to Vercel
-
-- **GitHub**: [Mauivision/mtg-maui.com](https://github.com/Mauivision/mtg-maui.com)
-- **Vercel**: Import the repo → add env vars → Deploy. Custom domain: **www.mtg-maui.com**
-- **Guides**: [docs/VERCEL_QUICKSTART.md](./docs/VERCEL_QUICKSTART.md) · [docs/DEPLOY_MTG_MAUI_TO_VERCEL.md](./docs/DEPLOY_MTG_MAUI_TO_VERCEL.md)
+- **Home** (`/`): Hero, Leaderboard, Character Charts, News Feed.
+- **Edit** (`/wizards`): Create leagues, manage players, games, events, news. Edits show on home.
 
 ---
 
-## ✨ Features
+## Quick start
 
-- **🏆 Real-time Leaderboard**: 16-player rankings with live updates
-- **✏️ Editable Scores**: Double-click to edit tournament scores and stats
-- **⚔️ Medieval Theme**: Immersive fantasy design perfect for MTG
-- **📊 Admin Dashboard**: Complete tournament management system
-- **🎮 Multiple Formats**: Support for Commander, Draft, and Standard
-- **📱 Mobile Responsive**: Works beautifully on all devices
-
----
-
-## 🚀 Quick Start
-
-### **1. Install Dependencies**
 ```bash
 npm install
-```
-
-### **2. Set Up Database**
-```bash
 npx prisma generate
 npx prisma migrate dev
-```
-
-### **3. Run Development Server**
-```bash
+npx prisma db seed    # optional
 npm run dev
 ```
 
-### **4. Open Application**
-```
-http://localhost:3003
-```
+Open **http://localhost:3003**. Use **Edit** in the header to open Wizards.
 
 ---
 
-## 📁 Project Structure
+## Database
 
-```
-mtg-maui-league/
-├── src/
-│   ├── app/              # Next.js app router pages & API routes
-│   ├── components/       # Reusable React components
-│   ├── contexts/         # React context providers
-│   ├── hooks/            # Custom React hooks
-│   ├── lib/              # Utility functions & configurations
-│   ├── styles/           # Global CSS styles
-│   └── types/            # TypeScript type definitions
-├── prisma/               # Database schema & migrations
-├── public/               # Static assets (images, icons, etc.)
-├── docs/                 # Project documentation
-├── scripts/              # Deployment & utility scripts
-└── .cursorrules          # Cursor IDE project rules
-```
+- **PostgreSQL** via `DATABASE_URL`. See [docs/VERCEL_POSTGRES_SETUP.md](docs/VERCEL_POSTGRES_SETUP.md).
+- Local: Postgres in `.env`. Vercel: Vercel Postgres + `DATABASE_URL`.
 
 ---
 
-## 🎯 Key Pages
+## Deploy (Vercel)
 
-- **Homepage**: `/` - Tournament info and league statistics
-- **Leaderboard**: `/leaderboard` - Rankings with editable scores
-- **Admin Panel**: `/admin` - Tournament management dashboard
-- **Wizards Control**: `/wizards` - Advanced tournament controls
-- **Character Sheets**: `/character-sheets` - Player profiles
-- **Rules**: `/rules` - Tournament rules and formats
+1. **Storage** → Create **Postgres** → link to project.
+2. **Env:** `DATABASE_URL` (auto), `SKIP_ADMIN_AUTH` = `true` (no-login mode).
+3. Push to `main` → Vercel builds and deploys.
 
----
-
-## 🗄️ Database
-
-### **Schema**
-- **Users**: Player accounts and authentication
-- **Leagues**: Tournament leagues and seasons
-- **Games**: Individual game records with scores
-- **Decks**: Player deck registrations
-- **Scoring Rules**: Configurable tournament scoring
-
-### **Commands**
-```bash
-npx prisma studio          # Visual database editor
-npx prisma migrate dev     # Create new migration
-npx prisma db seed         # Seed test data
-```
+Full checklist: [docs/DEPLOY_VERCEL_CHECKLIST.md](docs/DEPLOY_VERCEL_CHECKLIST.md).
 
 ---
 
-## 🎨 Theme & Design
+## Docs
 
-### **Colors**
-- **Primary**: Amber/Gold (`#f59e0b`, `#d97706`)
-- **Secondary**: Slate/Stone (`#64748b`, `#475569`)
-- **Accent**: Medieval red, green, purple
+**Start:** [docs/DIRECTION_AND_CONTROLS.md](docs/DIRECTION_AND_CONTROLS.md) — pages, controls, offline vs online.
 
-### **Fonts**
-- **Headings**: Cinzel (medieval fantasy)
-- **Body**: Inter (modern readability)
-
-### **Icons**
-- React Icons (Font Awesome) for consistent iconography
-- Medieval-themed: crowns, shields, trophies
+| Doc | Purpose |
+|-----|---------|
+| [docs/DIRECTION_AND_CONTROLS.md](docs/DIRECTION_AND_CONTROLS.md) | **Pages, controls, offline vs online** |
+| [docs/DEPLOY_VERCEL_CHECKLIST.md](docs/DEPLOY_VERCEL_CHECKLIST.md) | Vercel deploy + verify |
+| [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) | Project layout |
+| [docs/DATABASE_AND_PRISMA.md](docs/DATABASE_AND_PRISMA.md) | DB, Prisma, migrations |
+| [docs/EDITABLE_DATA_GUIDE.md](docs/EDITABLE_DATA_GUIDE.md) | What you can edit and how |
+| [docs/FUTURE_FEATURES.md](docs/FUTURE_FEATURES.md) | Login, Join League (restore later) |
 
 ---
 
-## 🚀 Deployment
-
-### **Vercel (recommended)**
-1. [vercel.com](https://vercel.com) → **New Project** → **Import Git Repository**
-2. Select **Mauivision/mtg-maui.com**
-3. Add **Environment Variables**: `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `DATABASE_URL`
-4. **Deploy**. Then add **www.mtg-maui.com** (and mtg-maui.com) under **Settings → Domains** and point HostGator DNS to Vercel.
-
-See [docs/VERCEL_QUICKSTART.md](./docs/VERCEL_QUICKSTART.md) and [docs/DEPLOY_MTG_MAUI_TO_VERCEL.md](./docs/DEPLOY_MTG_MAUI_TO_VERCEL.md).
-
-### **Environment variables**
-```env
-NEXTAUTH_URL=https://www.mtg-maui.com
-NEXTAUTH_SECRET=your_random_secret_here
-DATABASE_URL=your_postgres_or_placeholder_url
-```
-
----
-
-## 📚 Documentation
-
-- **Vercel + custom domain**: [docs/VERCEL_QUICKSTART.md](./docs/VERCEL_QUICKSTART.md) · [docs/DEPLOY_MTG_MAUI_TO_VERCEL.md](./docs/DEPLOY_MTG_MAUI_TO_VERCEL.md)
-- **Project structure**: [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md)
-- **Development workflow**: [docs/DEVELOPMENT_WORKFLOW.md](./docs/DEVELOPMENT_WORKFLOW.md)
-
----
-
-## 🛠️ Development Scripts
+## Scripts
 
 ```bash
-npm run dev              # Start development server (port 3003)
-npm run build            # Build for production
-npm run start            # Start production server
-npm run lint             # Lint code
-npm run verify           # Type-check + lint + build
-npm run deploy           # Deploy to Vercel (npx vercel --prod)
-npm run prisma:studio    # Open Prisma Studio
+npm run dev          # Dev server (port 3003)
+npm run build        # Production build
+npm run start        # Production server
+npm run lint         # Lint
+npm run verify       # Type-check + lint + build
+npm run deploy       # npx vercel --prod
 ```
 
 ---
 
-## 🎮 MTG Tournament Features
+## Tech
 
-### **Scoring System**
-- **Gold Objectives**: 5 points each
-- **Silver Objectives**: 2 points each
-- **Placement Bonuses**: Configurable per league
-- **Win/Loss Tracking**: Comprehensive statistics
-
-### **Tournament Formats**
-- **Commander**: Multiplayer format with legendary commanders
-- **Draft**: Build decks from booster packs
-- **Standard**: Modern Magic with latest sets
+- **Next.js 15** · **React 18** · **Prisma** (PostgreSQL) · **Tailwind**
 
 ---
 
-## 🏆 Players & Commanders
+**Other root `.md` files** (e.g. `COMPLETE_IMPROVEMENTS_SUMMARY`, `MTG_MAUI_LEAGUE_MASTER_DOCUMENTATION`) are legacy; see [docs/ARCHIVE.md](docs/ARCHIVE.md).
 
-**16 Pre-loaded Players:**
-- DragonMaster (The Ur-Dragon)
-- SpellSlinger (Jace, the Mind Sculptor)
-- CardShark (Thrasios, Triton Hero)
-- ManaBurn (Chandra, Torch of Defiance)
-- ArtifactLord (Urza, Lord High Artificer)
-- GraveDigger (Meren of Clan Nel Toth)
-- AngelWings (Kaalia of the Vast)
-- ZombieKing (Chainer, Dementia Master)
-- VampireLord (Edgar Markov)
-- FishKing (Aesi, Tyrant of Gyre Strait)
-- TreeBeard (Marath, Will of the Wild)
-- WizardHat (Mizzix of the Izmagnus)
-- JudgeHammer (Grand Arbiter Augustin IV)
-- KrakenLord (Kumena, Tyrant of Orazca)
-- GoblinKing (Krenko, Mob Boss)
-- MaskMaster (Estrid, the Masked)
-
----
-
-## 📦 Tech Stack
-
-- **Framework**: Next.js 15.3.8 (React 18.2.0)
-- **Database**: Prisma with SQLite/PostgreSQL
-- **Authentication**: NextAuth.js
-- **Styling**: Tailwind CSS
-- **UI Components**: Custom medieval-themed components
-- **Icons**: React Icons
-- **Forms**: React Hook Form
-- **Validation**: Zod
-
----
-
-## 🔒 Security
-
-- NextAuth.js for secure authentication
-- Role-based access control (RBAC)
-- Input validation with Zod
-- SQL injection protection via Prisma
-- Environment variable security
-
----
-
-## 📝 License
-
-© 2024 MTG Maui League. All rights reserved.
-
----
-
-## 🆘 Support
-
-- **Documentation**: See `/docs` folder
-- **Issues**: Report bugs via GitHub Issues
-- **Community**: Join our Discord server
-
----
-
-## 🎉 Ready to Deploy!
-
-Your MTG Maui League is tournament-ready and optimized for production deployment on Vercel, Netlify, or any hosting platform.
-
-**Get started**: `npm install && npm run dev` 🏰⚔️✨
+© MTG Maui League

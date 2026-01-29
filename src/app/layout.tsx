@@ -1,12 +1,10 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import dynamic from 'next/dynamic';
 import { Providers } from '@/components/providers';
 import { ModernHeader } from '@/components/layout/ModernHeader';
 import { ModernFooter } from '@/components/layout/ModernFooter';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { PageTransition } from '@/components/layout/PageTransition';
 import { PageProgress } from '@/components/ui/PageProgress';
 import { WebsiteStructuredData, OrganizationStructuredData } from '@/components/seo/StructuredData';
 import { WebVitals } from '@/components/analytics/WebVitals';
@@ -19,19 +17,6 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
 });
-
-const GoblinAssistant = dynamic(
-  () => import('@/components/ui/GoblinAssistant').then(mod => mod.GoblinAssistant),
-  {
-    loading: () => (
-      <div className="fixed bottom-6 right-6 z-50">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-600 to-green-800 shadow-2xl border-2 border-green-400 flex items-center justify-center">
-          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-        </div>
-      </div>
-    ),
-  },
-);
 
 export const metadata: Metadata = {
   title: 'MTG Maui League - Magic: The Gathering Tournament Platform',
@@ -119,10 +104,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ModernHeader />
               </header>
               <main id="main-content" className="flex-1 relative">
-                <PageTransition>{children}</PageTransition>
+                {children}
               </main>
               <ModernFooter />
-              <GoblinAssistant />
             </div>
           </Providers>
         </ErrorBoundary>

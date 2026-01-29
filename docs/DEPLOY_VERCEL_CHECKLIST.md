@@ -39,13 +39,13 @@ Ensure Project Settings → Build & Development match `vercel.json` or that over
    - **503** → Check `DATABASE_URL` and Vercel Postgres.
 
 2. **Wizards:**  
-   Open `/wizards`. If no league, click **Create League Tournament Records**. Then edit players, games, events.
+   Click **Edit** in the header (or open `/wizards`). If no league, click **Create League Tournament Records**. Then edit players, games, events.
 
-3. **Leaderboard:**  
-   Open `/leaderboard`. Use **Edit Scores** to change placements/points. Charts update when you refresh or when polling runs.
+3. **Home:**  
+   Scroll to **Leaderboard** and **Character Charts**; they use the same data. **News Feed** shows events and news from Wizards.
 
 ## 6. Live editing
 
-- **Tables:** Edit via **Wizards** (Players, Games, Events, etc.) and **Leaderboard → Edit Scores**.
-- **Charts:** Data comes from the same DB. Edit in Wizards → leaderboard/analytics charts update on refetch.
+- **Site:** One long-scroll **home** page (Hero, Leaderboard, Character Charts, News Feed). **Wizards** (`/wizards`) is the only other page; use **Edit** in the header to open it.
+- **Tables:** Edit via **Wizards** (Players, Games, Events, etc.). Leaderboard and Character Charts on the home page update when data changes.
 - All edits persist in Vercel Postgres.

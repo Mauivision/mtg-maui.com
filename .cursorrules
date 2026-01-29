@@ -1,12 +1,11 @@
 # MTG Maui League - Cursor IDE Rules
 
 ## Project Overview
-This is a Next.js-based Magic: The Gathering tournament league management system featuring:
-- Real-time leaderboard with 16 players
-- Editable tournament scores
-- Medieval fantasy theme
-- Admin dashboard for tournament management
-- Prisma database with SQLite/PostgreSQL support
+Next.js MTG tournament league app:
+- **Single long-scroll home** (`/`): Hero, Leaderboard, Character Charts, News Feed.
+- **Wizards** (`/wizards`): Edit panel — leagues, players, games, events, news. Link: **Edit** in header.
+- **PostgreSQL** via Prisma (`DATABASE_URL`). No SQLite.
+- **Offline** = local dev; **online** = Vercel. Same codebase. See `docs/DIRECTION_AND_CONTROLS.md`.
 
 ## Code Style & Conventions
 

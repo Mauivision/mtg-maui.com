@@ -28,6 +28,18 @@ const nextConfig = {
   async redirects() {
     return [
       { source: '/home', destination: '/', permanent: true },
+      { source: '/leaderboard', destination: '/#leaderboard', permanent: true },
+      { source: '/character-sheets', destination: '/#character-charts', permanent: true },
+      { source: '/bulletin', destination: '/#news-feed', permanent: true },
+      { source: '/admin', destination: '/wizards', permanent: true },
+      { source: '/analytics', destination: '/', permanent: true },
+      { source: '/commander', destination: '/', permanent: true },
+      { source: '/rules', destination: '/', permanent: true },
+      { source: '/coming-soon', destination: '/', permanent: true },
+      { source: '/auth/signin', destination: '/', permanent: true },
+      { source: '/auth/signup', destination: '/', permanent: true },
+      { source: '/players/:path*', destination: '/', permanent: true },
+      { source: '/tournaments/:path*', destination: '/', permanent: true },
     ];
   },
   webpack(config) {

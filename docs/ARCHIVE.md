@@ -1,0 +1,21 @@
+# Archived / legacy documentation
+
+**Current direction, pages, controls:** [DIRECTION_AND_CONTROLS.md](DIRECTION_AND_CONTROLS.md).
+
+---
+
+## Root-level (legacy)
+
+Kept for reference; **don’t use for current setup.**
+
+- `COMPLETE_IMPROVEMENTS_SUMMARY.md` · `LATEST_IMPROVEMENTS.md` · `IMPROVEMENTS_SUMMARY.md`
+- `MTG_MAUI_LEAGUE_MASTER_DOCUMENTATION.md` (long master doc; **direction** is in DIRECTION_AND_CONTROLS)
+- `ARENA_THEME_GUIDE.md` · `COMPLETE_IMAGE_REQUIREMENTS.md` · `IMAGE_FILES_SUMMARY.md` · `IMAGE_REQUIREMENTS_AND_PROMPTS.md`
+- `SITE_STRUCTURE_PARAMETERS.md` · `MCP_IMAGE_GENERATOR_SUMMARY.md` · `MCP_SETUP_GUIDE.md`
+
+---
+
+## docs/ (legacy)
+
+- `CLEANUP_SUMMARY.md` · `FIXES_APPLIED.md` · `IMPROVEMENTS_COMPLETE.md` · `PROJECT_STATUS_FIXED.md` · `PROJECT_ORGANIZATION.md`
+- `DEPLOY_NOW.md` · `VERCEL_QUICKSTART.md` · `DEPLOY_MTG_MAUI_TO_VERCEL.md` — **use [DEPLOY_VERCEL_CHECKLIST](DEPLOY_VERCEL_CHECKLIST.md)** instead.

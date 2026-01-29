@@ -39,7 +39,7 @@ export const WebsiteStructuredData = () => (
       },
       potentialAction: {
         '@type': 'SearchAction',
-        target: 'https://www.mtg-maui.com/leaderboard?search={search_term_string}',
+        target: 'https://www.mtg-maui.com/#leaderboard',
         'query-input': 'required name=search_term_string',
       },
     }}

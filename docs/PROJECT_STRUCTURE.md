@@ -1,8 +1,11 @@
-# 📁 MTG Maui League - Project Organization
+# 📁 MTG Maui League - Project Structure
 
-## 🎯 **Clean & Organized Structure**
+**Direction & controls:** See [DIRECTION_AND_CONTROLS.md](DIRECTION_AND_CONTROLS.md) for pages, offline vs online, and what you can edit.
 
-The project has been reorganized for better maintainability and deployment.
+## 🎯 **Layout**
+
+- **Single home** (`/`): long-scroll with Hero, Leaderboard, Character Charts, News Feed.
+- **Wizards** (`/wizards`): edit panel. Old routes redirect (e.g. `/leaderboard` → `/#leaderboard`, `/admin` → `/wizards`).
 
 ---
 
@@ -14,10 +17,9 @@ mtg-maui-league/
 ├── 📁 src/                          # Application source code
 │   ├── app/                         # Next.js app router
 │   │   ├── api/                     # API routes
-│   │   ├── admin/                   # Admin pages
-│   │   ├── leaderboard/             # Leaderboard pages
-│   │   ├── auth/                    # Authentication pages
-│   │   └── ...                      # Other pages
+│   │   ├── page.tsx                 # Single long-scroll home (Hero, Leaderboard, Character Charts, News)
+│   │   ├── wizards/                 # Edit panel (Wizards Control)
+│   │   └── ...                      # error, not-found, globals
 │   │
 │   ├── components/                  # React components
 │   │   ├── ui/                      # Base UI components
@@ -187,18 +189,15 @@ Your MTG Maui League project is now:
 - **`league`** – League, membership, and related types.
 
 ### **Leaderboard**
-- **Page:** `src/app/leaderboard/page.tsx`. Tabs: **Live Rankings** (RealtimeLeaderboard), **Detailed Stats** (table + filters), **Edit Scores** (EditableLeaderboardTable when a league is selected).
-- **APIs:**
-  - `GET /api/leaderboard/realtime` – Live rankings (optional `leagueId`, `gameType`, `limit`).
-  - `GET /api/leagues/[leagueId]/leaderboard` – Traditional leaderboard for a league (used by Edit Scores).
-  - `GET /api/leagues/status` – League status/stats (used by LeagueStatus component).
-- **Populate:** `POST /api/admin/populate` – Seeds 16 players + sample games. Placements JSON uses `place` and `points` (matches leagues leaderboard API).
+- **Home** (`/`): **Leaderboard** section uses `RealtimeLeaderboard` + `LeagueStatus`. **Character Charts** use `/api/leagues/[id]/character-sheets`. **News Feed** uses `/api/news` and `/api/events`.
+- **APIs:** `GET /api/leaderboard/realtime`, `GET /api/leagues/[leagueId]/leaderboard`, `GET /api/leagues/status`, `GET /api/leagues/[leagueId]/character-sheets`, `GET /api/news`, `GET /api/events`.
+- **Populate:** `POST /api/admin/populate` (from Wizards) – seeds league, 16 players, sample games.
 
 ### **Admin dashboard**
 - **`GET /api/admin/dashboard`** – Stats (users, games, leagues, events, db size, uptime). Db size: N/A for Postgres; was SQLite file size when using `dev.db`.
 - **`GET /api/admin/dashboard/activity`** – Recent users, games, leagues, events. Uses `logger` for errors.
 
-### **Page content & app layout (control of other pages’ information)**
+### **Page content & layout** (see [DIRECTION_AND_CONTROLS](DIRECTION_AND_CONTROLS.md))
 - **`PageContent`** (Prisma) – Per-path editable content: `path`, `title`, `description`, `config` (JSON). Seeded for `/`, `/leaderboard`, `/bulletin`, `/rules`, etc.
 - **`GET /api/pages`** – Public API: returns all page content for the frontend. **`GET/PUT /api/admin/pages`** – Admin CRUD for page content.
 - **`PageContentContext`** – Fetches `/api/pages`, exposes `getPage(path)`, `getConfig(path)`, `refresh()`. Used by layout (header/footer), home, leaderboard, bulletin.
@@ -206,22 +205,20 @@ Your MTG Maui League project is now:
 - **Wizards Control (Chaos League Tracker) → Page Content tab** – List pages, edit `title`, `description`, and `config` (JSON). `/admin` redirects to `/wizards`. Config can include `navLabel`, `heroSubtitle`, `heroHeadline`, `heroTagline`, `footerBlurb`, `exploreTitle`, `exploreSubtitle`, `features` (home), etc. Saving updates DB and calls `refresh()` so the app reflects changes immediately.
 - **Pages using page content:** Home (hero, features, explore), Leaderboard (title, description), Bulletin (title, description), Header (nav labels), Footer (blurb, quick-link labels).
 
-### **Editable data (tournaments, games, players, points, commanders)**
-- **Where:** **Wizards Control** ([`/wizards`](http://localhost:3003/wizards)) and **Leaderboard → Edit Scores**.
-- **What:** Players (name, email, commander), games (players, placements, points), events, news, drafts, scoring rules, page content, leaderboard (points/wins).
-- **How:** See **[docs/EDITABLE_DATA_GUIDE.md](EDITABLE_DATA_GUIDE.md)** for step‑by‑step tasks, API reference, and data flow.
+### **Editable data**
+- **Where:** **Wizards** (`/wizards`). Home shows Leaderboard, Character Charts, News Feed from the same data.
+- **What:** Leagues, players, games, events, news, drafts, scoring rules, page content. See **[EDITABLE_DATA_GUIDE.md](EDITABLE_DATA_GUIDE.md)**.
 
 ### **Components**
-- **`LeagueStatus`** – Fetches `/api/leagues/status`, shows league stats.
-- **`EditableLeaderboardTable`** – Fetches league leaderboard, double‑click to edit, save via `/api/admin/leaderboard/update`.
-- **`RealtimeLeaderboard`** – Fetches realtime API, shows live rankings + activity.
+- **`LeagueStatus`** – `/api/leagues/status`; used in home Leaderboard section.
+- **`RealtimeLeaderboard`** – `/api/leaderboard/realtime`; used in home Leaderboard section.
+- **`EditableLeaderboardTable`** – Used in Wizards (leaderboard tab); save via `/api/admin/leaderboard/update`.
 
-### **After Restructure / Rebuild**
-1. Run `npm install` (use `--legacy-peer-deps` if needed).
-2. Run `npx prisma generate`.
-3. Run `npm run build` to verify.
-4. Populate sample data: `POST /api/admin/populate` (e.g. from a simple HTML page or Admin quick action).
-5. Ensure a league exists and is selected for **Edit Scores** to work.
+### **After clone / rebuild**
+1. `npm install` · `npx prisma generate` · `npm run build`.
+2. Set `DATABASE_URL` (Postgres). See [VERCEL_POSTGRES_SETUP.md](VERCEL_POSTGRES_SETUP.md).
+3. `npx prisma migrate dev` · `npx prisma db seed` (optional).
+4. `npm run dev` → open `/`, then **Edit** → Wizards. Use **Create League Tournament Records** if no league.
 
 ### **Database**
 - **PostgreSQL** via `DATABASE_URL`. See [Vercel Postgres Setup](VERCEL_POSTGRES_SETUP.md). Admin dashboard `dbSize` shows N/A for Postgres.
