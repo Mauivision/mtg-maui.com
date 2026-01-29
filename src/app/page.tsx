@@ -1,74 +1,22 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { FaTrophy, FaUsers, FaCalendar, FaDice, FaNewspaper, FaBook } from 'react-icons/fa';
 import { useLeague } from '@/contexts/LeagueContext';
+import { useHomeData, useCharacterSheets } from '@/hooks';
 import { RealtimeLeaderboard } from '@/components/leaderboard/RealtimeLeaderboard';
 import { LeagueStatus } from '@/components/league/LeagueStatus';
 
 const sectionClass = 'scroll-mt-20 py-16 md:py-24 border-b border-slate-800/60';
 
 export default function HomePage() {
-  const { currentLeague, loading: leagueLoading } = useLeague();
-  const [stats, setStats] = useState<Record<string, number>>({ totalUsers: 0, totalLeagues: 0, totalGames: 0 });
-  const [news, setNews] = useState<Array<{ id: string; title: string; excerpt?: string; category: string; publishedAt: string }>>([]);
-  const [events, setEvents] = useState<Array<{ id: string; title: string; date: string; location?: string }>>([]);
-  const [players, setPlayers] = useState<any[]>([]);
-  const [loadingNews, setLoadingNews] = useState(true);
-  const [loadingChars, setLoadingChars] = useState(true);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [sRes, nRes, eRes] = await Promise.all([
-          fetch('/api/stats'),
-          fetch('/api/news'),
-          fetch('/api/events'),
-        ]);
-        if (sRes.ok) {
-          const d = await sRes.json();
-          setStats({ totalUsers: d.totalUsers ?? 0, totalLeagues: d.totalLeagues ?? 0, totalGames: d.totalGames ?? 0 });
-        }
-        if (nRes.ok) {
-          const d = await nRes.json();
-          setNews(Array.isArray(d.news) ? d.news : []);
-        }
-        if (eRes.ok) {
-          const d = await eRes.json();
-          setEvents(Array.isArray(d.events) ? d.events : []);
-        }
-      } catch {
-        /* ignore */
-      } finally {
-        setLoadingNews(false);
-      }
-    };
-    load();
-  }, []);
-
-  const fetchCharacterSheets = useCallback(async () => {
-    if (!currentLeague) return;
-    setLoadingChars(true);
-    try {
-      const r = await fetch(`/api/leagues/${currentLeague.id}/character-sheets`);
-      if (r.ok) {
-        const d = await r.json();
-        setPlayers(d.players || []);
-      } else setPlayers([]);
-    } catch {
-      setPlayers([]);
-    } finally {
-      setLoadingChars(false);
-    }
-  }, [currentLeague]);
-
-  useEffect(() => {
-    if (currentLeague && !leagueLoading) fetchCharacterSheets();
-    else if (!leagueLoading) setLoadingChars(false);
-  }, [currentLeague, leagueLoading, fetchCharacterSheets]);
+  const { currentLeague, leagues, setCurrentLeague, loading: leagueLoading } = useLeague();
+  const { stats, news, events, loading: loadingNews } = useHomeData();
+  const { players, loading: loadingChars } = useCharacterSheets(currentLeague?.id ?? null);
+  const charsLoading = loadingChars || leagueLoading;
 
   return (
     <div className="min-h-screen">
@@ -133,14 +81,16 @@ export default function HomePage() {
             <FaDice className="w-7 h-7 text-amber-400" />
             <h2 className="text-2xl md:text-3xl font-bold text-white">Character Charts</h2>
           </div>
-          {loadingChars || leagueLoading ? (
+          {charsLoading ? (
             <div className="flex justify-center py-12">
               <LoadingSpinner />
             </div>
           ) : !currentLeague ? (
             <Card className="bg-slate-800/50 border-slate-700">
               <CardContent className="p-8 text-center text-slate-400">
-                No league yet. Create one via Wizards (Edit) to see character charts.
+                {leagues.length > 0
+                  ? 'Select a league above to view character charts.'
+                  : 'No league yet. Create one via Wizards (Edit) to see character charts.'}
               </CardContent>
             </Card>
           ) : players.length === 0 ? (

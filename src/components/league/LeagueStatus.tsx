@@ -47,9 +47,19 @@ interface LeagueStatusProps {
   leagueId?: string | null;
   /** Refresh interval in ms; 0 to disable. Default 30_000 */
   refreshInterval?: number;
+  /** Compact layout (e.g. when used above full leaderboard). Fewer stats, no Top competitors. */
+  compact?: boolean;
+  /** Show Top competitors block. Default true; set false when full leaderboard is shown below. */
+  showTopPlayers?: boolean;
 }
 
-export function LeagueStatus({ leagueId, refreshInterval = 30_000 }: LeagueStatusProps) {
+export function LeagueStatus({
+  leagueId,
+  refreshInterval = 30_000,
+  compact = false,
+  showTopPlayers = true,
+}: LeagueStatusProps) {
+  const hideTopPlayers = compact || !showTopPlayers;
   const [data, setData] = useState<LeagueStatusData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -114,57 +124,62 @@ export function LeagueStatus({ leagueId, refreshInterval = 30_000 }: LeagueStatu
   }
 
   const { league, stats, topPlayers } = data;
+  const statCls = compact
+    ? 'flex items-center gap-2 p-2 rounded bg-slate-700/40'
+    : 'flex items-center gap-3 p-3 rounded bg-slate-700/40';
 
   return (
     <Card className="bg-slate-800/50 border-slate-700">
-      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <CardTitle className="text-white flex items-center gap-3">
+      <CardHeader className={compact ? 'pb-2' : 'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'}>
+        <CardTitle className="text-white flex items-center gap-3 flex-wrap">
           <span className="text-2xl">🏰</span>
           <div>
             <div className="text-lg font-bold">{league.name}</div>
-            <div className="text-sm text-slate-300">
-              {league.description ?? 'Active Magic: The Gathering league'}
-            </div>
+            {!compact && (
+              <div className="text-sm text-slate-300">
+                {league.description ?? 'Active Magic: The Gathering league'}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="primary" animated>
+              {(league.status ?? 'active').toUpperCase()}
+            </Badge>
+            {league.format && <Badge variant="secondary">{league.format}</Badge>}
           </div>
         </CardTitle>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="primary" animated>
-            {(league.status ?? 'active').toUpperCase()}
-          </Badge>
-          {league.format && <Badge variant="secondary">{league.format}</Badge>}
-        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div className="flex items-center gap-3 p-3 rounded bg-slate-700/40">
+      <CardContent className={compact ? 'space-y-2 pt-0' : 'space-y-4'}>
+        <div className={compact ? 'flex flex-wrap gap-4' : 'grid grid-cols-2 sm:grid-cols-5 gap-3'}>
+          <div className={statCls}>
             <FaUsers className="text-amber-400 w-5 h-5 shrink-0" />
             <div>
               <div className="text-lg font-bold text-white">{stats.totalPlayers}</div>
               <div className="text-xs text-slate-300">Players</div>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded bg-slate-700/40">
+          <div className={statCls}>
             <FaGamepad className="text-green-400 w-5 h-5 shrink-0" />
             <div>
               <div className="text-lg font-bold text-white">{stats.totalGames}</div>
               <div className="text-xs text-slate-300">Total Games</div>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded bg-slate-700/40 border border-green-600/30">
+          <div className={`${statCls} border border-green-600/30`}>
             <FaCheckCircle className="text-green-400 w-5 h-5 shrink-0" />
             <div>
               <div className="text-lg font-bold text-green-400">{stats.completedGames}</div>
               <div className="text-xs text-slate-300">Completed</div>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded bg-slate-700/40 border border-orange-600/30">
+          <div className={`${statCls} border border-orange-600/30`}>
             <FaSpinner className="text-orange-400 w-5 h-5 shrink-0 animate-spin" />
             <div>
               <div className="text-lg font-bold text-orange-400">{stats.activeGames}</div>
               <div className="text-xs text-slate-300">In Progress</div>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded bg-slate-700/40">
+          <div className={statCls}>
             <FaClock className="text-blue-400 w-5 h-5 shrink-0" />
             <div>
               <div className="text-lg font-bold text-white">{stats.upcomingGames}</div>
@@ -173,7 +188,7 @@ export function LeagueStatus({ leagueId, refreshInterval = 30_000 }: LeagueStatu
           </div>
         </div>
 
-        {topPlayers.length > 0 && (
+        {hideTopPlayers ? null : topPlayers.length > 0 ? (
           <div className="p-4 rounded-lg bg-gradient-to-r from-amber-900/20 to-orange-900/20 border border-amber-600/30">
             <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
               <FaTrophy className="w-4 h-4 text-amber-400" />
@@ -191,7 +206,7 @@ export function LeagueStatus({ leagueId, refreshInterval = 30_000 }: LeagueStatu
               ))}
             </div>
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );
