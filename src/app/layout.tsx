@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { Providers } from '@/components/providers';
 import { ModernHeader } from '@/components/layout/ModernHeader';
 import { ModernFooter } from '@/components/layout/ModernFooter';
@@ -114,6 +115,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OrganizationStructuredData />
         <WebVitals />
         <ErrorReporter />
+        <Analytics />
       </body>
     </html>
   );
