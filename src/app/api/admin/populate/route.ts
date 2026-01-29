@@ -3,11 +3,11 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
+import { requireAdminOrSimple } from '@/lib/auth-helpers';
 
 export async function POST(request: NextRequest) {
   try {
-    // Temporarily remove admin check for database population
-    // await requireAdmin();
+    await requireAdminOrSimple(request);
     logger.info('🌱 Populating MTG Maui League with 16 players...');
 
     // Get or create the default league
@@ -121,6 +121,9 @@ export async function POST(request: NextRequest) {
       message: 'Database populated with 16 players and sample games',
     });
   } catch (error) {
+    if (error instanceof Error && (error.message?.includes('Unauthorized') || error.message?.includes('Forbidden'))) {
+      return NextResponse.json({ error: 'Unauthorized: Admin access required' }, { status: 401 });
+    }
     logger.error('Error populating database', error);
     return handleApiError(error);
   }

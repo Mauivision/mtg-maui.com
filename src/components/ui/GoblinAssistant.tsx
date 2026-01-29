@@ -133,11 +133,6 @@ export const GoblinAssistant: React.FC = () => {
           action: () => (window.location.href = '/leaderboard'),
           icon: <FaTrophy className="w-4 h-4" />,
         },
-        {
-          label: 'Join a League',
-          action: () => (window.location.href = '/auth/signup'),
-          icon: <FaUsers className="w-4 h-4" />,
-        },
       ],
     };
     setMessages(prev => [...prev, tournamentMessage]);

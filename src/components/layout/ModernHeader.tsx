@@ -15,7 +15,6 @@ import {
   FaCrown,
   FaBook,
 } from 'react-icons/fa';
-import { Button } from '@/components/ui/Button';
 import { AdventureLink } from '@/components/layout/AdventureLink';
 import { usePageContent } from '@/contexts/PageContentContext';
 
@@ -79,19 +78,7 @@ export const ModernHeader: React.FC = () => {
             })}
           </nav>
 
-          {/* Auth Actions */}
-          <div className="flex items-center space-x-3">
-            <Link href="/auth/signin">
-              <Button variant="ghost" size="sm" className="text-slate-300 hover:text-amber-300 hover:bg-slate-800/80">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/leaderboard">
-              <Button size="sm" ripple className="bg-gradient-to-r from-amber-600 to-amber-700 text-white border border-amber-500/30 hover:from-amber-500 hover:to-amber-600">
-                Join League
-              </Button>
-            </Link>
-          </div>
+          {/* Auth / Join League removed; see docs/FUTURE_FEATURES.md */}
         </div>
       </div>
 

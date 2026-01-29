@@ -45,7 +45,6 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      // Try to fetch leagues from API
       const response = await fetch('/api/leagues');
 
       if (response.ok) {
@@ -53,66 +52,28 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
         const fetchedLeagues = data.leagues || [];
         setLeagues(fetchedLeagues);
 
-        // If no current league is set, use the first active league or create a default
         if (!currentLeague && fetchedLeagues.length > 0) {
           const activeLeague =
             fetchedLeagues.find((l: League) => l.status === 'active') || fetchedLeagues[0];
           setCurrentLeagueState(activeLeague);
         }
+        if (fetchedLeagues.length === 0) {
+          setCurrentLeagueState(null);
+        }
       } else {
-        // If no leagues exist, create a default one
-        await createDefaultLeague();
+        setLeagues([]);
+        setCurrentLeagueState(null);
+        setError('Failed to load leagues');
       }
     } catch (err) {
       logger.error('Error fetching leagues', err);
-      // Try to create default league on error
-      await createDefaultLeague();
+      setLeagues([]);
+      setCurrentLeagueState(null);
+      setError('Failed to load leagues');
     } finally {
       setLoading(false);
     }
   }, [currentLeague]);
-
-  const createDefaultLeague = async () => {
-    try {
-      const defaultLeague: League = {
-        id: 'default-league',
-        name: 'MTG Maui League',
-        description: 'Default league for MTG Maui',
-        format: 'commander',
-        status: 'active',
-      };
-
-      // Try to create via API (name, format, startDate required)
-      try {
-        const response = await fetch('/api/leagues', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: 'MTG Maui League',
-            description: 'Default league for MTG Maui',
-            format: 'commander',
-            startDate: new Date().toISOString().split('T')[0],
-            maxPlayers: 50,
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setLeagues([data.league]);
-          setCurrentLeagueState(data.league);
-        } else {
-          setLeagues([defaultLeague]);
-          setCurrentLeagueState(defaultLeague);
-        }
-      } catch {
-        setLeagues([defaultLeague]);
-        setCurrentLeagueState(defaultLeague);
-      }
-    } catch (err) {
-      logger.error('Error creating default league', err);
-      setError('Failed to initialize league');
-    }
-  };
 
   const setCurrentLeague = (league: League | null) => {
     setCurrentLeagueState(league);

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
+import { requireAdminOrSimple } from '@/lib/auth-helpers';
 
 export async function GET() {
   try {
@@ -66,6 +67,9 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json({ league }, { status: 201 });
   } catch (error) {
+    if (error instanceof Error && (error.message?.includes('Unauthorized') || error.message?.includes('Forbidden'))) {
+      return NextResponse.json({ error: 'Unauthorized: Admin access required' }, { status: 401 });
+    }
     logger.error('Error creating league', error);
     return handleApiError(error);
   }

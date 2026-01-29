@@ -189,12 +189,30 @@ export default function WizardsControlPage() {
     maxParticipants: 16,
   });
 
-  // Skip auth check for now - allow direct access to control panel
+  const loginEnabled = process.env.NEXT_PUBLIC_WIZARDS_LOGIN === 'true';
+
   useEffect(() => {
-    // Temporarily bypass authentication for development
-    setIsAdmin(true);
-    setCheckingAuth(false);
-  }, []);
+    if (!loginEnabled) {
+      setIsAdmin(true);
+      setCheckingAuth(false);
+      return;
+    }
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/auth/check-admin', { credentials: 'include' });
+        const data = await res.json().catch(() => ({}));
+        if (!mounted) return;
+        if (res.ok && data.isAdmin) setIsAdmin(true);
+        else setIsAdmin(false);
+      } catch {
+        if (mounted) setIsAdmin(false);
+      } finally {
+        if (mounted) setCheckingAuth(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [loginEnabled]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -305,7 +323,8 @@ export default function WizardsControlPage() {
   const fetchPairings = useCallback(async () => {
     if (!currentLeague) return;
     const response = await fetch(
-      `/api/admin/pairings?leagueId=${currentLeague.id}&gameType=commander`
+      `/api/admin/pairings?leagueId=${currentLeague.id}&gameType=commander`,
+      { credentials: 'include' }
     );
     if (response.ok) {
       const data = await response.json();
@@ -416,6 +435,7 @@ export default function WizardsControlPage() {
       const response = await fetch('/api/admin/players', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           leagueId: currentLeague.id,
           name: playerForm.name,
@@ -465,6 +485,7 @@ export default function WizardsControlPage() {
     try {
       const response = await fetch(`/api/admin/players?id=${playerId}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -570,6 +591,7 @@ export default function WizardsControlPage() {
     try {
       const response = await fetch(`/api/admin/events?id=${eventId}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -688,6 +710,7 @@ export default function WizardsControlPage() {
       const response = await fetch('/api/admin/pairings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           leagueId: currentLeague.id,
           gameType: pairingForm.gameType,
@@ -880,6 +903,64 @@ export default function WizardsControlPage() {
     }
   }, [refreshLeagues]);
 
+  if (loginEnabled && checkingAuth) {
+    return (
+      <div className="min-h-screen py-8 bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner />
+          <p className="text-slate-400 mt-4">Checking admin access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loginEnabled && !isAdmin) {
+    return (
+      <div className="min-h-screen py-8 bg-slate-900 flex items-center justify-center px-4">
+        <Card className="bg-slate-800 border-slate-700 max-w-md w-full">
+          <CardHeader>
+            <CardTitle className="text-white">Admin / Wizards Login</CardTitle>
+            <CardDescription className="text-slate-400">
+              Sign in to create leagues, events, and manage the Chaos League Tracker. Use Admin / 12345 for testing.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="admin-user" className="text-slate-300">Username</Label>
+                <Input
+                  id="admin-user"
+                  type="text"
+                  value={loginUsername}
+                  onChange={e => setLoginUsername(e.target.value)}
+                  placeholder="Admin"
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                  autoComplete="username"
+                />
+              </div>
+              <div>
+                <Label htmlFor="admin-pass" className="text-slate-300">Password</Label>
+                <Input
+                  id="admin-pass"
+                  type="password"
+                  value={loginPassword}
+                  onChange={e => setLoginPassword(e.target.value)}
+                  placeholder="••••••"
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                  autoComplete="current-password"
+                />
+              </div>
+              {loginError && <p className="text-sm text-red-400">{loginError}</p>}
+              <Button type="submit" disabled={isLoggingIn} className="w-full">
+                {isLoggingIn ? <FaSpinner className="w-4 h-4 animate-spin mx-auto" /> : 'Sign in'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (leagueLoading || !currentLeague) {
     return (
       <div className="min-h-screen py-8 bg-slate-900">
@@ -901,6 +982,12 @@ export default function WizardsControlPage() {
                 )}
                 Create League Tournament Records
               </Button>
+              {loginEnabled && (
+                <Button variant="ghost" onClick={handleLogout} className="flex items-center gap-2 text-slate-400 hover:text-white mt-2">
+                  <FaSignOutAlt className="w-4 h-4" />
+                  Log out
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -926,10 +1013,12 @@ export default function WizardsControlPage() {
               Edit players, scores, games, events, news. Changes appear on Leaderboard, Home, and Bulletin.
             </p>
           </div>
-          <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2 shrink-0">
-            <FaSignOutAlt className="w-4 h-4" />
-            Log out
-          </Button>
+          {loginEnabled && (
+            <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2 shrink-0">
+              <FaSignOutAlt className="w-4 h-4" />
+              Log out
+            </Button>
+          )}
         </div>
 
         {/* Tab Navigation */}

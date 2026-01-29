@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { siteImages } from '@/lib/site-images';
 import { Button } from '@/components/ui/Button';
@@ -310,15 +311,14 @@ export default function ComingSoonPage() {
                 progress on the leaderboard, and connect with the community.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  variant="outline"
-                  className="border-2 border-amber-400 text-amber-300 hover:bg-amber-500/10"
-                >
-                  View Leaderboard
-                </Button>
-                <Button className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 border-amber-500/30">
-                  Join League
-                </Button>
+                <Link href="/leaderboard">
+                  <Button
+                    variant="outline"
+                    className="border-2 border-amber-400 text-amber-300 hover:bg-amber-500/10"
+                  >
+                    View Leaderboard
+                  </Button>
+                </Link>
               </div>
             </div>
           </section>

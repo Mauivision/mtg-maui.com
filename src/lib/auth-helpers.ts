@@ -123,13 +123,17 @@ const SIMPLE_ADMIN_USER = {
 /**
  * Require admin access via either NextAuth session or simple-admin cookie.
  * Use this in admin API routes. Pass the request so the cookie can be checked.
+ * When SKIP_ADMIN_AUTH=true (e.g. dev / no-login mode), always allows access.
+ * See docs/FUTURE_FEATURES.md to re-enable login.
  */
 export async function requireAdminOrSimple(request: NextRequest) {
+  if (process.env.SKIP_ADMIN_AUTH === 'true') {
+    return SIMPLE_ADMIN_USER;
+  }
   const cookie = request.cookies.get(SIMPLE_ADMIN_COOKIE_NAME)?.value;
   if (cookie && verifySimpleAdminCookie(cookie)) {
     return SIMPLE_ADMIN_USER;
   }
-
   return requireAdmin();
 }
 

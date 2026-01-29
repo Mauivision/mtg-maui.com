@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { useLeague } from '@/contexts/LeagueContext';
-import toast from 'react-hot-toast';
 import {
   FaUsers,
   FaGamepad,
@@ -15,8 +13,8 @@ import {
   FaTrophy,
   FaCheckCircle,
   FaSpinner,
-  FaPlusCircle,
 } from 'react-icons/fa';
+import Link from 'next/link';
 
 interface LeagueStatusStats {
   totalPlayers: number;
@@ -53,11 +51,9 @@ interface LeagueStatusProps {
 }
 
 export function LeagueStatus({ leagueId, refreshInterval = 30_000 }: LeagueStatusProps) {
-  const { refreshLeagues } = useLeague();
   const [data, setData] = useState<LeagueStatusData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
 
   const fetchStatus = useCallback(async () => {
     setError(null);
@@ -79,28 +75,6 @@ export function LeagueStatus({ leagueId, refreshInterval = 30_000 }: LeagueStatu
       setLoading(false);
     }
   }, [leagueId]);
-
-  const handleCreateRecords = useCallback(async () => {
-    setCreating(true);
-    try {
-      const res = await fetch('/api/admin/populate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.error || `HTTP ${res.status}`);
-      }
-      toast.success('League, players, and sample games created.');
-      await refreshLeagues();
-      await fetchStatus();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to create records');
-    } finally {
-      setCreating(false);
-    }
-  }, [refreshLeagues, fetchStatus]);
 
   useEffect(() => {
     fetchStatus();
@@ -128,18 +102,13 @@ export function LeagueStatus({ leagueId, refreshInterval = 30_000 }: LeagueStatu
             <FaExclamationTriangle className="text-amber-400 shrink-0" />
             <span>{error ?? 'No league found'}</span>
           </div>
-          <Button
-            onClick={handleCreateRecords}
-            disabled={creating}
-            className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10 inline-flex items-center gap-2"
-          >
-            {creating ? (
-              <FaSpinner className="w-4 h-4 animate-spin" />
-            ) : (
-              <FaPlusCircle className="w-4 h-4" />
-            )}
-            Create League Tournament Records
-          </Button>
+          <p className="text-slate-400 text-sm">
+            Only admins can create leagues and events. Sign in at{' '}
+            <Link href="/wizards" className="text-amber-400 hover:underline">
+              /wizards
+            </Link>{' '}
+            (Admin / 12345) to create league tournament records.
+          </p>
         </CardContent>
       </Card>
     );
