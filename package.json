@@ -4,8 +4,8 @@
   "description": "MTG Maui League - Magic: The Gathering tournament leaderboard (chart + table), character charts, and Wizards edit panel. Next.js, Prisma, Vercel.",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3003",
-    "dev:alt": "next dev -p 3004",
+    "dev": "next dev -p 3004",
+    "dev:alt": "next dev -p 3003",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

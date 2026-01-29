@@ -37,7 +37,7 @@ This **drops all data**, reapplies migrations, and runs the seed (admin + sample
    npm run dev
    ```
 
-2. Open **http://localhost:3003/wizards**.
+2. Open **http://localhost:3004/wizards**.
 3. Click **“Create League Tournament Records”** (or the button that calls the populate API).
 
 That creates the default league, 16 players with commanders, and sample games with scores. The **home leaderboard** will show them sorted by points (top player at top).
@@ -84,7 +84,7 @@ npx prisma db seed
 
 ### 3. Add 16 players and games
 
-- **Locally:** Run `npm run dev`, open http://localhost:3003/wizards, click **“Create League Tournament Records”**.
+- **Locally:** Run `npm run dev`, open http://localhost:3004/wizards, click **“Create League Tournament Records”**.
 - **On Vercel:** Deploy the app (push to `main` or redeploy). Open **https://your-app.vercel.app/wizards** and click **“Create League Tournament Records”**.
 
 The leaderboard will show 16 players with scores, top player at top.

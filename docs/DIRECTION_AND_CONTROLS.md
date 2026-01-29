@@ -37,7 +37,7 @@
 
 | | **Offline (local)** | **Online (Vercel)** |
 |--|---------------------|---------------------|
-| **Run** | `npm run dev` (e.g. `localhost:3003`) | Deploy from Git → Vercel |
+| **Run** | `npm run dev` (e.g. `localhost:3004`) | Deploy from Git → Vercel |
 | **Database** | PostgreSQL via `DATABASE_URL` in `.env` | Vercel Postgres, `DATABASE_URL` in project env |
 | **Edits** | Wizards → DB; home sections update on refresh/poll | Same |
 | **Auth** | `SKIP_ADMIN_AUTH=true` → no login; Wizards open | Same for no-login mode |

@@ -224,5 +224,5 @@ Your MTG Maui League project is now:
 - **PostgreSQL** via `DATABASE_URL`. See [Vercel Postgres Setup](VERCEL_POSTGRES_SETUP.md). Admin dashboard `dbSize` shows N/A for Postgres.
 
 ### **Run**
-- `npm run dev` → dev server on port 3003. If `EADDRINUSE`, stop the process using 3003 or run `next dev -p 3004`.
+- `npm run dev` → dev server on port 3004. If `EADDRINUSE`, stop the process using 3004 or run `npm run dev:alt` (port 3003).
 - `npm run build` && `npm start` → production run.

@@ -26,7 +26,7 @@ This guide explains **where** and **how** to add or edit league data (players, g
 ## How to Access the Editable UI
 
 1. **Wizards Control**  
-   - Open **[/wizards](http://localhost:3003/wizards)** (or your app URL + `/wizards`).  
+   - Open **[/wizards](http://localhost:3004/wizards)** (or your app URL + `/wizards`).  
    - If you see “No League Available,” use **Create League Tournament Records** to create the default league, players, and sample games.  
    - Use the tabs to manage **Players**, **Games**, **Events**, **News**, **Drafts**, **Leaderboard**, **Scoring Rules**, **Page Content**, etc.
 

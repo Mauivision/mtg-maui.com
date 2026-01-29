@@ -24,10 +24,10 @@ npm run dev
 
 ### Daily Development
 ```bash
-# Start dev server (port 3003)
+# Start dev server (port 3004)
 npm run dev
 
-# If port 3003 is in use: npm run dev:alt  (uses 3004)
+# If port 3004 is in use: npm run dev:alt  (uses 3003)
 
 # Type check in watch mode
 npm run type-check:watch

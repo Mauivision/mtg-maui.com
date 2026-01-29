@@ -24,7 +24,7 @@ npx prisma db seed    # optional
 npm run dev
 ```
 
-Open **http://localhost:3003**. Use **Edit** in the header to open Wizards.
+Open **http://localhost:3004**. Use **Edit** in the header to open Wizards.
 
 ---
 
@@ -66,8 +66,8 @@ Full checklist: [docs/DEPLOY_VERCEL_CHECKLIST.md](docs/DEPLOY_VERCEL_CHECKLIST.m
 ## Scripts
 
 ```bash
-npm run dev          # Dev server (port 3003)
-npm run dev:alt      # Dev on 3004 if 3003 in use
+npm run dev          # Dev server (port 3004)
+npm run dev:alt      # Dev on 3003 if 3004 in use
 npm run db:reset     # Reset DB (migrate reset --force), then use /wizards → Create League Tournament Records
 npm run build        # Production build
 npm run start        # Production server
