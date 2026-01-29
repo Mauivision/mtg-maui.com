@@ -7,6 +7,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Input } from '@/components/ui/Input';
 import { FaSave, FaUndo, FaPlus, FaTrash, FaExclamationTriangle, FaSearch, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { logger } from '@/lib/logger';
 import type { EditableLeaderboardEntry } from '@/types/leaderboard';
 
 // Alias for cleaner code
@@ -181,7 +182,7 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
       setOriginalEntries(JSON.parse(JSON.stringify(fetchedEntries)));
       setHasChanges(false);
     } catch (error) {
-      console.error('Error fetching leaderboard:', error);
+      logger.error('Error fetching leaderboard', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch leaderboard';
       toast.error(errorMessage);
     } finally {
@@ -277,9 +278,9 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
             return {
               playerId: entry.playerId,
               totalPoints: entry.totalPoints,
-              gamesPlayed: entry.gamesPlayed,
               wins: entry.wins,
               averagePlacement: entry.averagePlacement,
+              gamesPlayed: entry.gamesPlayed,
             };
           }
           return null;
@@ -308,7 +309,7 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
       toast.success(result.message || `Successfully updated ${changes.length} player(s)`);
       await fetchLeaderboard(); // Refresh to get latest data
     } catch (error) {
-      console.error('Error saving leaderboard:', error);
+      logger.error('Error saving leaderboard', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to save changes';
       toast.error(errorMessage);
     } finally {
@@ -443,12 +444,9 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
         <CardHeader>
           <CardTitle className="text-white">Leaderboard Editor</CardTitle>
           <p className="text-gray-400 text-sm mt-2">
-            <span className="text-green-400 font-semibold">Easy Editing:</span> Click or double-click any cell to edit. 
-            Use ↑/↓ arrow keys or hover buttons to adjust numbers. Press Enter to save, Esc to cancel.
-            <span className="text-yellow-400">
-              {' '}
-              *Games played is calculated from actual games and cannot be edited directly.
-            </span>
+            <span className="text-green-400 font-semibold">Easy editing:</span> Click or double-click any cell to edit.
+            Use ↑/↓ arrow keys or the hover ± buttons to adjust numbers. Press Enter to apply, Esc to cancel.
+            Save updates the home leaderboard. <span className="text-yellow-400">*Games</span> is from recorded games and read-only.
           </p>
         </CardHeader>
         <CardContent className="p-0">

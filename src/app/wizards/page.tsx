@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -33,6 +34,7 @@ import {
   FaFileAlt,
   FaPlusCircle,
   FaSpinner,
+  FaExternalLinkAlt,
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { siteImages } from '@/lib/site-images';
@@ -115,7 +117,7 @@ interface Pairing {
 }
 
 export default function WizardsControlPage() {
-  const { currentLeague, loading: leagueLoading, refreshLeagues } = useLeague();
+  const { currentLeague, leagues, setCurrentLeague, loading: leagueLoading, refreshLeagues } = useLeague();
   const { refresh: refreshPageContent } = usePageContent();
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [loading, setLoading] = useState(true);
@@ -1013,12 +1015,34 @@ export default function WizardsControlPage() {
               Edit players, scores, games, events, news. Changes appear on Leaderboard, Home, and Bulletin.
             </p>
           </div>
-          {loginEnabled && (
-            <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2 shrink-0">
-              <FaSignOutAlt className="w-4 h-4" />
-              Log out
-            </Button>
-          )}
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 shrink-0">
+            {leagues.length > 1 && (
+              <label className="flex items-center gap-2 text-sm">
+                <span className="text-slate-400">League</span>
+                <select
+                  value={currentLeague?.id ?? ''}
+                  onChange={(e) => {
+                    const id = e.target.value;
+                    const L = id ? leagues.find((l) => l.id === id) ?? null : null;
+                    setCurrentLeague(L);
+                  }}
+                  className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                >
+                  {leagues.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {loginEnabled && (
+              <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2">
+                <FaSignOutAlt className="w-4 h-4" />
+                Log out
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -1519,13 +1543,20 @@ export default function WizardsControlPage() {
             {/* Leaderboard Tab */}
             {activeTab === 'leaderboard' && currentLeague && (
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <h2 className="text-2xl font-bold text-white">Leaderboard Editor</h2>
                     <p className="text-gray-400 text-sm mt-1">
-                      Excel-like editable table. Double-click any cell to edit player stats.
+                      Click or double-click any cell to edit. Changes appear on the home leaderboard.
                     </p>
                   </div>
+                  <Link
+                    href="/#leaderboard"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-500/50 text-amber-400 hover:bg-amber-500/10 text-sm font-medium shrink-0"
+                  >
+                    <FaExternalLinkAlt className="w-4 h-4" />
+                    View on Home
+                  </Link>
                 </div>
                 <EditableLeaderboardTable leagueId={currentLeague.id} />
               </div>

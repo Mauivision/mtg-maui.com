@@ -18,6 +18,18 @@ interface UserStats {
   lastActive: Date;
 }
 
+function parseJson<T>(raw: string, fallback: T): T {
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * Realtime leaderboard aggregates from LeagueGame.placements (same source as
+ * Wizards Leaderboard tab). Edits in Wizards → Leaderboard show here.
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -33,7 +45,6 @@ export async function GET(request: NextRequest) {
 
     const { gameType, leagueId, limit } = validated.data;
 
-    // Base user filter: optionally only league members
     let userIds: string[] | null = null;
     if (leagueId != null) {
       const memberships = await prisma.leagueMembership.findMany({
@@ -43,7 +54,6 @@ export async function GET(request: NextRequest) {
       userIds = memberships.map((m) => m.userId);
     }
 
-    // If league specified but no members, return empty
     if (leagueId != null && (!userIds || userIds.length === 0)) {
       return NextResponse.json({ entries: [] });
     }
@@ -58,45 +68,46 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ entries: [] });
     }
 
-    const uidList = users.map((u) => u.id);
+    const uidSet = new Set(users.map((u) => u.id));
 
-    const gameWhere: {
-      playerId: { in: string[] };
-      game?: { gameType?: string; leagueId?: string };
-    } = { playerId: { in: uidList } };
-    const gameFilter: { gameType?: string; leagueId?: string } = {};
-    if (gameType !== 'all') gameFilter.gameType = gameType;
-    if (leagueId != null) gameFilter.leagueId = leagueId;
-    if (Object.keys(gameFilter).length > 0) gameWhere.game = gameFilter;
+    const gameWhere: { leagueId?: string | null; gameType?: string } = {};
+    if (leagueId != null) gameWhere.leagueId = leagueId;
+    if (gameType !== 'all') gameWhere.gameType = gameType;
 
-    const decks = await prisma.leagueGameDeck.findMany({
-      where: gameWhere,
-      select: {
-        playerId: true,
-        points: true,
-        placement: true,
-        game: { select: { createdAt: true } },
-      },
+    const games = await prisma.leagueGame.findMany({
+      where: Object.keys(gameWhere).length > 0 ? gameWhere : undefined,
+      select: { players: true, placements: true, date: true },
     });
 
     const byUser = new Map<string, UserStats>();
-
     for (const u of users) {
       byUser.set(u.id, { points: 0, wins: 0, losses: 0, lastActive: new Date(0) });
     }
 
-    for (const d of decks) {
-      const cur = byUser.get(d.playerId);
-      if (!cur) continue;
-      cur.points += d.points;
-      if (d.placement === 1) cur.wins += 1;
-      else if (d.placement > 1) cur.losses += 1;
-      const t = d.game?.createdAt;
-      if (t && t > cur.lastActive) cur.lastActive = t;
+    for (const g of games) {
+      const placements = parseJson<Array<{ playerId: string; place?: number; points?: number }>>(
+        g.placements,
+        []
+      );
+      const date = g.date ?? new Date(0);
+
+      for (const pl of placements) {
+        const pid = pl.playerId;
+        if (!uidSet.has(pid)) continue;
+        const cur = byUser.get(pid);
+        if (!cur) continue;
+
+        const pts = typeof pl.points === 'number' ? pl.points : 0;
+        const place = typeof pl.place === 'number' ? pl.place : 1;
+
+        cur.points += pts;
+        if (place === 1) cur.wins += 1;
+        else if (place > 1) cur.losses += 1;
+        if (date > cur.lastActive) cur.lastActive = date;
+      }
     }
 
     const list: Array<Omit<RealtimeLeaderboardEntry, 'previousRank' | 'trend' | 'playerId' | 'avatar'>> = [];
-    let rank = 0;
     const sorted = Array.from(byUser.entries())
       .map(([id, s]) => {
         const u = users.find((x) => x.id === id);
@@ -115,6 +126,7 @@ export async function GET(request: NextRequest) {
         return wb - wa;
       });
 
+    let rank = 0;
     for (const row of sorted) {
       rank += 1;
       const gamesPlayed = row.wins + row.losses;
