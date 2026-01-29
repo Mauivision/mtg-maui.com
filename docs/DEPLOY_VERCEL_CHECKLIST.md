@@ -27,14 +27,26 @@ Optional: `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, etc. for auth when you re-enable it
 
 Ensure Project Settings → Build & Development match `vercel.json` or that overrides are off so the repo config is used.
 
-## 4. Deploy (override production)
+## 4. Reconnect Vercel (after removing Git connection)
 
-- **Same project:** Do **not** create a new Vercel project. Use your existing one (e.g. `mtg-maui-com`), connected to `Mauivision/mtg-maui.com`, branch `main`.
+If you removed the Vercel ↔ GitHub connection, **reconnect** (don't create a new project):
+
+1. **[Vercel Dashboard](https://vercel.com/dashboard)** → open your project (e.g. **mtg-maui-com**).
+2. **Settings** → **Git**.
+3. **Connect Git Repository** → choose **GitHub** → **Mauivision/mtg-maui.com**.
+4. **Production Branch:** `main` → **Save**.
+5. **Deployments** → **Redeploy** the latest deployment, or push a commit to `main` to trigger a new build.
+
+Env vars (`DATABASE_URL`, etc.) and domain stay as before. Only the Git link is restored.
+
+## 5. Deploy (override production)
+
+- **Same project:** Use your existing Vercel project, connected to `Mauivision/mtg-maui.com`, branch `main`.
 - Push to `main` → Vercel builds and deploys from `vercel.json`, **overriding** production.
-- Or: Vercel → Deployments → **Redeploy** latest (use “Redeploy” on the correct deployment to override).
+- Or: Vercel → Deployments → **Redeploy** latest.
 - **Optional:** Project Settings → General → name/description (e.g. "MTG Maui League").
 
-## 5. Verify
+## 6. Verify
 
 1. **Database:**  
    `GET https://<your-domain>/api/health`  
@@ -47,7 +59,7 @@ Ensure Project Settings → Build & Development match `vercel.json` or that over
 3. **Home:**  
    Scroll to **Leaderboard** (points bar chart + rankings table), **Character Charts**, and **News Feed**; they use the same data from Wizards.
 
-## 6. Live editing
+## 7. Live editing
 
 - **Site:** One long-scroll **home** page (Hero, Leaderboard with chart + table, Character Charts, News Feed). **Wizards** (`/wizards`) is the only other page; use **Edit** in the header to open it.
 - **Tables:** Edit via **Wizards** (Players, Games, Events, etc.). Leaderboard and Character Charts on the home page update when data changes.
@@ -55,7 +67,7 @@ Ensure Project Settings → Build & Development match `vercel.json` or that over
 
 ---
 
-## 7. Why GitHub seems “messed up” or Vercel keeps showing the old version
+## 8. Why GitHub seems “messed up” or Vercel keeps showing the old version
 
 ### GitHub
 
