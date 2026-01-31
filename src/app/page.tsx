@@ -138,9 +138,9 @@ export default function HomePage() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <CardTitle className="text-white text-lg">{p.playerName}</CardTitle>
-                        <div className="flex items-center gap-2 text-amber-300 text-sm mt-1">
-                          <FaBook className="w-3 h-3" aria-hidden />
-                          {p.commander || '—'}
+                        <div className="flex items-center gap-2 text-amber-300 text-sm mt-1" aria-label={`Commander: ${p.commander || 'Not specified'}`}>
+                          <FaBook className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                          <span>{p.commander || '—'}</span>
                         </div>
                       </div>
                       <Badge className="bg-amber-900/50 text-amber-200 shrink-0">#{p.rank}</Badge>

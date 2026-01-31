@@ -973,9 +973,10 @@ export default function WizardsControlPage() {
               <h2 className="text-2xl font-bold text-white">No League Available</h2>
               <p className="text-gray-400">Create a default league with 16 players and sample games to get started.</p>
               <Button
+                variant="outline"
                 onClick={handleCreateRecords}
                 disabled={creatingRecords}
-                className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10 inline-flex items-center gap-2"
+                className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:border-amber-400 focus:ring-amber-500 inline-flex items-center gap-2"
               >
                 {creatingRecords ? (
                   <FaSpinner className="w-4 h-4 animate-spin" />
