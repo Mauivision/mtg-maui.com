@@ -9,6 +9,7 @@ import { useLeague } from '@/contexts/LeagueContext';
 import { useHomeData, useCharacterSheets } from '@/hooks';
 import { RealtimeLeaderboard } from '@/components/leaderboard/RealtimeLeaderboard';
 import { SimpleLeaderboardChart } from '@/components/leaderboard/SimpleLeaderboardChart';
+import { Wave1PodResults } from '@/components/leaderboard/Wave1PodResults';
 import { LeagueStatus } from '@/components/league/LeagueStatus';
 
 const sectionClass = 'scroll-mt-20 py-16 md:py-24 border-b border-slate-800/60';
@@ -22,7 +23,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero — no images */}
-      <section id="hero" className={sectionClass}>
+      <section id="hero" className={sectionClass} aria-label="Hero">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-amber-400/90 text-sm uppercase tracking-widest mb-3">Hawaii&apos;s Premier MTG League</p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
@@ -58,16 +59,35 @@ export default function HomePage() {
       </section>
 
       {/* Leaderboard */}
-      <section id="leaderboard" className={sectionClass}>
+      <section id="leaderboard" className={sectionClass} aria-labelledby="leaderboard-heading">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-6">
-            <FaTrophy className="w-7 h-7 text-amber-400" />
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Leaderboard</h2>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <FaTrophy className="w-7 h-7 text-amber-400" aria-hidden />
+              <h2 id="leaderboard-heading" className="text-2xl md:text-3xl font-bold text-white">Leaderboard</h2>
+            </div>
+            {leagues.length > 1 && currentLeague && (
+              <select
+                value={currentLeague.id}
+                onChange={(e) => {
+                  const league = leagues.find((l) => l.id === e.target.value);
+                  if (league) setCurrentLeague(league);
+                }}
+                className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                aria-label="Select league"
+              >
+                {leagues.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
           <div className="mb-6">
             <LeagueStatus leagueId={currentLeague?.id} refreshInterval={60_000} />
           </div>
-          <div className="space-y-6">
+          <div className="space-y-8">
             <SimpleLeaderboardChart
               leagueId={currentLeague?.id ?? undefined}
               limit={16}
@@ -78,16 +98,19 @@ export default function HomePage() {
               limit={20}
               variant="embed"
             />
+            <div id="wave1-pods" className="scroll-mt-20">
+              <Wave1PodResults leagueId={currentLeague?.id ?? undefined} />
+            </div>
           </div>
         </div>
       </section>
 
       {/* Character Charts */}
-      <section id="character-charts" className={sectionClass}>
+      <section id="character-charts" className={sectionClass} aria-labelledby="character-charts-heading">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-6">
-            <FaDice className="w-7 h-7 text-amber-400" />
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Character Charts</h2>
+            <FaDice className="w-7 h-7 text-amber-400" aria-hidden />
+            <h2 id="character-charts-heading" className="text-2xl md:text-3xl font-bold text-white">Character Charts</h2>
           </div>
           {charsLoading ? (
             <div className="flex justify-center py-12">
@@ -109,14 +132,14 @@ export default function HomePage() {
             </Card>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {players.slice(0, 12).map((p) => (
-                <Card key={p.id} className="bg-slate-800/50 border-slate-700">
+              {players.slice(0, 16).map((p) => (
+                <Card key={p.id} className="bg-slate-800/50 border-slate-700 transition-shadow hover:shadow-lg hover:shadow-amber-900/20">
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <CardTitle className="text-white text-lg">{p.playerName}</CardTitle>
                         <div className="flex items-center gap-2 text-amber-300 text-sm mt-1">
-                          <FaBook className="w-3 h-3" />
+                          <FaBook className="w-3 h-3" aria-hidden />
                           {p.commander || '—'}
                         </div>
                       </div>
@@ -153,11 +176,11 @@ export default function HomePage() {
       </section>
 
       {/* News Feed */}
-      <section id="news-feed" className={sectionClass}>
+      <section id="news-feed" className={sectionClass} aria-labelledby="news-feed-heading">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-6">
-            <FaNewspaper className="w-7 h-7 text-amber-400" />
-            <h2 className="text-2xl md:text-3xl font-bold text-white">News Feed</h2>
+            <FaNewspaper className="w-7 h-7 text-amber-400" aria-hidden />
+            <h2 id="news-feed-heading" className="text-2xl md:text-3xl font-bold text-white">News Feed</h2>
           </div>
           {loadingNews ? (
             <div className="flex justify-center py-12">

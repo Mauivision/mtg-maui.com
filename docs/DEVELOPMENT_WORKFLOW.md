@@ -1,6 +1,6 @@
 # 🔧 Development Workflow Guide
 
-**Pages & controls:** [DIRECTION_AND_CONTROLS](DIRECTION_AND_CONTROLS.md). **Offline** = local dev; **online** = Vercel.
+**Pages & controls:** [DIRECTION_AND_CONTROLS](DIRECTION_AND_CONTROLS.md). **Offline** = local dev; **online** = Vercel. **Single project only** — one repo, one Vercel project.
 
 ## Quick Start
 
@@ -18,16 +18,19 @@ npm run prisma:migrate
 # Seed database (optional)
 npm run prisma:seed
 
+# Or seed Maui Commander League Pods A–D (see docs/SCORE_ENTRY_GUIDE.md)
+npm run prisma:seed:games
+
 # Start development server
 npm run dev
 ```
 
 ### Daily Development
 ```bash
-# Start dev server (port 3004)
+# Start dev server (port 3003)
 npm run dev
 
-# If port 3004 is in use: npm run dev:alt  (uses 3003)
+# If port 3003 is in use: npm run dev:alt  (uses 3004)
 
 # Type check in watch mode
 npm run type-check:watch
@@ -37,6 +40,9 @@ npm run lint:fix
 
 # Full verification
 npm run verify
+
+# Code check & fix (lint fix + verify)
+npm run doctor
 ```
 
 ---
@@ -276,6 +282,18 @@ npm run clean:all  # Deep clean including cache
 
 ---
 
+## Before Commit / Pre-Push
+
+Run verification before pushing:
+
+```bash
+npm run doctor   # Lint fix + verify (recommended)
+# or
+npm run verify   # Type-check + lint + build
+```
+
+If you changed Prisma schema: `npx prisma migrate dev` and ensure migrations are committed.
+
 ## Best Practices Summary
 
 1. ✅ Use centralized exports from index files
@@ -289,5 +307,5 @@ npm run clean:all  # Deep clean including cache
 
 ---
 
-**Last Updated**: 2026-01-26  
+**Last Updated**: 2026-01-28  
 **Status**: ✅ **COMPREHENSIVE GUIDE**

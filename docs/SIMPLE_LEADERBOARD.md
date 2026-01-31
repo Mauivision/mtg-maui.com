@@ -18,7 +18,7 @@ Three steps. No SQL unless your DB is broken.
 ## 2. Create 16 players and their game scores
 
 1. Start the app: `npm run dev`
-2. Open **http://localhost:3004/wizards**
+2. Open **http://localhost:3003/wizards**
 3. Click **“Create League Tournament Records”**
 
 That creates:
@@ -31,7 +31,7 @@ That creates:
 
 ## 3. See the leaderboard (top player at top)
 
-1. Open **http://localhost:3004** (home)
+1. Open **http://localhost:3003** (home)
 2. Scroll to **Leaderboard**
 
 The list is **sorted by total points**, highest first. Top player at top, then down.

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
+import { isStaticLeagueDataMode, getStaticLeagueStatus } from '@/lib/static-league-data';
 
 const querySchema = z.object({
   leagueId: z.string().optional(),
@@ -20,6 +21,12 @@ export async function GET(request: NextRequest) {
     }
 
     const { leagueId } = validated.data;
+
+    if (isStaticLeagueDataMode()) {
+      const data = getStaticLeagueStatus(leagueId);
+      if (!data) return NextResponse.json({ error: 'No active league found' }, { status: 404 });
+      return NextResponse.json(data);
+    }
 
     const league = leagueId
       ? await prisma.league.findUnique({ where: { id: leagueId } })

@@ -178,7 +178,13 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
 
   if (loading) {
     return (
-      <div className="space-y-3">
+      <div
+        className="space-y-3"
+        role="region"
+        aria-label="Leaderboard rankings"
+        aria-busy="true"
+        aria-live="polite"
+      >
         {Array.from({ length: 10 }).map((_, index) => (
           <LeaderboardEntrySkeleton key={index} />
         ))}
@@ -187,7 +193,7 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
   }
 
   return (
-    <div className={isEmbed ? 'space-y-4' : 'space-y-6'}>
+    <div className={isEmbed ? 'space-y-4' : 'space-y-6'} role="region" aria-label="Leaderboard rankings">
       {/* Header — full in standalone, compact in embed */}
       {!isEmbed && (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -252,9 +258,9 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
 
       {/* Error Banner */}
       {error && retryCount > 0 && (
-        <div className="bg-red-900/30 border border-red-700 text-red-200 px-4 py-3 rounded-lg flex items-center justify-between">
+        <div className="bg-red-900/30 border border-red-700 text-red-200 px-4 py-3 rounded-lg flex items-center justify-between" role="alert">
           <div className="flex items-center gap-2">
-            <FaExclamationTriangle className="w-5 h-5" />
+            <FaExclamationTriangle className="w-5 h-5" aria-hidden />
             <span>Failed to fetch leaderboard. Retry attempt {retryCount}.</span>
           </div>
           <Button
@@ -286,114 +292,93 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
           </CardHeader>
         )}
         <CardContent>
-          <div className="space-y-2">
-            {leaderboard.length === 0 && !loading ? (
-              <div className="text-center py-8">
-                <FaUsers className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-400 mb-2">No players found</p>
-                {error ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setError(null);
-                      fetchLeaderboard(true);
-                    }}
-                    className="mt-4 border-amber-400 text-amber-400 hover:bg-amber-900/30"
-                  >
-                    <FaRedo className="w-4 h-4 mr-2" />
-                    Retry
-                  </Button>
-                ) : (
-                  <p className="text-gray-500 text-sm">Players will appear here once games are recorded.</p>
-                )}
-              </div>
-            ) : (
-              leaderboard.map((entry, index) => (
-                <div
-                  key={entry.id}
-                  className={`rounded-lg border transition-all hover:scale-[1.02] animate-slide-up ${
-                    isEmbed ? 'p-3' : 'p-4'
-                  } ${
-                    entry.rank <= 3
-                      ? 'bg-gradient-to-r from-amber-900/20 to-orange-900/20 border-amber-600/30'
-                      : 'bg-slate-700/30 border-slate-600 hover:bg-slate-700/50'
-                  }`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+          {leaderboard.length === 0 && !loading ? (
+            <div className="text-center py-8">
+              <FaUsers className="w-12 h-12 text-gray-500 mx-auto mb-4" aria-hidden />
+              <p className="text-gray-400 mb-2">No players found</p>
+              {error ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setError(null);
+                    fetchLeaderboard(true);
+                  }}
+                  className="mt-4 border-amber-400 text-amber-400 hover:bg-amber-900/30"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      {/* Rank */}
-                      <div className="flex items-center gap-2 min-w-[60px]">
-                        {getRankIcon(entry.rank)}
-                        {getRankChange(entry)}
-                      </div>
-
-                      {/* Avatar & Name */}
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-amber-600 to-orange-600 rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold text-sm">
-                            {entry.name.charAt(0).toUpperCase()}
-                          </span>
+                  <FaRedo className="w-4 h-4 mr-2" />
+                  Retry
+                </Button>
+              ) : (
+                <p className="text-gray-500 text-sm">Players will appear here once games are recorded.</p>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-slate-600">
+              <table className="w-full min-w-[640px] border-collapse" aria-label="Leaderboard rankings">
+                <thead>
+                  <tr className="border-b border-slate-600 bg-slate-700/50">
+                    <th scope="col" className="text-left py-3 px-4 text-slate-300 font-semibold text-sm">Rank</th>
+                    <th scope="col" className="text-left py-3 px-4 text-slate-300 font-semibold text-sm">Player</th>
+                    <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Points</th>
+                    <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Games</th>
+                    <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Record</th>
+                    <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Win Rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leaderboard.map((entry, index) => (
+                    <tr
+                      key={entry.id}
+                      className={`border-b border-slate-700/80 transition-colors hover:bg-slate-700/40 ${
+                        entry.rank <= 3
+                          ? 'bg-gradient-to-r from-amber-900/15 to-orange-900/15'
+                          : 'bg-slate-800/30'
+                      }`}
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          {getRankIcon(entry.rank)}
+                          {getRankChange(entry)}
                         </div>
-                        <div>
-                          <h3 className="text-white font-medium">{entry.name}</h3>
-                          <div className="flex items-center gap-2">
-                            {getStreakIcon(entry.currentStreak)}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 bg-gradient-to-br from-amber-600 to-orange-600 rounded-full flex items-center justify-center shrink-0">
+                            <span className="text-white font-bold text-sm" aria-hidden>
+                              {entry.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-white font-medium">{entry.name}</span>
                             {entry.currentStreak > 0 && (
-                              <span className="text-sm text-orange-400">
-                                {entry.currentStreak} win streak
-                              </span>
+                              <div className="flex items-center gap-1.5 mt-0.5 text-xs text-orange-400">
+                                {getStreakIcon(entry.currentStreak)}
+                                <span>{entry.currentStreak} win streak</span>
+                              </div>
                             )}
                           </div>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="flex items-center gap-4 text-right">
-                      <div>
-                        <div className="text-lg font-bold text-amber-400">{entry.points}</div>
-                        <div className="text-xs text-gray-400">Points</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-blue-400">
-                          {entry.gamesPlayed || entry.wins + entry.losses}
-                        </div>
-                        <div className="text-xs text-gray-400">Games</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-white">
-                          {entry.wins}W-{entry.losses}L
-                        </div>
-                        <div className="text-xs text-gray-400">Record</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-green-400">
-                          {entry.winRate.toFixed(1)}%
-                        </div>
-                        <div className="text-xs text-gray-400">Win Rate</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Progress Bar for Top 3 */}
-                  {entry.rank <= 3 && (
-                    <div className="mt-3">
-                      <div className="w-full bg-slate-700 rounded-full h-2">
-                        <div
-                          className="bg-gradient-to-r from-amber-600 to-orange-600 h-2 rounded-full transition-all duration-1000"
-                          style={{
-                            width: `${Math.min((entry.points / Math.max(...leaderboard.map(e => e.points))) * 100, 100)}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <span className="font-bold text-amber-400">{entry.points}</span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <span className="font-bold text-blue-400">{entry.gamesPlayed || entry.wins + entry.losses}</span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <span className="font-medium text-white">{entry.wins}W–{entry.losses}L</span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <span className="font-bold text-green-400">{entry.winRate.toFixed(1)}%</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 

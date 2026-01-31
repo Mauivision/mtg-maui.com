@@ -42,22 +42,8 @@ const nextConfig = {
       { source: '/tournaments/:path*', destination: '/', permanent: true },
     ];
   },
-  webpack(config) {
-    config.resolve ??= {};
-    config.resolve.alias ??= {};
-    try {
-      const path = require('path');
-      const jspdfEs = path.join(
-        path.dirname(require.resolve('jspdf/package.json')),
-        'dist',
-        'jspdf.es.min.js'
-      );
-      config.resolve.alias['jspdf'] = jspdfEs;
-    } catch (_) {
-      // jspdf not installed or path missing; use default
-    }
-    return config;
-  },
+  // Removed custom jspdf webpack alias - it caused "Cannot read properties of undefined (reading 'call')"
+  // jspdf uses default resolution. Re-add only if bundling issues occur.
 };
 
 module.exports = nextConfig;

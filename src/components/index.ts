@@ -34,6 +34,7 @@ export { AnalyticsDashboard } from './analytics/AnalyticsDashboard';
 // Leaderboard Components
 export { RealtimeLeaderboard } from './leaderboard/RealtimeLeaderboard';
 export { LeaderboardFilters } from './leaderboard/LeaderboardFilters';
+export { Wave1PodResults } from './leaderboard/Wave1PodResults';
 
 // Admin Components
 export { AdminDashboard } from './admin/AdminDashboard';

@@ -4,9 +4,14 @@ import { z } from 'zod';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 import { requireAdminOrSimple } from '@/lib/auth-helpers';
+import { isStaticLeagueDataMode, getStaticLeagues } from '@/lib/static-league-data';
 
 export async function GET() {
   try {
+    if (isStaticLeagueDataMode()) {
+      const leagues = getStaticLeagues();
+      return NextResponse.json({ leagues });
+    }
     const leagues = await prisma.league.findMany({
       include: {
         memberships: true,

@@ -1,6 +1,6 @@
 # Vercel Deploy Checklist
 
-Use this when deploying MTG Maui League to Vercel. One project only — **same** repo, **same** Vercel project; push to `main` overrides production.
+Use this when deploying MTG Maui League to Vercel. **Single project only** — one repo (`Mauivision/mtg-maui.com`), one Vercel project; push to `main` overrides production. Run `npm run doctor` before deploy (lint fix + verify).
 
 ## 1. Database (required)
 

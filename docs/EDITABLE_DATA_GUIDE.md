@@ -20,13 +20,14 @@ This guide explains **where** and **how** to add or edit league data (players, g
 | **Commander pairings** | Wizards Control → **Commander Pairings** tab | `GET/POST /api/admin/pairings` |
 | **Page content** (titles, hero, nav) | Wizards Control → **Page Content** tab | `GET/PUT /api/admin/pages` |
 | **Seasons** | Wizards Control → **Seasons** tab | Uses Events API |
+| **Wave 1 pod results** | Read-only from `LeagueGame`; add games via Wizards or [seed scripts](SCORE_ENTRY_GUIDE.md) | `GET /api/leagues/[id]/wave1` |
 
 ---
 
 ## How to Access the Editable UI
 
 1. **Wizards Control**  
-   - Open **[/wizards](http://localhost:3004/wizards)** (or your app URL + `/wizards`).  
+   - Open **[/wizards](http://localhost:3003/wizards)** (or your app URL + `/wizards`).  
    - If you see “No League Available,” use **Create League Tournament Records** to create the default league, players, and sample games.  
    - Use the tabs to manage **Players**, **Games**, **Events**, **News**, **Drafts**, **Leaderboard**, **Scoring Rules**, **Page Content**, etc.
 
@@ -35,6 +36,10 @@ This guide explains **where** and **how** to add or edit league data (players, g
    - Use the editable table to change **total points**, **wins**, etc. per player.  
    - Save sends updates to `POST /api/admin/leaderboard/update`.  
    - **View** rankings on **Home** → scroll to **Leaderboard** (or `/#leaderboard`).
+
+3. **Score entry via seed scripts (Cursor-friendly)**  
+   - See [SCORE_ENTRY_GUIDE](SCORE_ENTRY_GUIDE.md) for adding game results by running seed scripts (e.g. `npm run prisma:seed:games`).  
+   - Paste score sheet data into Cursor and ask it to add the game.
 
 ---
 

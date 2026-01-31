@@ -90,7 +90,7 @@ NEXTAUTH_URL=https://your-app.vercel.app
 ```bash
 npm install
 npm run dev
-# Visit http://localhost:3004/leaderboard
+# Visit http://localhost:3003/leaderboard
 ```
 
 ---

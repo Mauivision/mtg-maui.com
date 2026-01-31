@@ -1,0 +1,55 @@
+{
+  "league": {
+    "id": "maui-commander-static",
+    "name": "Maui Commander League",
+    "description": "Maui Commander League — Pod Score Sheet",
+    "format": "commander",
+    "status": "active",
+    "startDate": "2026-01-01",
+    "endDate": null
+  },
+  "players": [
+    { "id": "april", "name": "April", "commander": "Loica Cole" },
+    { "id": "kaipo", "name": "Kaipo", "commander": "Spectacular Spider-Man / Tormod" },
+    { "id": "ronnie", "name": "Ronnie", "commander": "Toph / Arcanis" },
+    { "id": "kevin", "name": "Kevin", "commander": "Infinite Guideline Station" },
+    { "id": "kendra", "name": "Kendra", "commander": "Commander Deck" },
+    { "id": "aarons", "name": "Aaron S.", "commander": "Commander Deck" },
+    { "id": "aaronv", "name": "Aaron V.", "commander": "Commander Deck" },
+    { "id": "zach", "name": "Zach", "commander": "Commander Deck" },
+    { "id": "aaronh", "name": "Aaron H.", "commander": "Yannik / Esper" },
+    { "id": "james", "name": "James", "commander": "Kefka / Grixis" },
+    { "id": "tre", "name": "Tre", "commander": "Breya" },
+    { "id": "dan", "name": "Dan", "commander": "Sofka" },
+    { "id": "nate", "name": "Nate", "commander": "Diamond Weapon" },
+    { "id": "scott", "name": "Scott", "commander": "Jodah" },
+    { "id": "travis", "name": "Travis", "commander": "Soda / Iona" },
+    { "id": "dustin", "name": "Dustin", "commander": "5pidey / Tobran" }
+  ],
+  "games": [
+    { "date": "2026-01-05", "round": 1, "pod": "A", "results": [
+      { "playerId": "april", "place": 1, "points": 9 },
+      { "playerId": "ronnie", "place": 2, "points": 1 },
+      { "playerId": "kaipo", "place": 3, "points": 4 },
+      { "playerId": "kevin", "place": 4, "points": 1 }
+    ]},
+    { "date": "2026-01-10", "round": 2, "pod": "B", "results": [
+      { "playerId": "kendra", "place": 1, "points": 14 },
+      { "playerId": "aarons", "place": 2, "points": 3 },
+      { "playerId": "aaronv", "place": 3, "points": 2 },
+      { "playerId": "zach", "place": 4, "points": 1 }
+    ]},
+    { "date": "2026-01-25", "round": 3, "pod": "C", "results": [
+      { "playerId": "aaronh", "place": 1, "points": 8 },
+      { "playerId": "james", "place": 2, "points": 3 },
+      { "playerId": "tre", "place": 3, "points": 3 },
+      { "playerId": "dan", "place": 4, "points": 1 }
+    ]},
+    { "date": "2026-01-30", "round": 4, "pod": "D", "results": [
+      { "playerId": "nate", "place": 1, "points": 7 },
+      { "playerId": "scott", "place": 2, "points": 3 },
+      { "playerId": "travis", "place": 3, "points": 3 },
+      { "playerId": "dustin", "place": 4, "points": 1 }
+    ]}
+  ]
+}

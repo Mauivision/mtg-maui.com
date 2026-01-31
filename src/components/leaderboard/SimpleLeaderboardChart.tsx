@@ -56,7 +56,7 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
 
   if (loading) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="bg-slate-800/50 border-slate-700" aria-busy="true" aria-live="polite">
         <CardContent className="py-12 flex flex-col items-center justify-center gap-3">
           <LoadingSpinner className="text-amber-500" />
           <span className="text-slate-400 text-sm">Loading leaderboard…</span>

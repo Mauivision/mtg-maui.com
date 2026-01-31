@@ -9,6 +9,7 @@ const links = [
   { href: '/#character-charts', label: 'Character Charts' },
   { href: '/#news-feed', label: 'News Feed' },
   { href: '/wizards', label: 'Edit' },
+  { href: '/#hero', label: 'Back to top' },
 ];
 
 export const ModernFooter: React.FC = () => {
@@ -22,12 +23,12 @@ export const ModernFooter: React.FC = () => {
             </div>
             <span className="font-bold text-white">MTG Maui League</span>
           </div>
-          <nav className="flex flex-wrap gap-4">
+          <nav className="flex flex-wrap gap-4" aria-label="Footer navigation">
             {links.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
-                className="text-slate-400 hover:text-amber-400 text-sm transition-colors"
+                className="text-slate-400 hover:text-amber-400 focus:text-amber-400 focus:outline-none focus:underline text-sm transition-colors"
               >
                 {label}
               </Link>

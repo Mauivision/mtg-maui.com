@@ -28,16 +28,16 @@ export const ModernHeader: React.FC = () => {
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
             {nav.map((item) => {
               const Icon = item.icon;
               return (
                 <a
                   key={item.anchor}
                   href={item.href}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:text-amber-300 hover:bg-slate-700/50 transition-all duration-200"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:text-amber-300 hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950 transition-all duration-200"
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4" aria-hidden />
                   {item.name}
                 </a>
               );
@@ -46,27 +46,27 @@ export const ModernHeader: React.FC = () => {
 
           <Link
             href="/wizards"
-            className="text-slate-400 hover:text-amber-400 text-sm font-medium transition-colors"
+            className="text-slate-400 hover:text-amber-400 focus:text-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950 rounded text-sm font-medium transition-colors"
           >
             Edit
           </Link>
         </div>
 
-        <nav className="md:hidden flex flex-wrap gap-2 py-3 border-t border-slate-800">
-          {nav.map((item) => {
-            const Icon = item.icon;
-            return (
-              <a
-                key={item.anchor}
-                href={item.href}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-slate-700/50"
-              >
-                <Icon className="w-4 h-4" />
-                {item.name}
-              </a>
-            );
-          })}
-          <Link href="/wizards" className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-amber-400">
+<nav className="md:hidden flex flex-wrap gap-2 py-3 border-t border-slate-800" aria-label="Mobile navigation">
+            {nav.map((item) => {
+              const Icon = item.icon;
+              return (
+                <a
+                  key={item.anchor}
+                  href={item.href}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950"
+                >
+                  <Icon className="w-4 h-4" aria-hidden />
+                  {item.name}
+                </a>
+              );
+            })}
+          <Link href="/wizards" className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-amber-400 focus:text-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950">
             Edit
           </Link>
         </nav>

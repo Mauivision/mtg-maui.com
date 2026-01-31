@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 import type { RealtimeLeaderboardEntry } from '@/types/leaderboard';
+import { isStaticLeagueDataMode, getStaticLeaderboard } from '@/lib/static-league-data';
 
 const querySchema = z.object({
   gameType: z.enum(['all', 'commander', 'draft', 'standard']).default('all'),
@@ -29,6 +30,7 @@ function parseJson<T>(raw: string, fallback: T): T {
 /**
  * Realtime leaderboard aggregates from LeagueGame.placements (same source as
  * Wizards Leaderboard tab). Edits in Wizards → Leaderboard show here.
+ * Uses static data when DATABASE_URL is not set.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -44,6 +46,11 @@ export async function GET(request: NextRequest) {
     }
 
     const { gameType, leagueId, limit } = validated.data;
+
+    if (isStaticLeagueDataMode()) {
+      const entries = getStaticLeaderboard(leagueId, limit);
+      return NextResponse.json({ entries });
+    }
 
     let userIds: string[] | null = null;
     if (leagueId != null) {

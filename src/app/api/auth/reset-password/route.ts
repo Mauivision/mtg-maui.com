@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     void expiresAt;
 
     // Create reset URL
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3003';
     const resetUrl = `${baseUrl}/auth/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
 
     // Send email using Resend (if configured) or fallback to console

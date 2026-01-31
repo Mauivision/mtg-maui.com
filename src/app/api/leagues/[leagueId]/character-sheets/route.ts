@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
+import { isStaticLeagueDataMode, getStaticCharacterSheets } from '@/lib/static-league-data';
 
 function parseJson<T>(raw: string | unknown, fallback: T): T {
   if (typeof raw === 'string') {
@@ -19,6 +20,11 @@ export async function GET(request: NextRequest, { params }: { params: { leagueId
     const { leagueId } = params;
     const { searchParams } = new URL(request.url);
     const gameType = searchParams.get('gameType'); // "commander", "draft", or null for all
+
+    if (isStaticLeagueDataMode()) {
+      const data = getStaticCharacterSheets(leagueId);
+      return NextResponse.json(data);
+    }
 
     // Get all active memberships for this league
     const memberships = await prisma.leagueMembership.findMany({

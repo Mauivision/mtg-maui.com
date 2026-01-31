@@ -12,8 +12,10 @@ import {
   FaTrophy,
   FaCheckCircle,
   FaSpinner,
+  FaRedo,
 } from 'react-icons/fa';
 import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 
 interface LeagueStatusStats {
   totalPlayers: number;
@@ -70,7 +72,10 @@ export function LeagueStatus({
     try {
       const params = new URLSearchParams();
       if (leagueId) params.set('leagueId', leagueId);
-      const res = await fetch(`/api/leagues/status?${params}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch(`/api/leagues/status?${params}`, { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error || `HTTP ${res.status}`);
@@ -78,7 +83,12 @@ export function LeagueStatus({
       const json = await res.json();
       setData(json);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load league status');
+      const msg = err instanceof Error ? err.message : 'Failed to load league status';
+      setError(
+        msg.includes('abort') || msg.includes('AbortError')
+          ? 'Request timed out. Check that DATABASE_URL is set in .env and Postgres is running.'
+          : msg
+      );
       setData(null);
     } finally {
       setLoading(false);
@@ -94,10 +104,10 @@ export function LeagueStatus({
 
   if (loading) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="bg-slate-800/50 border-slate-700" aria-busy="true" aria-live="polite">
         <CardContent className="py-6 flex items-center gap-3 text-slate-100">
           <LoadingSpinner />
-          <span>Loading league status...</span>
+          <span>Loading league status…</span>
         </CardContent>
       </Card>
     );
@@ -112,12 +122,27 @@ export function LeagueStatus({
             <span>{error ?? 'No league found'}</span>
           </div>
           <p className="text-slate-400 text-sm">
-            Only admins can create leagues and events. Sign in at{' '}
-            <Link href="/wizards" className="text-amber-400 hover:underline">
-              /wizards
-            </Link>{' '}
-            (Admin / 12345) to create league tournament records.
+            {error?.includes('DATABASE_URL')
+              ? 'Set DATABASE_URL in .env and run npm run setup:maui'
+              : 'Only admins can create leagues. Sign in at '}
+            {!error?.includes('DATABASE_URL') && (
+              <>
+                <Link href="/wizards" className="text-amber-400 hover:underline">
+                  /wizards
+                </Link>{' '}
+                (Admin / 12345) to create league records.
+              </>
+            )}
           </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fetchStatus()}
+            className="border-amber-400 text-amber-400 hover:bg-amber-900/30"
+          >
+            <FaRedo className="w-4 h-4 mr-2" aria-hidden />
+            Retry
+          </Button>
         </CardContent>
       </Card>
     );

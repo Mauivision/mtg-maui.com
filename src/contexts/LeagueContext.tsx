@@ -44,7 +44,10 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/leagues');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const response = await fetch('/api/leagues', { signal: controller.signal });
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         setLeagues([]);
@@ -68,7 +71,10 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
       }
 
       if (fetchedLeagues.length > 0) {
-        const active = fetchedLeagues.find((l) => l.status === 'active') || fetchedLeagues[0];
+        const mauiCommander = fetchedLeagues.find((l) => l.name === 'Maui Commander League');
+        const mtgMaui = fetchedLeagues.find((l) => l.name === 'MTG Maui League');
+        const preferred = mauiCommander ?? mtgMaui;
+        const active = preferred ?? fetchedLeagues.find((l) => l.status === 'active') ?? fetchedLeagues[0];
         setCurrentLeagueState(active);
       } else {
         setCurrentLeagueState(null);
@@ -77,7 +83,12 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
       logger.error('Error fetching leagues', err);
       setLeagues([]);
       setCurrentLeagueState(null);
-      setError('Failed to load leagues');
+      const msg = err instanceof Error ? err.message : '';
+      setError(
+        msg.includes('abort') || msg.includes('AbortError')
+          ? 'Request timed out. Check DATABASE_URL in .env and that Postgres is running.'
+          : 'Failed to load leagues'
+      );
     } finally {
       setLoading(false);
     }
