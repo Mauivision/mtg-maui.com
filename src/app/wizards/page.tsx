@@ -83,6 +83,7 @@ interface Player {
   totalPoints: number;
   gamesPlayed: number;
   active: boolean;
+  joinedAt?: string;
 }
 
 interface Event {
@@ -1135,23 +1136,35 @@ export default function WizardsControlPage() {
                               <tr key={player.id} className="hover:bg-slate-700/50">
                                 <td className="py-4 px-6 text-gray-300">{index + 1}</td>
                                 <td className="py-4 px-6">
-                                  {editingPlayer === player.id ? (
-                                    <Input
-                                      defaultValue={player.name}
-                                      onKeyDown={e => {
-                                        if (e.key === 'Enter') {
-                                          updatePlayer(player.id, {
-                                            name: (e.target as HTMLInputElement).value,
-                                          });
-                                        } else if (e.key === 'Escape') {
-                                          setEditingPlayer(null);
-                                        }
-                                      }}
-                                      className="bg-slate-700 border-slate-600 text-white"
-                                    />
-                                  ) : (
-                                    <span className="text-white font-medium">{player.name}</span>
-                                  )}
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    {editingPlayer === player.id ? (
+                                      <Input
+                                        defaultValue={player.name}
+                                        onKeyDown={e => {
+                                          if (e.key === 'Enter') {
+                                            updatePlayer(player.id, {
+                                              name: (e.target as HTMLInputElement).value,
+                                            });
+                                          } else if (e.key === 'Escape') {
+                                            setEditingPlayer(null);
+                                          }
+                                        }}
+                                        className="bg-slate-700 border-slate-600 text-white"
+                                      />
+                                    ) : (
+                                      <span className="text-white font-medium">{player.name}</span>
+                                    )}
+                                    {player.joinedAt && (() => {
+                                      const joined = new Date(player.joinedAt).getTime();
+                                      const daysSince = (Date.now() - joined) / (1000 * 60 * 60 * 24);
+                                      if (daysSince <= 60) {
+                                        return (
+                                          <Badge className="bg-blue-600 text-xs shrink-0">New</Badge>
+                                        );
+                                      }
+                                      return null;
+                                    })()}
+                                  </div>
                                 </td>
                                 <td className="py-4 px-6 text-gray-300">{player.email}</td>
                                 <td className="py-4 px-6 text-gray-300">
@@ -1164,8 +1177,8 @@ export default function WizardsControlPage() {
                                   {player.gamesPlayed}
                                 </td>
                                 <td className="py-4 px-6 text-center">
-                                  <Badge className={player.active ? 'bg-green-600' : 'bg-gray-600'}>
-                                    {player.active ? 'Active' : 'Inactive'}
+                                  <Badge className={player.active ? 'bg-green-600' : 'bg-red-900/80 text-red-200'}>
+                                    {player.active ? 'Active' : 'Dropped'}
                                   </Badge>
                                 </td>
                                 <td className="py-4 px-6 text-center">
