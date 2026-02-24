@@ -21,7 +21,8 @@ function nameMatches(scoreName: string, userName: string | null, userEmail: stri
     const letter = key.slice(6, 7);
     return disp.includes('aaron') && (disp.includes(' ' + letter) || disp.includes(letter + ' ') || userEmail.toLowerCase().includes(letter));
   }
-  return disp.includes(key) || (key.length >= 2 && (disp.includes(key) || (disp.split(/\s+/)[0] && key.includes(disp.split(/\s+/)[0]!))));
+  const firstWord = disp.split(/\s+/)[0];
+  return disp.includes(key) || (key.length >= 2 && (disp.includes(key) || (!!firstWord && key.includes(firstWord))));
 }
 
 function scoresToMatchWins(scores: number[]): number[] {

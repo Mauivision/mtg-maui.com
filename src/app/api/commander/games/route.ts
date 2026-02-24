@@ -2,12 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
+import { isStaticLeagueDataMode, getStaticCommanderGames } from '@/lib/static-league-data';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
+
+    if (isStaticLeagueDataMode()) {
+      const staticGames = getStaticCommanderGames();
+      const games = staticGames.slice(offset, offset + limit);
+      return NextResponse.json({ games });
+    }
 
     const games = await prisma.leagueGame.findMany({
       where: { gameType: 'commander' },
@@ -64,6 +71,11 @@ export async function GET(request: NextRequest) {
         })),
         };
       });
+
+    if (mapped.length === 0) {
+      const staticGames = getStaticCommanderGames();
+      return NextResponse.json({ games: staticGames.slice(offset, offset + limit) });
+    }
 
     return NextResponse.json({ games: mapped });
   } catch (error) {

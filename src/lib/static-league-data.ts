@@ -322,3 +322,39 @@ export function getStaticCharacterSheets(leagueId?: string) {
 
   return { players: sorted };
 }
+
+/** Commander games for /score page when using static data or DB empty. */
+export function getStaticCommanderGames() {
+  const d = loadData();
+  const playerMap = new Map(d.players.map((p) => [p.id, p]));
+
+  return d.games.map((g, idx) => {
+    const sorted = [...g.results].sort((a, b) => a.place - b.place);
+    const winner = sorted[0];
+    const winnerPlayer = winner ? playerMap.get(winner.playerId) : null;
+    return {
+      id: `static-${idx}-${g.date}`,
+      name: g.pod,
+      totalPlayers: g.results.length,
+      createdAt: new Date(g.date).toISOString(),
+      winner: winnerPlayer
+        ? {
+            id: winner.playerId,
+            name: winnerPlayer.name,
+            commander: winnerPlayer.commander || '—',
+          }
+        : { id: '', name: '—', commander: '—' },
+      players: sorted.map((r) => {
+        const p = playerMap.get(r.playerId);
+        return {
+          id: r.playerId,
+          name: p?.name ?? r.playerId,
+          commander: p?.commander ?? '—',
+          placement: r.place,
+          points: r.points,
+          knockouts: 0,
+        };
+      }),
+    };
+  });
+}
