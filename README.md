@@ -56,6 +56,7 @@ npm run dev
 - **PostgreSQL** via `DATABASE_URL`. See [docs/VERCEL_POSTGRES_SETUP.md](docs/VERCEL_POSTGRES_SETUP.md).
 - Local: Postgres in `.env`. Vercel: Vercel Postgres + `DATABASE_URL`.
 - **Reset DB and install 16 players + leaderboard:** [docs/DATABASE_RESET_AND_POPULATE.md](docs/DATABASE_RESET_AND_POPULATE.md).
+- **Update Commander games, draft scores, and player status (e.g. on live):** [docs/UPDATE_GAMES_AND_DRAFTS.md](docs/UPDATE_GAMES_AND_DRAFTS.md).
 - **Simple leaderboard (16 players, scores, top down):** [docs/SIMPLE_LEADERBOARD.md](docs/SIMPLE_LEADERBOARD.md).
 
 ---
