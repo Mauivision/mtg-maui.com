@@ -33,23 +33,23 @@ export default function HomePage() {
             Commander. Draft. Real rankings. One place for leaderboard, character charts, and news.
           </p>
           <div className="grid grid-cols-3 gap-6 max-w-md mx-auto">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-amber-600/20 border border-amber-500/40 flex items-center justify-center">
-                <FaUsers className="w-5 h-5 text-amber-400" />
+            <div className="flex flex-col items-center group">
+              <div className="w-12 h-12 rounded-full bg-sky-600/20 border border-sky-500/40 flex items-center justify-center transition-colors group-hover:border-sky-400/60 group-hover:bg-sky-600/30" aria-hidden>
+                <FaUsers className="w-5 h-5 text-sky-400" />
               </div>
               <div className="text-xl font-bold text-white mt-2">{stats.totalUsers}</div>
               <div className="text-xs text-slate-400 uppercase">Players</div>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-amber-600/20 border border-amber-500/40 flex items-center justify-center">
+            <div className="flex flex-col items-center group">
+              <div className="w-12 h-12 rounded-full bg-amber-600/20 border border-amber-500/40 flex items-center justify-center transition-colors group-hover:border-amber-400/60 group-hover:bg-amber-600/30" aria-hidden>
                 <FaTrophy className="w-5 h-5 text-amber-400" />
               </div>
               <div className="text-xl font-bold text-white mt-2">{stats.totalLeagues}</div>
               <div className="text-xs text-slate-400 uppercase">Leagues</div>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-amber-600/20 border border-amber-500/40 flex items-center justify-center">
-                <FaCalendar className="w-5 h-5 text-amber-400" />
+            <div className="flex flex-col items-center group">
+              <div className="w-12 h-12 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center transition-colors group-hover:border-emerald-400/60 group-hover:bg-emerald-600/30" aria-hidden>
+                <FaCalendar className="w-5 h-5 text-emerald-400" />
               </div>
               <div className="text-xl font-bold text-white mt-2">{stats.totalGames}</div>
               <div className="text-xs text-slate-400 uppercase">Games</div>

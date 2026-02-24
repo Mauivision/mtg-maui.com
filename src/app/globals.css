@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Reimagined Design System — Arena / Tavern */
+/* Reimagined Design System — Arena / Tavern / Elemental */
 :root {
   --foreground-rgb: 248, 250, 252;
   --background-rgb: 10, 12, 18;
@@ -23,7 +23,7 @@
   --arena-800: 146, 64, 14;
   --arena-900: 120, 53, 15;
 
-  /* Mana-inspired accents */
+  /* Mana / Elemental accents — fire, water, earth, air */
   --mana-blue: 59, 130, 246;
   --mana-red: 239, 68, 68;
   --mana-green: 34, 197, 94;

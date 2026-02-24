@@ -3,74 +3,69 @@ import { prisma } from '@/lib/prisma';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 
-
-
-
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
+    const offset = parseInt(searchParams.get('offset') || '0', 10);
 
-    // Get Commander games with detailed participant data
-    const games = await prisma.$queryRaw<
-      Array<{
-        id: string;
-        name: string;
-        totalPlayers: number;
-        createdAt: string;
-        winner: {
-          id: string;
-          name: string;
-          commander: string;
+    const games = await prisma.leagueGame.findMany({
+      where: { gameType: 'commander' },
+      include: {
+        gameDecks: {
+          include: {
+            deck: {
+              include: {
+                membership: {
+                  include: {
+                    user: {
+                      select: { id: true, name: true, email: true },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          orderBy: { placement: 'asc' },
+        },
+      },
+      orderBy: { date: 'desc' },
+      take: limit,
+      skip: offset,
+    });
+
+    const mapped = games
+      .filter(game => game.gameDecks.length > 0)
+      .map(game => {
+        const decks = game.gameDecks;
+        const winner = decks.find(d => d.placement === 1);
+        const totalPlayers = decks.length;
+        const gameName = game.notes?.trim() || `Pod — ${game.date.toISOString().slice(0, 10)}`;
+
+        return {
+        id: game.id,
+        name: gameName,
+        totalPlayers,
+        createdAt: game.date.toISOString(),
+        winner: winner
+          ? {
+              id: winner.deck.membership.user.id,
+              name: winner.deck.membership.user.name || winner.deck.membership.user.email,
+              commander: winner.deck.commander || '—',
+            }
+          : { id: '', name: '—', commander: '—' },
+        players: decks.map(d => ({
+          id: d.deck.membership.user.id,
+          name: d.deck.membership.user.name || d.deck.membership.user.email,
+          commander: d.deck.commander || '—',
+          placement: d.placement,
+          points: d.points,
+          knockouts: 0,
+        })),
         };
-        players: Array<{
-          id: string;
-          name: string;
-          commander: string;
-          placement: number;
-          points: number;
-          knockouts: number;
-          eliminatedBy?: string;
-          lifeRemaining?: number;
-        }>;
-      }>
-    >`
-      SELECT
-        lg.id,
-        lg.name,
-        lg.totalPlayers,
-        lg.createdAt,
-        JSON_OBJECT(
-          'id', u.id,
-          'name', u.name,
-          'commander', lgp.commander
-        ) as winner,
-        JSON_ARRAYAGG(
-          JSON_OBJECT(
-            'id', u2.id,
-            'name', u2.name,
-            'commander', lgp2.commander,
-            'placement', lgp2.placement,
-            'points', lgp2.points,
-            'knockouts', COALESCE(JSON_LENGTH(lgp2.placements, '$.knockouts'), 0),
-            'eliminatedBy', JSON_EXTRACT(lgp2.placements, '$.eliminatedBy'),
-            'lifeRemaining', JSON_EXTRACT(lgp2.placements, '$.lifeRemaining')
-          )
-        ) as players
-      FROM LeagueGame lg
-      JOIN LeagueGameParticipant lgp ON lg.id = lgp.gameId
-      JOIN User u ON lgp.playerId = u.id
-      JOIN LeagueGameParticipant lgp2 ON lg.id = lgp2.gameId
-      JOIN User u2 ON lgp2.playerId = u2.id
-      WHERE lg.gameType = 'commander'
-        AND lgp.placement = 1
-      GROUP BY lg.id, lg.name, lg.totalPlayers, lg.createdAt, u.id, u.name, lgp.commander
-      ORDER BY lg.createdAt DESC
-      LIMIT ${limit} OFFSET ${offset}
-    `;
+      });
 
-    return NextResponse.json({ games });
+    return NextResponse.json({ games: mapped });
   } catch (error) {
     logger.error('Commander games API error', error);
     return handleApiError(error);

@@ -2,11 +2,12 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { FaHome, FaTrophy, FaDice, FaNewspaper } from 'react-icons/fa';
+import { FaHome, FaTrophy, FaDice, FaNewspaper, FaChartLine } from 'react-icons/fa';
 
 const nav = [
   { name: 'Home', href: '/', anchor: '#hero', icon: FaHome },
   { name: 'Leaderboard', href: '/#leaderboard', anchor: '#leaderboard', icon: FaTrophy },
+  { name: 'Scores', href: '/score', anchor: '#score', icon: FaChartLine },
   { name: 'Character Charts', href: '/#character-charts', anchor: '#character-charts', icon: FaDice },
   { name: 'News Feed', href: '/#news-feed', anchor: '#news-feed', icon: FaNewspaper },
 ];

@@ -1712,6 +1712,12 @@ export default function WizardsControlPage() {
                                   </div>
                                 </div>
                                 <div className="flex gap-2">
+                                  <Link href={`/draft/score-table?draftId=${draft.id}`}>
+                                    <Button variant="outline" size="sm" title="16-player 1v1 score table (4 rounds, best of 3)">
+                                      <FaTable className="w-4 h-4 mr-1" />
+                                      Score table
+                                    </Button>
+                                  </Link>
                                   <Button
                                     variant="outline"
                                     size="sm"

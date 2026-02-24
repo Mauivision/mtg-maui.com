@@ -286,6 +286,7 @@ model DraftEvent {
   creator         User               @relation(fields: [creatorId], references: [id])
   pods            DraftPod[]
   participants    DraftParticipant[]
+  matches         DraftMatch[]
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 }
@@ -319,6 +320,8 @@ model DraftParticipant {
   draftPod         DraftPod          @relation(fields: [draftPodId], references: [id], onDelete: Cascade)
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   draftPickResults DraftPickResult[]
+  matchesAsP1      DraftMatch[]     @relation("MatchPlayer1")
+  matchesAsP2      DraftMatch[]     @relation("MatchPlayer2")
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
@@ -336,6 +339,25 @@ model DraftPickResult {
   participant        DraftParticipant @relation(fields: [draftParticipantId], references: [id], onDelete: Cascade)
 
   @@index([draftParticipantId, round])
+}
+
+// 1v1 tournament matches (best of 3 games). Swiss pairings over 4 rounds.
+model DraftMatch {
+  id              String           @id @default(cuid())
+  draftEventId    String
+  round           Int               // 1–4
+  participant1Id  String
+  participant2Id  String
+  gamesWon1       Int               @default(0) // 0, 1, or 2 (first to 2 wins)
+  gamesWon2       Int               @default(0)
+  draftEvent      DraftEvent       @relation(fields: [draftEventId], references: [id], onDelete: Cascade)
+  participant1    DraftParticipant  @relation("MatchPlayer1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2    DraftParticipant  @relation("MatchPlayer2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([draftEventId, round, participant1Id, participant2Id])
+  @@index([draftEventId, round])
 }
 
 // Card Pool Management for Limited Formats

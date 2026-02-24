@@ -253,7 +253,9 @@ export const CommanderScoring: React.FC = () => {
                               <span className="text-sm opacity-75">#{player.placement}</span>
                             </div>
                             <div className="text-right">
-                              <div className="font-bold text-lg">{scoring.totalPoints} pts</div>
+                              <div className="font-bold text-lg">
+                                {typeof player.points === 'number' ? `${player.points} pts` : `${scoring.totalPoints} pts`}
+                              </div>
                               <div className="text-sm opacity-75">{player.commander}</div>
                             </div>
                           </div>
