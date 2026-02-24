@@ -44,6 +44,8 @@ export async function GET(request: NextRequest) {
       where: { leagueId: league.id },
     });
 
+    const totalDrafts = await prisma.draftEvent.count().catch(() => 0);
+
     // Schema has no LeagueGame.status; treat all recorded games as completed
     const completedGames = totalGames;
     const activeGames = 0;
@@ -86,6 +88,7 @@ export async function GET(request: NextRequest) {
       stats: {
         totalPlayers,
         totalGames,
+        totalDrafts,
         completedGames,
         activeGames,
         upcomingGames,

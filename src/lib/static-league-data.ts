@@ -19,6 +19,8 @@ export interface StaticPlayer {
   id: string;
   name: string;
   commander: string;
+  /** If false, player is dropped/replaced and excluded from leaderboard and charts (e.g. Aaron H replaced by Tim). */
+  active?: boolean;
 }
 
 export interface StaticGameResult {
@@ -34,6 +36,11 @@ export interface StaticGame {
   results: StaticGameResult[];
 }
 
+export interface StaticDraftStanding {
+  name: string;
+  points: number;
+}
+
 export interface StaticLeagueData {
   league: {
     id: string;
@@ -46,6 +53,10 @@ export interface StaticLeagueData {
   };
   players: StaticPlayer[];
   games: StaticGame[];
+  draftStandings?: {
+    draftName: string;
+    standings: StaticDraftStanding[];
+  };
 }
 
 let cached: StaticLeagueData | null = null;
@@ -82,10 +93,12 @@ export function getStaticLeagues() {
 
 export function getStaticLeagueStatus(leagueId?: string) {
   const d = loadData();
-  const league = leagueId ? d.players.length ? d.league : null : d.league;
+  const activePlayers = d.players.filter((p) => p.active !== false);
+  const league = leagueId ? activePlayers.length ? d.league : null : d.league;
   if (!league) return null;
 
   const nameMap = new Map(d.players.map((p) => [p.id, p.name]));
+  const activeIds = new Set(activePlayers.map((p) => p.id));
   const byPlayer = new Map<string, { points: number; name: string }>();
 
   for (const g of d.games) {
@@ -97,6 +110,7 @@ export function getStaticLeagueStatus(leagueId?: string) {
   }
 
   const topPlayers = Array.from(byPlayer.entries())
+    .filter(([id]) => activeIds.has(id))
     .map(([id, v]) => ({ playerId: id, playerName: v.name, totalPoints: v.points }))
     .sort((a, b) => b.totalPoints - a.totalPoints)
     .slice(0, 3);
@@ -112,8 +126,9 @@ export function getStaticLeagueStatus(leagueId?: string) {
       endDate: league.endDate ? new Date(league.endDate).toISOString() : null,
     },
     stats: {
-      totalPlayers: d.players.length,
+      totalPlayers: activePlayers.length,
       totalGames: d.games.length,
+      totalDrafts: 1,
       completedGames: d.games.length,
       activeGames: 0,
       upcomingGames: 0,
@@ -134,14 +149,15 @@ export function getStaticLeagueStatus(leagueId?: string) {
 
 export function getStaticLeaderboard(leagueId?: string, limit = 20) {
   const d = loadData();
+  const activeIds = new Set(d.players.filter((p) => p.active !== false).map((p) => p.id));
   const nameMap = new Map(d.players.map((p) => [p.id, p.name]));
   const byPlayer = new Map<
     string,
-    { points: number; wins: number; losses: number; lastActive: Date }
+    { commanderPoints: number; wins: number; losses: number; lastActive: Date }
   >();
 
   for (const p of d.players) {
-    byPlayer.set(p.id, { points: 0, wins: 0, losses: 0, lastActive: new Date(0) });
+    byPlayer.set(p.id, { commanderPoints: 0, wins: 0, losses: 0, lastActive: new Date(0) });
   }
 
   for (const g of d.games) {
@@ -149,20 +165,39 @@ export function getStaticLeaderboard(leagueId?: string, limit = 20) {
     for (const r of g.results) {
       const cur = byPlayer.get(r.playerId);
       if (!cur) continue;
-      cur.points += r.points;
+      cur.commanderPoints += r.points;
       if (r.place === 1) cur.wins += 1;
       else cur.losses += 1;
       if (date > cur.lastActive) cur.lastActive = date;
     }
   }
 
+  const draftStandings = getStaticDraftStandings();
+  const draftPointsByName = new Map<string, number>();
+  if (draftStandings?.standings?.length) {
+    for (const s of draftStandings.standings) {
+      draftPointsByName.set(s.name, (draftPointsByName.get(s.name) ?? 0) + s.points);
+    }
+  }
+
   const sorted = Array.from(byPlayer.entries())
-    .map(([id, s]) => ({
-      id,
-      name: nameMap.get(id) ?? id,
-      ...s,
-      gamesPlayed: s.wins + s.losses,
-    }))
+    .filter(([id]) => activeIds.has(id))
+    .map(([id, s]) => {
+      const name = nameMap.get(id) ?? id;
+      const draftPts = draftPointsByName.get(name) ?? 0;
+      const totalPoints = s.commanderPoints + draftPts;
+      return {
+        id,
+        name,
+        commanderPoints: s.commanderPoints,
+        draftPoints: draftPts,
+        points: totalPoints,
+        wins: s.wins,
+        losses: s.losses,
+        gamesPlayed: s.wins + s.losses,
+        lastActive: s.lastActive,
+      };
+    })
     .sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points;
       if (b.wins !== a.wins) return b.wins - a.wins;
@@ -172,17 +207,18 @@ export function getStaticLeaderboard(leagueId?: string, limit = 20) {
     });
 
   let rank = 0;
-  return sorted.slice(0, limit).map((row, i) => {
+  return sorted.slice(0, limit).map((row) => {
     rank += 1;
-    const gamesPlayed = row.wins + row.losses;
-    const winRate = gamesPlayed > 0 ? Math.round((row.wins / gamesPlayed) * 1000) / 10 : 0;
+    const winRate = row.gamesPlayed > 0 ? Math.round((row.wins / row.gamesPlayed) * 1000) / 10 : 0;
     return {
       id: row.id,
       name: row.name,
       points: row.points,
+      commanderPoints: row.commanderPoints,
+      draftPoints: row.draftPoints,
       wins: row.wins,
       losses: row.losses,
-      gamesPlayed,
+      gamesPlayed: row.gamesPlayed,
       winRate,
       currentStreak: row.wins > row.losses ? 1 : 0,
       bestStreak: row.wins,
@@ -199,6 +235,8 @@ export function getStaticLeaderboard(leagueId?: string, limit = 20) {
 
 export function getStaticWave1(leagueId?: string) {
   const d = loadData();
+  const activePlayers = d.players.filter((p) => p.active !== false);
+  const activeIds = new Set(activePlayers.map((p) => p.id));
   const nameMap = new Map(d.players.map((p) => [p.id, p.name]));
   const byPlayer = new Map<string, { points: number; wins: number; losses: number }>();
 
@@ -217,6 +255,7 @@ export function getStaticWave1(leagueId?: string) {
   }
 
   const playerStats = Array.from(byPlayer.entries())
+    .filter(([id]) => activeIds.has(id))
     .map(([id, s]) => ({
       id,
       name: nameMap.get(id) ?? id,
@@ -260,6 +299,7 @@ export function getStaticStats() {
 
 export function getStaticCharacterSheets(leagueId?: string) {
   const d = loadData();
+  const activePlayers = d.players.filter((p) => p.active !== false);
   const byPlayer = new Map<
     string,
     { totalPoints: number; wins: number; losses: number; placements: number[] }
@@ -280,7 +320,7 @@ export function getStaticCharacterSheets(leagueId?: string) {
     }
   }
 
-  const players = d.players.map((p) => {
+  const players = activePlayers.map((p) => {
     const s = byPlayer.get(p.id) ?? {
       totalPoints: 0,
       wins: 0,
@@ -357,4 +397,13 @@ export function getStaticCommanderGames() {
       }),
     };
   });
+}
+
+/** Draft game points (1v1 standings) for the draft points chart. */
+export function getStaticDraftStandings(): { draftName: string; standings: StaticDraftStanding[] } | null {
+  const d = loadData();
+  if (d.draftStandings?.standings?.length) {
+    return { draftName: d.draftStandings.draftName, standings: d.draftStandings.standings };
+  }
+  return null;
 }

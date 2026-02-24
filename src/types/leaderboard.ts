@@ -8,6 +8,10 @@ export interface RealtimeLeaderboardEntry {
   name: string;
   avatar?: string;
   points: number;
+  /** Commander pod points (included in points when present). */
+  commanderPoints?: number;
+  /** Draft 1v1 points (included in points when present). */
+  draftPoints?: number;
   wins: number;
   losses: number;
   gamesPlayed: number;

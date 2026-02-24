@@ -9,6 +9,7 @@ import { useLeague } from '@/contexts/LeagueContext';
 import { useHomeData, useCharacterSheets } from '@/hooks';
 import { RealtimeLeaderboard } from '@/components/leaderboard/RealtimeLeaderboard';
 import { SimpleLeaderboardChart } from '@/components/leaderboard/SimpleLeaderboardChart';
+import { DraftPointsChart } from '@/components/leaderboard/DraftPointsChart';
 import { Wave1PodResults } from '@/components/leaderboard/Wave1PodResults';
 import { LeagueStatus } from '@/components/league/LeagueStatus';
 
@@ -90,7 +91,7 @@ export default function HomePage() {
           <div className="space-y-8">
             <SimpleLeaderboardChart
               leagueId={currentLeague?.id ?? undefined}
-              limit={16}
+              limit={24}
             />
             <RealtimeLeaderboard
               leagueId={currentLeague?.id ?? undefined}
@@ -101,6 +102,7 @@ export default function HomePage() {
             <div id="wave1-pods" className="scroll-mt-20">
               <Wave1PodResults leagueId={currentLeague?.id ?? undefined} />
             </div>
+            <DraftPointsChart />
           </div>
         </div>
       </section>

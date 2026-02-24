@@ -320,7 +320,10 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
                   <tr className="border-b border-slate-600 bg-slate-700/50">
                     <th scope="col" className="text-left py-3 px-4 text-slate-300 font-semibold text-sm">Rank</th>
                     <th scope="col" className="text-left py-3 px-4 text-slate-300 font-semibold text-sm">Player</th>
-                    <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Points</th>
+                    <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">
+                      <span>Points</span>
+                      <span className="block text-xs font-normal text-slate-500">Commander + Draft</span>
+                    </th>
                     <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Games</th>
                     <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Record</th>
                     <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Win Rate</th>
@@ -362,7 +365,16 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <span className="font-bold text-amber-400">{entry.points}</span>
+                        {typeof entry.commanderPoints === 'number' && typeof entry.draftPoints === 'number' ? (
+                          <div className="flex flex-col items-end gap-0.5">
+                            <span className="font-bold text-amber-400">{entry.points}</span>
+                            <span className="text-xs text-slate-400" title="Commander + Draft = Total">
+                              {entry.commanderPoints} + {entry.draftPoints} = {entry.points}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="font-bold text-amber-400">{entry.points}</span>
+                        )}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <span className="font-bold text-blue-400">{entry.gamesPlayed || entry.wins + entry.losses}</span>

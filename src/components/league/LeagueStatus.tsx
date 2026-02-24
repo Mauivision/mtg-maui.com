@@ -7,6 +7,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import {
   FaUsers,
   FaGamepad,
+  FaDice,
   FaClock,
   FaExclamationTriangle,
   FaTrophy,
@@ -20,6 +21,7 @@ import { Button } from '@/components/ui/Button';
 interface LeagueStatusStats {
   totalPlayers: number;
   totalGames: number;
+  totalDrafts?: number;
   completedGames: number;
   activeGames: number;
   upcomingGames: number;
@@ -175,7 +177,7 @@ export function LeagueStatus({
         </CardTitle>
       </CardHeader>
       <CardContent className={compact ? 'space-y-2 pt-0' : 'space-y-4'}>
-        <div className={compact ? 'flex flex-wrap gap-4' : 'grid grid-cols-2 sm:grid-cols-5 gap-3'}>
+        <div className={compact ? 'flex flex-wrap gap-4' : 'grid grid-cols-2 sm:grid-cols-6 gap-3'}>
           <div className={statCls}>
             <FaUsers className="text-amber-400 w-5 h-5 shrink-0" />
             <div>
@@ -187,7 +189,14 @@ export function LeagueStatus({
             <FaGamepad className="text-green-400 w-5 h-5 shrink-0" />
             <div>
               <div className="text-lg font-bold text-white">{stats.totalGames}</div>
-              <div className="text-xs text-slate-300">Total Games</div>
+              <div className="text-xs text-slate-300">Games (incl. drafts)</div>
+            </div>
+          </div>
+          <div className={statCls}>
+            <FaDice className="text-violet-400 w-5 h-5 shrink-0" />
+            <div>
+              <div className="text-lg font-bold text-white">{stats.totalDrafts ?? 0}</div>
+              <div className="text-xs text-slate-300">Drafts</div>
             </div>
           </div>
           <div className={`${statCls} border border-green-600/30`}>
