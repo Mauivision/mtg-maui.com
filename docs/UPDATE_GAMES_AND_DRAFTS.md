@@ -39,7 +39,7 @@ After that, refresh the live site; you should see current scores plus the new po
 ## Prerequisites
 
 - **Production database:** Your live site (Vercel) must have `DATABASE_URL` set in **Project → Settings → Environment Variables** to your **production** Postgres (e.g. Vercel Postgres).
-- **Migrations:** The Vercel build runs `prisma migrate deploy`, so the production DB schema stays in sync when you deploy. If you ever need to run migrations manually against production, see [Run commands against production](#run-commands-against-production) below.
+- **Migrations:** Run `prisma migrate deploy` against production when you change the schema (see [Run commands against production](#run-commands-against-production)). The Vercel build does not run migrations so the build always succeeds even without `DATABASE_URL`. If you ever need to run migrations manually against production, see [Run commands against production](#run-commands-against-production) below.
 
 ---
 
