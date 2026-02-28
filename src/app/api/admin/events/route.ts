@@ -49,6 +49,29 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Also post to the news reel so the event appears on the homepage
+    const excerpt =
+      typeof description === 'string' && description.trim()
+        ? description.trim().slice(0, 200) + (description.length > 200 ? '…' : '')
+        : null;
+    const details = [time, location].filter(Boolean).join(' · ');
+    const newsTitle = details ? `${title} — ${details}` : title;
+    try {
+      await prisma.news.create({
+        data: {
+          title: newsTitle,
+          excerpt: excerpt ?? (details ? `Upcoming event: ${title}` : undefined),
+          content: description || undefined,
+          category: 'Announcements',
+          author: 'League',
+          publishedAt: new Date(date),
+        },
+      });
+    } catch (newsErr) {
+      logger.warn('Event created but news post failed', newsErr);
+      // Event is still created; don't fail the request
+    }
+
     return NextResponse.json({ event }, { status: 201 });
   } catch (error) {
     if (error instanceof Error && (error.message?.includes('Unauthorized') || error.message?.includes('Forbidden'))) {
