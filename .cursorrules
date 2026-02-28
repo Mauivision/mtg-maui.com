@@ -247,4 +247,11 @@ Apply these when planning, implementing, or debugging features.
 - Comprehensive reporting and analytics
 - Bulk operations for efficiency
 
+## Scores & Drafts (Leaderboard / Data)
+
+- **Commander points:** Only from `LeagueGame` where `gameType === 'commander'`. Do not count draft or other game types as commander.
+- **Draft points:** Only from `DraftEvent` / `DraftMatch` (match wins × 3). Merge all drafts; for the **first** draft only, **Tim**'s points are excluded from his total (he played for Dan; points shown as "First draft (played for Dan): X pts — not in total").
+- **First draft VP list:** 16 players (Zach 6 … Dustin 1). See `prisma/seed-first-draft-scores.ts`, draft score-table default import, and `src/data/league-data.json` draftStandings. Keep spelling **Kaipo** (not Kalpo).
+- **Docs:** `docs/UPDATE_GAMES_AND_DRAFTS.md` (how to update games/drafts/player status); `docs/VERIFY_SCORES_AND_DRAFT.md` (verification checklist and scoring logic).
+
 Remember: This is a tournament management system for Magic: The Gathering players. Keep the medieval fantasy theme consistent and ensure all features enhance the competitive gaming experience!

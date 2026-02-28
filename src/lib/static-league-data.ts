@@ -180,17 +180,23 @@ export function getStaticLeaderboard(leagueId?: string, limit = 20) {
     }
   }
 
+  // Tim played for Dan in first draft: show points but do not add to his total
+  const timFirstDraftPts =
+    draftStandings?.standings?.find((s) => s.name.trim().toLowerCase() === 'tim')?.points ?? 0;
+
   const sorted = Array.from(byPlayer.entries())
     .filter(([id]) => activeIds.has(id))
     .map(([id, s]) => {
       const name = nameMap.get(id) ?? id;
-      const draftPts = draftPointsByName.get(name) ?? 0;
+      const isTim = name.trim().toLowerCase() === 'tim';
+      const draftPts = isTim ? 0 : (draftPointsByName.get(name) ?? 0);
       const totalPoints = s.commanderPoints + draftPts;
       return {
         id,
         name,
         commanderPoints: s.commanderPoints,
         draftPoints: draftPts,
+        firstDraftPointsPlayedForDan: isTim && timFirstDraftPts > 0 ? timFirstDraftPts : undefined,
         points: totalPoints,
         wins: s.wins,
         losses: s.losses,
@@ -216,6 +222,7 @@ export function getStaticLeaderboard(leagueId?: string, limit = 20) {
       points: row.points,
       commanderPoints: row.commanderPoints,
       draftPoints: row.draftPoints,
+      firstDraftPointsPlayedForDan: row.firstDraftPointsPlayedForDan,
       wins: row.wins,
       losses: row.losses,
       gamesPlayed: row.gamesPlayed,

@@ -112,7 +112,11 @@ If you prefer to run the seed script that uses the same name+score list:
 
 ---
 
-## 3. Player status: Tim (new) and Aaron H (dropped)
+## 3. Player status: Tim (new), Aaron H (dropped), and first draft (Tim played for Dan)
+
+- **Aaron H** has **dropped** from the league. His points are not transferred to anyone.
+- **Tim** has taken Aaron H’s place in the league. Tim does **not** share points with Aaron H; Tim earns points from all games and drafts from here on.
+- **First draft:** Tim played for **Dan** so Dan could use the draft cards. Dan gets the cards; Tim’s first-draft points are **listed** on the leaderboard as “First draft (played for Dan): X pts — not in total” and are **not** added to Tim’s total. Tim’s total = Commander + Draft from **later** drafts only. Run the first-draft seed or Import standings as usual; the leaderboard logic excludes Tim’s first-draft points from his total automatically.
 
 To show **Tim as a new player** and **Aaron H as dropped** on the live site:
 
@@ -136,7 +140,18 @@ To show **Tim as a new player** and **Aaron H as dropped** on the live site:
 
 ---
 
-## 4. Run commands against production
+## 4. News (e.g. Draft March 1st 2026)
+
+To add the **Draft this Sunday — March 1st, 2026** news item:
+
+1. Set `DATABASE_URL` to your **production** URL (or local).
+2. Run: `npm run prisma:seed:news-march-draft`
+
+Or in **Wizards** → **News** → add a post with title “Draft this Sunday — March 1st, 2026” and category **Announcements**.
+
+---
+
+## 5. Run commands against production
 
 Whenever a doc says “run against production,” use your **production** `DATABASE_URL` in the same terminal session, then run the command.
 
@@ -156,24 +171,28 @@ npm run prisma:seed:tim-aaron
 
 # First draft scores (draft must exist with 16 players + pairings)
 npx ts-node --project tsconfig.seed.json prisma/seed-first-draft-scores.ts
+
+# News: Draft Sunday March 1st 2026
+npm run prisma:seed:news-march-draft
 ```
 
 Never point `DATABASE_URL` at production by mistake when running `prisma migrate reset` or `db:reset`; those wipe the database.
 
 ---
 
-## 5. Quick checklist
+## 6. Quick checklist
 
 | Goal                         | Where to do it                    | Action |
 |-----------------------------|------------------------------------|--------|
 | Commander pods on live site | Local terminal + prod `DATABASE_URL` or Wizards | Run `prisma:seed:commander-pods-feb` **or** add each pod in Wizards → Games |
 | First draft scores on live | Live site                          | Draft score table → **Import standings (name + score)** → Import |
 | Tim new, Aaron H dropped   | Local terminal + prod `DATABASE_URL` or Wizards | Run `prisma:seed:tim-aaron` **or** add Tim and mark Aaron H dropped in Wizards → Players |
+| News: Draft March 1st 2026 | Local terminal + prod `DATABASE_URL` or Wizards | Run `npm run prisma:seed:news-march-draft` **or** add in Wizards → News |
 | Schema up to date on prod  | Automatic on deploy                | Vercel build runs `prisma migrate deploy` |
 
 ---
 
-## 6. Troubleshooting
+## 7. Troubleshooting
 
 - **Scores page empty:** Commander games only show if they have **LeagueGameDeck** records (created by the seed or by adding games via Wizards with players who have decks). Run the Commander pods seed or add games in Wizards.
 - **Draft import fails:** “Could not match…” means a name in the list doesn’t match a participant. Check spelling (e.g. Kaipo vs Kalpo) and that the draft has exactly 16 participants.

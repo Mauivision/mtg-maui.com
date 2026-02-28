@@ -26,6 +26,7 @@
     "prisma:seed:games": "npm run prisma:seed:game && npm run prisma:seed:game:b && npm run prisma:seed:game:c && npm run prisma:seed:game:d",
     "prisma:seed:commander-pods-feb": "ts-node --project tsconfig.seed.json prisma/seed-commander-pods-feb-2026.ts",
     "prisma:seed:tim-aaron": "ts-node --project tsconfig.seed.json prisma/seed-tim-new-aaron-h-dropped.ts",
+    "prisma:seed:news-march-draft": "ts-node --project tsconfig.seed.json prisma/seed-news-march-draft-2026.ts",
     "prisma:seed:maui": "ts-node --project tsconfig.seed.json prisma/seed-maui-commander-full.ts",
     "setup:maui": "prisma generate && prisma migrate deploy && npm run prisma:seed:maui",
     "prisma:reset": "prisma migrate reset",

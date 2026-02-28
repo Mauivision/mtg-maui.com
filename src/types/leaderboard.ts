@@ -24,6 +24,8 @@ export interface RealtimeLeaderboardEntry {
   lastActive: string;
   goldObjectives?: number;
   silverObjectives?: number;
+  /** First draft points when player played for someone else (e.g. Tim for Dan); shown but not in total. */
+  firstDraftPointsPlayedForDan?: number;
 }
 
 /**
