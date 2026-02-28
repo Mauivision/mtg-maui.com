@@ -12,22 +12,22 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const NAME_AND_SCORES: { name: string; score: number }[] = [
-  { name: 'Kendra', score: 1 },
-  { name: 'April', score: 2 },
-  { name: 'James', score: 4 },
-  { name: 'Nate', score: 5 },
-  { name: 'Dustin', score: 1 },
-  { name: 'Travis', score: 3 },
-  { name: 'Ronnie', score: 2 },
-  { name: 'Aaron H', score: 5 },
-  { name: 'Aaron S', score: 2 },
-  { name: 'Aaron V', score: 3 },
   { name: 'Zach', score: 6 },
-  { name: 'Kevin', score: 3 },
+  { name: 'Nate', score: 5 },
+  { name: 'Aaron H', score: 5 },
+  { name: 'James', score: 4 },
   { name: 'Tre', score: 4 },
-  { name: 'Tim', score: 4 },
-  { name: 'Kalpo', score: 3 },
+  { name: 'Tim', score: 5 },
+  { name: 'Kevin', score: 4 },
+  { name: 'Travis', score: 3 },
+  { name: 'Aaron V', score: 3 },
   { name: 'Scott', score: 3 },
+  { name: 'Kaipo', score: 3 },
+  { name: 'April', score: 2 },
+  { name: 'Ronnie', score: 2 },
+  { name: 'Aaron S', score: 2 },
+  { name: 'Kendra', score: 1 },
+  { name: 'Dustin', score: 1 },
 ];
 
 function displayName(name: string | null, email: string): string {

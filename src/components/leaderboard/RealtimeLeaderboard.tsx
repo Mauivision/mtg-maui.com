@@ -371,6 +371,11 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
                             <span className="text-xs text-slate-400" title="Commander + Draft = Total">
                               {entry.commanderPoints} + {entry.draftPoints} = {entry.points}
                             </span>
+                            {typeof entry.firstDraftPointsPlayedForDan === 'number' && entry.firstDraftPointsPlayedForDan > 0 && (
+                              <span className="text-xs text-slate-500" title="First draft: Tim played for Dan; cards to Dan, points not in total">
+                                First draft (played for Dan): {entry.firstDraftPointsPlayedForDan} pts — not in total
+                              </span>
+                            )}
                           </div>
                         ) : (
                           <span className="font-bold text-amber-400">{entry.points}</span>

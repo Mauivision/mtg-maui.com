@@ -7,16 +7,16 @@ const IMG = '/images';
 
 export const siteImages = {
   /** Main hero / default background (home, rules, etc.) */
-  heroBackground: `${IMG}/medieval-background.jpg`,
+  heroBackground: `${IMG}/dark-medieval-sky.png`,
 
   /** OG / social preview (1200x630 ideal; we use existing asset) */
   ogImage: `${IMG}/medieval-background.jpg`,
 
   /** Page-specific backgrounds */
   backgrounds: {
-    default: `${IMG}/medieval-background.jpg`,
-    home: `${IMG}/medieval-background.jpg`,
-    wizards: `${IMG}/medieval-background.jpg`,
+    default: `${IMG}/dark-medieval-sky.png`,
+    home: `${IMG}/dark-medieval-sky.png`,
+    wizards: `${IMG}/dark-medieval-sky.png`,
     auth: `${IMG}/mtg-background.jpg`,
     rules: `${IMG}/medieval-background.jpg`,
     commander: `${IMG}/backgrounds/commander-bg.jpg`,

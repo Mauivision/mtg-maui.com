@@ -74,7 +74,7 @@ function DraftScoreTableContent() {
   const [importingScores, setImportingScores] = useState(false);
   const [showImportStandings, setShowImportStandings] = useState(false);
   const [importStandingsText, setImportStandingsText] = useState(
-    `Kendra 1\nApril 2\nJames 4\nNate 5\nDustin 1\nTravis 3\nRonnie 2\nAaron H 5\nAaron S 2\nAaron V 3\nZach 6\nKevin 3\nTre 4\nTim 4\nKalpo 3\nScott 3`
+    `Zach 6\nNate 5\nAaron H 5\nJames 4\nTre 4\nTim 5\nKevin 4\nTravis 3\nAaron V 3\nScott 3\nKaipo 3\nApril 2\nRonnie 2\nAaron S 2\nKendra 1\nDustin 1`
   );
   const [importingStandings, setImportingStandings] = useState(false);
 
