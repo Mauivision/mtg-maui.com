@@ -26,7 +26,7 @@ DATABASE_URL="postgresql://mtguser:mtgpass@localhost:5432/mtg_maui" npm run pris
 
 - **BOM in migration file**: The initial migration (`prisma/migrations/20260126120000_init_postgres/migration.sql`) originally had a UTF-8 BOM that PostgreSQL cannot parse. This has been fixed in the repo. If you encounter `syntax error at or near "﻿"` during migration, strip the BOM.
 - **Seed scripts don't load `.env`**: The `ts-node` seed scripts (e.g. `npm run prisma:seed:maui`) do not automatically load `.env`. You must either export `DATABASE_URL` or prefix the command: `DATABASE_URL="..." npm run prisma:seed:maui`.
-- **Leaderboard query error**: The homepage leaderboard may show a Prisma `queryRaw` error about `relation "leaguegamedeck" does not exist`. This is a known issue with the raw SQL query referencing a view/table not created by migrations. The Points chart and character cards still render correctly with seeded data.
+- **Raw SQL quoting**: PostgreSQL table names created by Prisma are case-sensitive (quoted). All `$queryRaw` calls must use `Prisma.sql` with double-quoted table/column names (e.g. `"LeagueGameDeck"`, not `LeagueGameDeck`). Unquoted identifiers get lowercased by PostgreSQL, causing "relation does not exist" errors.
 - **Static data mode**: Set `USE_STATIC_LEAGUE_DATA=true` in `.env` (and omit `DATABASE_URL`) to run without a database. This provides read-only demo data from `src/data/league-data.json`.
 - **Auth is off by default**: `SKIP_ADMIN_AUTH=true` in `.env` means the Wizards admin panel is open without login.
 
