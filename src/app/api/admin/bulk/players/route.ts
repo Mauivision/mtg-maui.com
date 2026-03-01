@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { requireAdminOrSimple } from '@/lib/auth-helpers';
 import { handleApiError } from '@/lib/api-error';
@@ -29,15 +30,17 @@ export async function POST(request: NextRequest) {
         const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
 
         // First, find players who haven't played recently
-        const inactivePlayers = await prisma.$queryRaw<Array<{ userId: string }>>`
-          SELECT DISTINCT lm.userId
-          FROM LeagueMembership lm
-          LEFT JOIN LeagueGameParticipant lgp ON lm.userId = lgp.playerId
-          LEFT JOIN LeagueGame lg ON lgp.gameId = lg.id AND lg.leagueId = lm.leagueId
-          WHERE lm.active = true
-          GROUP BY lm.userId, lm.leagueId
-          HAVING MAX(COALESCE(lg.createdAt, lm.joinedAt)) < ${ninetyDaysAgo}
-        `;
+        const inactivePlayers = await prisma.$queryRaw<Array<{ userId: string }>>(
+          Prisma.sql`
+            SELECT DISTINCT lm."userId"
+            FROM "LeagueMembership" lm
+            LEFT JOIN "LeagueGameDeck" lgd ON lm."userId" = lgd."playerId"
+            LEFT JOIN "LeagueGame" lg ON lgd."gameId" = lg.id AND lg."leagueId" = lm."leagueId"
+            WHERE lm.active = true
+            GROUP BY lm."userId", lm."leagueId"
+            HAVING MAX(COALESCE(lg."createdAt", lm."joinedAt")) < ${ninetyDaysAgo}
+          `
+        );
 
         const deactivateResult = await prisma.leagueMembership.updateMany({
           where: {
