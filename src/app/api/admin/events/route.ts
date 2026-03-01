@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (newsErr) {
-      logger.warn('Event created but news post failed', newsErr);
+      logger.warn('Event created but news post failed', { error: String(newsErr) });
       // Event is still created; don't fail the request
     }
 
