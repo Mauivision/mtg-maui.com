@@ -54,7 +54,8 @@ npm run dev
 ## Database
 
 - **PostgreSQL** via `DATABASE_URL`. See [docs/VERCEL_POSTGRES_SETUP.md](docs/VERCEL_POSTGRES_SETUP.md).
-- Local: Postgres in `.env`. Vercel: Vercel Postgres + `DATABASE_URL`.
+- **Supabase:** use the Supabase Postgres URI as `DATABASE_URL` — [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
+- Local: `.env.local`. Vercel: **Settings → Environment Variables** + `DATABASE_URL` (Vercel Postgres or Supabase).
 - **Reset DB and install 16 players + leaderboard:** [docs/DATABASE_RESET_AND_POPULATE.md](docs/DATABASE_RESET_AND_POPULATE.md).
 - **Update Commander games, draft scores, and player status (e.g. on live):** [docs/UPDATE_GAMES_AND_DRAFTS.md](docs/UPDATE_GAMES_AND_DRAFTS.md).
 - **Simple leaderboard (16 players, scores, top down):** [docs/SIMPLE_LEADERBOARD.md](docs/SIMPLE_LEADERBOARD.md).
@@ -63,9 +64,9 @@ npm run dev
 
 ## Deploy (Vercel)
 
-1. **Storage** → Create **Postgres** → link to project.
-2. **Env:** `DATABASE_URL` (auto from Postgres), `SKIP_ADMIN_AUTH` = `true` (no-login mode).
-3. Push to `main` → Vercel runs `vercel.json` build and deploys.
+1. **Database:** Either Vercel **Storage → Postgres**, **or** use **Supabase** and paste its URI into Vercel **Settings → Environment Variables** as `DATABASE_URL`.
+2. **Env:** `DATABASE_URL` (required for DB mode), `SKIP_ADMIN_AUTH` = `true` (optional no-login Wizards).
+3. Push to `main` → Vercel runs `vercel.json` (`prisma migrate deploy` + build) and deploys.
 
 Full checklist: [docs/DEPLOY_VERCEL_CHECKLIST.md](docs/DEPLOY_VERCEL_CHECKLIST.md). One project only; push to `main` overrides production.
 
@@ -81,6 +82,7 @@ Full checklist: [docs/DEPLOY_VERCEL_CHECKLIST.md](docs/DEPLOY_VERCEL_CHECKLIST.m
 | [docs/DEPLOY_VERCEL_CHECKLIST.md](docs/DEPLOY_VERCEL_CHECKLIST.md) | Vercel deploy + verify |
 | [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) | Project layout |
 | [docs/DATABASE_AND_PRISMA.md](docs/DATABASE_AND_PRISMA.md) | DB, Prisma, migrations |
+| [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) | **Supabase Postgres + `DATABASE_URL`** |
 | [docs/EDITABLE_DATA_GUIDE.md](docs/EDITABLE_DATA_GUIDE.md) | What you can edit and how |
 | [docs/SCORE_ENTRY_GUIDE.md](docs/SCORE_ENTRY_GUIDE.md) | Add game results via seed scripts (Cursor-friendly) |
 | [docs/DATABASE_RESET_AND_POPULATE.md](docs/DATABASE_RESET_AND_POPULATE.md) | Reset DB, 16 players, leaderboard (top down) |

@@ -61,7 +61,7 @@ Use the **same** Postgres DB or a separate one (e.g. local Docker, Neon free tie
 
 ## Alternatives
 
-- **Supabase** (Postgres): Use its connection string as `DATABASE_URL`.
+- **Supabase** (Postgres): Use its connection string as `DATABASE_URL`. Step-by-step: [SUPABASE_SETUP.md](SUPABASE_SETUP.md).
 - **PlanetScale** (MySQL): Change Prisma `provider` to `mysql` and adjust schema/migrations.
 - **Turso/libSQL**: SQLite-compatible, serverless; requires `libsql` provider and different setup.
 
