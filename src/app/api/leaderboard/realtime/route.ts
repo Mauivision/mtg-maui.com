@@ -12,6 +12,8 @@ const querySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(10),
 });
 
+const NO_STORE = { 'Cache-Control': 'no-store, must-revalidate' as const };
+
 interface UserStats {
   points: number;
   wins: number;
@@ -44,14 +46,14 @@ export async function GET(request: NextRequest) {
     });
 
     if (!validated.success) {
-      return NextResponse.json({ error: 'Invalid parameters' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid parameters' }, { status: 400, headers: NO_STORE });
     }
 
     const { gameType, leagueId, limit } = validated.data;
 
     if (isStaticLeagueDataMode()) {
       const entries = getStaticLeaderboard(leagueId, limit);
-      return NextResponse.json({ entries });
+      return NextResponse.json({ entries }, { headers: NO_STORE });
     }
 
     let userIds: string[] | null = null;
@@ -64,7 +66,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (leagueId != null && (!userIds || userIds.length === 0)) {
-      return NextResponse.json({ entries: [] });
+      return NextResponse.json({ entries: [] }, { headers: NO_STORE });
     }
 
     const whereUser = userIds != null && userIds.length > 0 ? { id: { in: userIds } } : {};
@@ -74,7 +76,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (users.length === 0) {
-      return NextResponse.json({ entries: [] });
+      return NextResponse.json({ entries: [] }, { headers: NO_STORE });
     }
 
     const uidSet = new Set(users.map((u) => u.id));
@@ -255,7 +257,7 @@ export async function GET(request: NextRequest) {
       trend: 'same' as const,
     }));
 
-    return NextResponse.json({ entries });
+    return NextResponse.json({ entries }, { headers: NO_STORE });
   } catch (error) {
     logger.error('Realtime leaderboard API error', error);
     return handleApiError(error);

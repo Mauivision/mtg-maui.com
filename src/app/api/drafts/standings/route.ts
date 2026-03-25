@@ -4,18 +4,24 @@ import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 import { isStaticLeagueDataMode, getStaticDraftStandings } from '@/lib/static-league-data';
 
+/** Avoid stale charts on CDN; DB responses must reflect live Postgres/Supabase only. */
+const NO_STORE = { 'Cache-Control': 'no-store, must-revalidate' as const };
+
 /** Public GET: latest draft standings (points earned) for the draft points chart. */
 export async function GET() {
   try {
     if (isStaticLeagueDataMode()) {
       const staticData = getStaticDraftStandings();
       if (staticData) {
-        return NextResponse.json({
-          draftName: staticData.draftName,
-          standings: staticData.standings.map((s) => ({ name: s.name, points: s.points })),
-        });
+        return NextResponse.json(
+          {
+            draftName: staticData.draftName,
+            standings: staticData.standings.map((s) => ({ name: s.name, points: s.points })),
+          },
+          { headers: NO_STORE }
+        );
       }
-      return NextResponse.json({ draftName: null, standings: [] });
+      return NextResponse.json({ draftName: null, standings: [] }, { headers: NO_STORE });
     }
 
     const draft = await prisma.draftEvent.findFirst({
@@ -29,15 +35,9 @@ export async function GET() {
       },
     });
 
+    // With DATABASE_URL (e.g. Supabase), never fall back to bundled JSON — return DB truth only.
     if (!draft || draft.participants.length === 0) {
-      const staticData = getStaticDraftStandings();
-      if (staticData) {
-        return NextResponse.json({
-          draftName: staticData.draftName,
-          standings: staticData.standings.map((s) => ({ name: s.name, points: s.points })),
-        });
-      }
-      return NextResponse.json({ draftName: null, standings: [] });
+      return NextResponse.json({ draftName: null, standings: [] }, { headers: NO_STORE });
     }
 
     const participants = draft.participants as Array<{
@@ -79,10 +79,13 @@ export async function GET() {
       .map((p) => ({ name: p.name, points: p.matchPoints }))
       .sort((a, b) => b.points - a.points);
 
-    return NextResponse.json({
-      draftName: draft.name,
-      standings,
-    });
+    return NextResponse.json(
+      {
+        draftName: draft.name,
+        standings,
+      },
+      { headers: NO_STORE }
+    );
   } catch (error) {
     logger.error('Draft standings API error', error);
     return handleApiError(error);

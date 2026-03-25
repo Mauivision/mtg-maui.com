@@ -18,6 +18,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
+    "db:check": "ts-node --project tsconfig.seed.json scripts/check-db-connection.ts",
     "prisma:seed": "prisma db seed",
     "prisma:seed:game": "ts-node --project tsconfig.seed.json prisma/seed-game-2026-01-05.ts",
     "prisma:seed:game:b": "ts-node --project tsconfig.seed.json prisma/seed-game-2026-01-10.ts",

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,12 +10,19 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { FaTrophy } from 'react-icons/fa';
+import { FaRedo, FaTrophy } from 'react-icons/fa';
 import type { RealtimeLeaderboardEntry } from '@/types/leaderboard';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
+
+const POLL_MS = 45_000;
+
+function formatUpdatedAt(d: Date): string {
+  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+}
 
 interface SimpleLeaderboardChartProps {
   leagueId?: string;
@@ -29,30 +36,89 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
   const [entries, setEntries] = useState<RealtimeLeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const initialFetchDone = useRef(false);
 
-  const fetchLeaderboard = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const params = new URLSearchParams({
-        gameType: 'all',
-        limit: limit.toString(),
-        ...(leagueId && { leagueId }),
-      });
-      const response = await fetch(`/api/leaderboard/realtime?${params}`);
-      const data = await response.json();
-      setEntries(data.entries ?? []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load leaderboard');
-      setEntries([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [leagueId, limit]);
+  const fetchLeaderboard = useCallback(
+    async (opts?: { silent?: boolean; manual?: boolean }) => {
+      const silent = opts?.silent === true;
+      const manual = opts?.manual === true;
+      const showFullSpinner = !silent && !initialFetchDone.current;
+      try {
+        if (showFullSpinner) {
+          setLoading(true);
+        }
+        if (manual) setButtonLoading(true);
+        setError(null);
+        const params = new URLSearchParams({
+          gameType: 'all',
+          limit: limit.toString(),
+          ...(leagueId && { leagueId }),
+        });
+        const response = await fetch(`/api/leaderboard/realtime?${params}`, {
+          cache: 'no-store',
+        });
+        const data = await response.json();
+        setEntries(data.entries ?? []);
+        setLastUpdated(new Date());
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load leaderboard');
+        setEntries([]);
+      } finally {
+        initialFetchDone.current = true;
+        if (showFullSpinner) setLoading(false);
+        if (manual) setButtonLoading(false);
+      }
+    },
+    [leagueId, limit]
+  );
 
   useEffect(() => {
-    fetchLeaderboard();
+    initialFetchDone.current = false;
+    void fetchLeaderboard();
   }, [fetchLeaderboard]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void fetchLeaderboard({ silent: true });
+      }
+    }, POLL_MS);
+    return () => clearInterval(id);
+  }, [fetchLeaderboard]);
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === 'visible') {
+        void fetchLeaderboard({ silent: true });
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, [fetchLeaderboard]);
+
+  const headerActions = (
+    <div className="flex items-center gap-2 shrink-0">
+      {lastUpdated && (
+        <span className="text-xs text-slate-500 tabular-nums" title="Last data refresh">
+          {formatUpdatedAt(lastUpdated)}
+        </span>
+      )}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="border-slate-600 text-slate-200"
+        loading={buttonLoading}
+        disabled={loading}
+        aria-label="Refresh leaderboard chart"
+        onClick={() => void fetchLeaderboard({ manual: true })}
+      >
+        <FaRedo className="w-3.5 h-3.5" />
+      </Button>
+    </div>
+  );
 
   if (loading) {
     return (
@@ -69,10 +135,13 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
     return (
       <Card className="bg-slate-800/50 border-slate-700">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <FaTrophy className="w-5 h-5 text-amber-500" />
-            Points
-          </CardTitle>
+          <div className="flex flex-row items-center justify-between gap-2">
+            <CardTitle className="text-white flex items-center gap-2">
+              <FaTrophy className="w-5 h-5 text-amber-500" />
+              Points
+            </CardTitle>
+            {headerActions}
+          </div>
         </CardHeader>
         <CardContent className="py-8 text-center text-slate-400">
           {error ? (
@@ -157,10 +226,13 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
   return (
     <Card className="bg-slate-800/50 border-slate-700">
       <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
-          <FaTrophy className="w-5 h-5 text-amber-500" />
-          Points
-        </CardTitle>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <CardTitle className="text-white flex items-center gap-2">
+            <FaTrophy className="w-5 h-5 text-amber-500" />
+            Points
+          </CardTitle>
+          {headerActions}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="h-[min(400px,50vh)] min-h-[280px]">

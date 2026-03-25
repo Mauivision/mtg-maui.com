@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,11 +10,18 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { FaDice } from 'react-icons/fa';
+import { FaDice, FaRedo } from 'react-icons/fa';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
+
+const POLL_MS = 45_000;
+
+function formatUpdatedAt(d: Date): string {
+  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+}
 
 interface DraftStanding {
   name: string;
@@ -26,26 +33,80 @@ export const DraftPointsChart: React.FC = () => {
   const [standings, setStandings] = useState<DraftStanding[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const initialFetchDone = useRef(false);
 
-  const fetchStandings = useCallback(async () => {
+  const fetchStandings = useCallback(async (opts?: { silent?: boolean; manual?: boolean }) => {
+    const silent = opts?.silent === true;
+    const manual = opts?.manual === true;
+    const showFullSpinner = !silent && !initialFetchDone.current;
     try {
-      setLoading(true);
+      if (showFullSpinner) {
+        setLoading(true);
+      }
+      if (manual) setButtonLoading(true);
       setError(null);
-      const response = await fetch('/api/drafts/standings');
+      const response = await fetch('/api/drafts/standings', { cache: 'no-store' });
       const data = await response.json();
       setDraftName(data.draftName ?? null);
       setStandings(data.standings ?? []);
+      setLastUpdated(new Date());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load draft standings');
       setStandings([]);
     } finally {
-      setLoading(false);
+      initialFetchDone.current = true;
+      if (showFullSpinner) setLoading(false);
+      if (manual) setButtonLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchStandings();
+    initialFetchDone.current = false;
+    void fetchStandings();
   }, [fetchStandings]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void fetchStandings({ silent: true });
+      }
+    }, POLL_MS);
+    return () => clearInterval(id);
+  }, [fetchStandings]);
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === 'visible') {
+        void fetchStandings({ silent: true });
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, [fetchStandings]);
+
+  const headerActions = (
+    <div className="flex items-center gap-2 shrink-0">
+      {lastUpdated && (
+        <span className="text-xs text-slate-500 tabular-nums" title="Last data refresh">
+          {formatUpdatedAt(lastUpdated)}
+        </span>
+      )}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="border-slate-600 text-slate-200"
+        loading={buttonLoading}
+        disabled={loading}
+        aria-label="Refresh draft standings chart"
+        onClick={() => void fetchStandings({ manual: true })}
+      >
+        <FaRedo className="w-3.5 h-3.5" />
+      </Button>
+    </div>
+  );
 
   if (loading) {
     return (
@@ -62,10 +123,13 @@ export const DraftPointsChart: React.FC = () => {
     return (
       <Card className="bg-slate-800/50 border-slate-700">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <FaDice className="w-5 h-5 text-amber-500" />
-            Draft — Points earned
-          </CardTitle>
+          <div className="flex flex-row items-center justify-between gap-2">
+            <CardTitle className="text-white flex items-center gap-2">
+              <FaDice className="w-5 h-5 text-amber-500" />
+              Draft — Points earned
+            </CardTitle>
+            {headerActions}
+          </div>
         </CardHeader>
         <CardContent className="py-8 text-center text-slate-400">
           {error ? (
@@ -145,10 +209,13 @@ export const DraftPointsChart: React.FC = () => {
   return (
     <Card className="bg-slate-800/50 border-slate-700">
       <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
-          <FaDice className="w-5 h-5 text-amber-500" />
-          {draftName || 'Draft'} — Points earned
-        </CardTitle>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <CardTitle className="text-white flex items-center gap-2">
+            <FaDice className="w-5 h-5 text-amber-500" />
+            {draftName || 'Draft'} — Points earned
+          </CardTitle>
+          {headerActions}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="h-[min(420px,55vh)] min-h-[280px]">
