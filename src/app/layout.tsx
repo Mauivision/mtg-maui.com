@@ -10,6 +10,7 @@ import { WebsiteStructuredData, OrganizationStructuredData } from '@/components/
 import { WebVitals } from '@/components/analytics/WebVitals';
 import { ErrorReporter } from '@/components/analytics/ErrorReporter';
 import { SkipLinks } from '@/components/ui/SkipLinks';
+import { HiddenRelics } from '@/components/ui/HiddenRelics';
 import { siteImages } from '@/lib/site-images';
 import './globals.css';
 
@@ -100,6 +101,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           className="pointer-events-none fixed inset-0 z-0 bg-slate-950 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${siteImages.backgrounds.default})` }}
         />
+        <HiddenRelics />
         <SkipLinks />
         <PageProgress />
         <ErrorBoundary>
