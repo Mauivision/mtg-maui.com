@@ -467,7 +467,7 @@ export function getStaticStats() {
     totalLeagues: 1,
     totalDrafts: 2,
     totalEvents: 0,
-    newsCount: 0,
+    newsCount: 2,
   };
 }
 

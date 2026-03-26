@@ -346,7 +346,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ playerId
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
+            <div className="h-64 rounded-lg bg-slate-950/50 p-3">
               <Line data={tournamentHistoryData} options={chartOptions} />
             </div>
           </CardContent>
@@ -361,7 +361,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ playerId
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-center justify-center">
+            <div className="h-64 flex items-center justify-center rounded-lg bg-slate-950/50 p-3">
               <Doughnut
                 data={gameTypeData}
                 options={{
@@ -390,7 +390,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ playerId
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
+            <div className="h-64 rounded-lg bg-slate-950/50 p-3">
               <Radar data={radarData} options={radarOptions} />
             </div>
           </CardContent>

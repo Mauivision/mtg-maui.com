@@ -209,7 +209,7 @@ export const DraftPointsChart: React.FC = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[min(420px,55vh)] min-h-[280px]">
+        <div className="h-[min(420px,55vh)] min-h-[280px] rounded-lg bg-slate-950/50 p-3">
           <Bar data={chartData} options={chartOptions} />
         </div>
       </CardContent>
