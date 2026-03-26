@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Gallery placeholder image">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1023"/>
+      <stop offset="1" stop-color="#050814"/>
+    </linearGradient>
+    <radialGradient id="g1" cx="70%" cy="28%" r="70%">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0.28"/>
+      <stop offset="0.6" stop-color="#22c55e" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#22c55e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="30%" cy="70%" r="75%">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity="0.24"/>
+      <stop offset="0.62" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect width="1200" height="800" fill="url(#g1)"/>
+  <rect width="1200" height="800" fill="url(#g2)"/>
+  <g fill="none" stroke="#e2e8f0" stroke-opacity="0.10">
+    <path d="M120 600 C 320 460, 540 520, 700 580 S 980 720, 1120 630" stroke-width="3"/>
+    <path d="M120 650 C 340 520, 560 560, 720 620 S 980 770, 1120 680" stroke-width="1.8"/>
+  </g>
+  <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" fill="#cbd5e1">
+    <text x="56" y="96" font-size="18" font-weight="700" letter-spacing="3" fill="#34d399" fill-opacity="0.75">GALLERY</text>
+    <text x="56" y="150" font-size="40" font-weight="800" fill="#f8fafc">MTG Maui League</text>
+    <text x="56" y="196" font-size="18" font-weight="600">Placeholder artwork</text>
+  </g>
+</svg>

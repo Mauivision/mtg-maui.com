@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-label="Abstract skyline ambient background">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#050814"/>
+      <stop offset="0.55" stop-color="#0b1531"/>
+      <stop offset="1" stop-color="#070611"/>
+    </linearGradient>
+    <radialGradient id="dawn" cx="55%" cy="24%" r="55%">
+      <stop offset="0" stop-color="#fde68a" stop-opacity="0.22"/>
+      <stop offset="0.42" stop-color="#f59e0b" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch" seed="7" />
+      <feColorMatrix type="matrix" values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 0.03 0" />
+    </filter>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#sky)" />
+  <rect width="1920" height="1080" fill="url(#dawn)" />
+
+  <!-- Minimal geometric silhouette (not a literal castle; just abstract spires) -->
+  <g fill="#020414" fill-opacity="0.65">
+    <path d="M0 860 L140 820 L220 860 L340 800 L470 860 L620 780 L760 860 L920 810 L1040 860 L1180 790 L1320 860 L1490 820 L1600 860 L1720 830 L1820 860 L1920 840 L1920 1080 L0 1080 Z" />
+  </g>
+
+  <!-- Accent sparks -->
+  <g fill="#fbbf24" fill-opacity="0.18">
+    <circle cx="320" cy="240" r="2.2" />
+    <circle cx="560" cy="180" r="1.6" />
+    <circle cx="910" cy="260" r="2.0" />
+    <circle cx="1220" cy="210" r="1.8" />
+    <circle cx="1500" cy="170" r="1.4" />
+  </g>
+
+  <rect width="1920" height="1080" filter="url(#grain)" opacity="0.9" />
+</svg>

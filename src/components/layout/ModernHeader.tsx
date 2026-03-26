@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaHome, FaTrophy, FaDice, FaNewspaper, FaChartLine } from 'react-icons/fa';
 
 const nav = [
@@ -21,8 +22,15 @@ export const ModernHeader: React.FC = () => {
             href="/"
             className="flex items-center space-x-2.5 group transition-all duration-200 hover:scale-[1.02]"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-600 to-amber-800 border border-amber-500/40 flex items-center justify-center">
-              <span className="text-amber-200 font-bold text-sm">M</span>
+            <div className="w-8 h-8 rounded-lg bg-slate-950/40 border border-slate-700/60 flex items-center justify-center overflow-hidden">
+              <Image
+                src="/images/icons/logo.png"
+                alt="MTG Maui logo"
+                width={32}
+                height={32}
+                className="w-8 h-8 object-contain"
+                priority
+              />
             </div>
             <span className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors">
               Maui League
