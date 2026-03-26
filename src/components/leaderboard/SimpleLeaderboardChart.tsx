@@ -116,7 +116,7 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
 
   if (loading) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700" aria-busy="true" aria-live="polite">
+      <Card className="bg-slate-800/70 border-slate-700 backdrop-blur-sm" aria-busy="true" aria-live="polite">
         <CardContent className="py-12 flex flex-col items-center justify-center gap-3">
           <LoadingSpinner className="text-amber-500" />
           <span className="text-slate-400 text-sm">Loading leaderboard…</span>
@@ -138,7 +138,7 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
 
   if (error || entries.length === 0) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="bg-slate-800/70 border-slate-700 backdrop-blur-sm">
         <CardHeader>
           <div className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="text-white flex items-center gap-2">
@@ -242,7 +242,7 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
   };
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700">
+    <Card className="bg-slate-800/70 border-slate-700 backdrop-blur-sm">
       <CardHeader>
         <div className="flex flex-row items-center justify-between gap-2">
           <CardTitle className="text-white flex items-center gap-2">
@@ -253,7 +253,7 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[min(400px,50vh)] min-h-[280px] rounded-lg bg-slate-950/50 p-3">
+        <div className="h-[min(400px,50vh)] min-h-[280px] rounded-lg bg-slate-950/60 p-3 backdrop-blur-sm">
           <Bar data={chartData} options={chartOptions} />
         </div>
       </CardContent>

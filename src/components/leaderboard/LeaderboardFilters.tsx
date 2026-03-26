@@ -42,7 +42,7 @@ export function LeaderboardFilters({
   onRefresh,
 }: LeaderboardFiltersProps) {
   return (
-    <div className="bg-slate-800/90 border border-slate-700 rounded-lg p-4 mb-6 backdrop-blur-sm">
+    <div className="bg-slate-800/70 border border-slate-700 rounded-lg p-4 mb-6 backdrop-blur-sm">
       <div className="flex flex-wrap items-center gap-4">
         {/* Game Type Filter */}
         <div className="flex items-center gap-2">
