@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { FaTrophy, FaUsers, FaMedal, FaCrown, FaRedo } from 'react-icons/fa';
+import { resolveCharacterIconForPlayer } from '@/lib/character-sheet-icons';
 
 interface PlayerStat {
   id: string;
@@ -190,7 +192,19 @@ export const Wave1PodResults: React.FC<Wave1PodResultsProps> = ({ leagueId }) =>
                       <span className="text-slate-400">#{p.rank}</span>
                     )}
                   </td>
-                  <td className="py-3 px-4 font-medium text-white">{p.name}</td>
+                  <td className="py-3 px-4 font-medium text-white">
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src={resolveCharacterIconForPlayer(p.name).url}
+                        alt=""
+                        width={28}
+                        height={28}
+                        className="h-7 w-7 shrink-0 rounded-full border border-amber-500/35 object-cover object-[center_25%]"
+                        sizes="28px"
+                      />
+                      <span className="truncate">{p.name}</span>
+                    </div>
+                  </td>
                   <td className="py-3 px-4 text-right font-bold text-amber-400">{p.points}</td>
                   <td className="py-3 px-4 text-right text-blue-400">{p.gamesPlayed}</td>
                   <td className="py-3 px-4 text-right text-slate-300">{p.wins}W–{p.losses}L</td>
@@ -234,7 +248,19 @@ export const Wave1PodResults: React.FC<Wave1PodResultsProps> = ({ leagueId }) =>
                             {r.place === 1 && <FaCrown className="w-3.5 h-3.5 text-yellow-400 inline mr-1" aria-hidden />}
                             {r.place}
                           </td>
-                          <td className="py-1.5 text-white font-medium">{r.playerName}</td>
+                          <td className="py-1.5 text-white font-medium">
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src={resolveCharacterIconForPlayer(r.playerName).url}
+                                alt=""
+                                width={24}
+                                height={24}
+                                className="h-6 w-6 shrink-0 rounded-full border border-amber-500/35 object-cover object-[center_25%]"
+                                sizes="24px"
+                              />
+                              <span className="truncate">{r.playerName}</span>
+                            </div>
+                          </td>
                           <td className="py-1.5 text-right text-amber-400 font-semibold">{r.points}</td>
                         </tr>
                       ))}

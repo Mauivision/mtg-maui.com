@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -19,6 +20,7 @@ import {
   FaBolt,
 } from 'react-icons/fa';
 import { format, subDays, startOfDay } from 'date-fns';
+import { resolveCharacterIconForPlayer } from '@/lib/character-sheet-icons';
 
 interface PlayerStats {
   id: string;
@@ -156,10 +158,15 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ playerId }) => {
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-24 h-24 bg-gradient-to-br from-amber-600 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-3xl font-bold text-white">
-                  {playerStats.name.charAt(0).toUpperCase()}
-                </span>
+              <div className="w-24 h-24 rounded-full bg-slate-950/40 border border-slate-700/60 flex items-center justify-center overflow-hidden shadow-lg">
+                <Image
+                  src={resolveCharacterIconForPlayer(playerStats.name).url}
+                  alt={`${playerStats.name} character`}
+                  width={96}
+                  height={96}
+                  className="h-24 w-24 object-cover object-[center_25%]"
+                  sizes="96px"
+                />
               </div>
               <div className="absolute -bottom-2 -right-2 bg-slate-900 rounded-full p-2 border-2 border-slate-700">
                 {getRankIcon(playerStats.rank)}

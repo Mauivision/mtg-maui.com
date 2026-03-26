@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { FaArrowLeft, FaRedo, FaTable } from 'react-icons/fa';
+import { resolveCharacterIconForPlayer } from '@/lib/character-sheet-icons';
 
 type Breakdown = {
   win?: number;
@@ -150,11 +152,22 @@ export default function GamesPage() {
                             const golden = n(b?.golden) ?? n(p.goldAchievements);
                             const silver = n(b?.silver) ?? n(p.silverAchievements);
                             const inGameVp = n(b?.inGameVp);
+                            const icon = resolveCharacterIconForPlayer(p.name);
                             return (
                               <tr key={p.id} className="border-b border-slate-800/70">
                                 <td className="px-3 py-2 text-slate-100">
                                   <div className="flex flex-col">
-                                    <span className="font-medium">{p.name}</span>
+                                    <div className="flex items-center gap-2">
+                                      <Image
+                                        src={icon.url}
+                                        alt=""
+                                        width={28}
+                                        height={28}
+                                        className="h-7 w-7 shrink-0 rounded-full border border-amber-500/35 object-cover object-[center_25%]"
+                                        sizes="28px"
+                                      />
+                                      <span className="font-medium">{p.name}</span>
+                                    </div>
                                     <span className="text-xs text-slate-500">{p.commander || '—'}</span>
                                   </div>
                                 </td>
