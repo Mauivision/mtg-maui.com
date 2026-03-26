@@ -11,6 +11,7 @@ import { useLeague } from '@/contexts/LeagueContext';
 import { useHomeData, useCharacterSheets } from '@/hooks';
 import { SimpleLeaderboardChart } from '@/components/leaderboard/SimpleLeaderboardChart';
 import { DraftPointsChart } from '@/components/leaderboard/DraftPointsChart';
+import { RealtimeLeaderboard } from '@/components/leaderboard/RealtimeLeaderboard';
 import { Wave1PodResults } from '@/components/leaderboard/Wave1PodResults';
 import { LeagueStatus } from '@/components/league/LeagueStatus';
 import { siteImages } from '@/lib/site-images';
@@ -127,6 +128,18 @@ export default function HomePage() {
                 metric="total"
               />
               <DraftPointsChart />
+            </div>
+            <div className="rounded-xl border border-slate-700 bg-slate-900/40 p-4 backdrop-blur-sm">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h3 className="text-lg font-semibold text-white">Combined total leaderboard</h3>
+                <span className="text-xs text-slate-400">Commander + Draft = Total</span>
+              </div>
+              <RealtimeLeaderboard
+                leagueId={currentLeague?.id ?? undefined}
+                gameType="all"
+                limit={10}
+                variant="embed"
+              />
             </div>
             <p className="text-center text-sm text-slate-400">
               <Link
