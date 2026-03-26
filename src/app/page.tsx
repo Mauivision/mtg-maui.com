@@ -129,8 +129,8 @@ export default function HomePage() {
               />
               <DraftPointsChart />
             </div>
-            <div className="rounded-xl border border-slate-700 bg-slate-900/40 p-4 backdrop-blur-sm">
-              <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="-mx-4 sm:mx-0 rounded-none sm:rounded-xl border-y sm:border border-slate-700 bg-slate-900/40 p-4 backdrop-blur-sm">
+              <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                 <h3 className="text-lg font-semibold text-white">Combined total leaderboard</h3>
                 <span className="text-xs text-slate-400">Commander + Draft = Total</span>
               </div>

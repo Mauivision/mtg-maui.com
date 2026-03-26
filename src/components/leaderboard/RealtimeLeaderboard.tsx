@@ -199,6 +199,38 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
     );
   }
 
+  const MobileEmbedList = () => (
+    <div className="sm:hidden space-y-2" role="list" aria-label="Leaderboard rankings (mobile)">
+      {leaderboard.slice(0, limit).map((entry) => (
+        <div
+          key={entry.id}
+          role="listitem"
+          className="rounded-xl border border-slate-700 bg-slate-950/60 px-3 py-2.5 backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-300 tabular-nums font-semibold w-7">#{entry.rank}</span>
+                <span className="truncate text-white font-medium">{entry.name}</span>
+              </div>
+              <div className="mt-1 text-xs text-slate-400 tabular-nums">
+                {entry.wins}W–{entry.losses}L · {entry.winRate.toFixed(1)}% · {entry.gamesPlayed || entry.wins + entry.losses} games
+              </div>
+            </div>
+            <div className="shrink-0 text-right">
+              <div className="text-amber-300 font-bold tabular-nums">{entry.points}</div>
+              {typeof entry.commanderPoints === 'number' && typeof entry.draftPoints === 'number' && (
+                <div className="text-[11px] text-slate-500 tabular-nums">
+                  {entry.commanderPoints}+{entry.draftPoints}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className={isEmbed ? 'space-y-4' : 'space-y-6'} role="region" aria-label="Leaderboard rankings">
       {/* Header — full in standalone, compact in embed */}
@@ -321,8 +353,10 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-slate-600 bg-slate-950/50">
-              <table className="w-full min-w-[640px] border-collapse" aria-label="Leaderboard rankings">
+            <>
+              <MobileEmbedList />
+              <div className="hidden sm:block overflow-x-auto rounded-lg border border-slate-600 bg-slate-950/50">
+                <table className="w-full min-w-[640px] border-collapse" aria-label="Leaderboard rankings">
                 <thead>
                   <tr className="border-b border-slate-600 bg-slate-900/50">
                     <th scope="col" className="text-left py-3 px-4 text-slate-300 font-semibold text-sm">Rank</th>
@@ -428,8 +462,9 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
+                </table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
