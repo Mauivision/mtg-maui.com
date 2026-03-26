@@ -19,18 +19,26 @@ export async function GET(request: NextRequest, { params }: { params: { leagueId
   try {
     const { leagueId } = params;
     const { searchParams } = new URL(request.url);
-    const gameType = searchParams.get('gameType'); // "commander", "draft", or null for all
+    const gameTypeParam = searchParams.get('gameType');
+    /** Default commander-only so totals match pod VP (e.g. 14 for Kendra’s first game) and not double-count draft LeagueGames. Use gameType=all for every type. */
+    const gameTypeWhere =
+      gameTypeParam === 'all'
+        ? {}
+        : gameTypeParam === 'draft' ||
+            gameTypeParam === 'commander' ||
+            gameTypeParam === 'standard'
+          ? { gameType: gameTypeParam }
+          : { gameType: 'commander' as const };
 
     if (isStaticLeagueDataMode()) {
       const data = getStaticCharacterSheets(leagueId);
       return NextResponse.json(data);
     }
 
-    // Get all active memberships for this league
+    // Get all memberships for this league (active + dropped)
     const memberships = await prisma.leagueMembership.findMany({
       where: {
         leagueId,
-        active: true,
       },
       include: {
         user: {
@@ -49,11 +57,30 @@ export async function GET(request: NextRequest, { params }: { params: { leagueId
       },
     });
 
+    // Latest commander used per player from their most recent commander pod
+    const latestCommanderByUserId = new Map<string, string>();
+    try {
+      const latestDecks = await prisma.leagueGameDeck.findMany({
+        where: { game: { leagueId, gameType: 'commander' } },
+        orderBy: [{ game: { date: 'desc' } }, { createdAt: 'desc' }],
+        distinct: ['playerId'],
+        include: { deck: { select: { commander: true } } },
+      });
+      for (const row of latestDecks) {
+        const commander = row.deck?.commander?.trim();
+        if (commander) latestCommanderByUserId.set(row.playerId, commander);
+      }
+    } catch (e) {
+      logger.warn('Unable to resolve latest commanders from LeagueGameDeck', {
+        err: e instanceof Error ? e.message : String(e),
+      });
+    }
+
     // Get all games for this league, optionally filtered by game type
     const games = await prisma.leagueGame.findMany({
       where: {
         leagueId,
-        ...(gameType && { gameType }),
+        ...gameTypeWhere,
       },
     });
 
@@ -94,16 +121,21 @@ export async function GET(request: NextRequest, { params }: { params: { leagueId
             });
 
             if (playerPlacement) {
-              const points = playerPlacement.points || 0;
-              const placement = playerPlacement.placement || playerPlacement.place || 1;
+              const points =
+                typeof playerPlacement.points === 'number' && !Number.isNaN(playerPlacement.points)
+                  ? playerPlacement.points
+                  : 0;
+              const rankRaw = playerPlacement.placement ?? playerPlacement.place;
+              const rankKnown = typeof rankRaw === 'number' && !Number.isNaN(rankRaw);
 
               totalPoints += points;
-              placements.push(placement);
-
-              if (placement === 1) {
-                wins++;
-              } else {
-                losses++;
+              if (rankKnown) {
+                placements.push(rankRaw);
+                if (rankRaw === 1) {
+                  wins++;
+                } else {
+                  losses++;
+                }
               }
 
               // Count objectives from placement data
@@ -125,7 +157,12 @@ export async function GET(request: NextRequest, { params }: { params: { leagueId
                     : game.commanderObjectives;
 
                 // Check if this player won the gold objective
-                if (objectives.goldRoll && playerPlacement?.placement === objectives.goldRoll) {
+                const goldPlace = playerPlacement?.placement ?? playerPlacement?.place;
+                if (
+                  objectives.goldRoll &&
+                  typeof goldPlace === 'number' &&
+                  goldPlace === objectives.goldRoll
+                ) {
                   goldObjectives++;
                 }
 
@@ -166,10 +203,10 @@ export async function GET(request: NextRequest, { params }: { params: { leagueId
         ); // Based on average placement
         const experience = calculateStat(gamesPlayed * 10, 120); // Based on games played
 
-        // Calculate level based on total points (1 point = 10 XP, level up every 200 XP)
-        const xp = totalPoints * 10;
-        const level = Math.max(1, Math.floor(xp / 200) + 1);
-        const nextLevelXp = level * 200;
+        // Level = commander games played (same as gamesPlayed for this league view).
+        const level = gamesPlayed;
+        const xp = gamesPlayed;
+        const nextLevelXp = gamesPlayed + 1;
 
         // Calculate rank (sorted by total points, then average placement)
         // This will be sorted in the response
@@ -183,12 +220,16 @@ export async function GET(request: NextRequest, { params }: { params: { leagueId
         if (totalPoints >= 200) achievements.push('Point Master');
         if (averagePlacement <= 1.5) achievements.push('First Blood');
         if (silverObjectives >= 20) achievements.push('Silver Collector');
-        if (level >= 10) achievements.push('Level Master');
+        if (gamesPlayed >= 10) achievements.push('Level Master');
 
         return {
           id: userId,
           playerName: membership.user.name || 'Unknown Player',
-          commander: membership.registeredDecks[0]?.commander || 'Unknown Commander',
+          active: membership.active,
+          commander:
+            latestCommanderByUserId.get(userId) ??
+            membership.registeredDecks[0]?.commander ??
+            'Unknown Commander',
           level,
           totalPoints,
           gamesPlayed,
@@ -215,6 +256,10 @@ export async function GET(request: NextRequest, { params }: { params: { leagueId
     // Sort by total points (rank 1 = highest points)
     const sortedSheets = characterSheets
       .sort((a, b) => {
+        // Active players first
+        const aa = a.active === false ? 1 : 0;
+        const bb = b.active === false ? 1 : 0;
+        if (aa !== bb) return aa - bb;
         if (b.totalPoints !== a.totalPoints) {
           return b.totalPoints - a.totalPoints;
         }

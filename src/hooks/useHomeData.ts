@@ -6,6 +6,7 @@ export interface HomeStats {
   totalUsers: number;
   totalLeagues: number;
   totalGames: number;
+  totalDrafts: number;
 }
 
 export interface HomeNewsItem {
@@ -36,6 +37,7 @@ export function useHomeData(): UseHomeDataResult {
     totalUsers: 0,
     totalLeagues: 0,
     totalGames: 0,
+    totalDrafts: 0,
   });
   const [news, setNews] = useState<HomeNewsItem[]>([]);
   const [events, setEvents] = useState<HomeEventItem[]>([]);
@@ -55,6 +57,7 @@ export function useHomeData(): UseHomeDataResult {
           totalUsers: d.totalUsers ?? 0,
           totalLeagues: d.totalLeagues ?? 0,
           totalGames: d.totalGames ?? 0,
+          totalDrafts: d.totalDrafts ?? 0,
         });
       }
       if (nRes.ok) {

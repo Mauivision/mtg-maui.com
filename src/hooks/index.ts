@@ -9,4 +9,3 @@ export type { CharacterSheetPlayer } from './useCharacterSheets';
 export { useHomeData } from './useHomeData';
 export type { HomeStats, HomeNewsItem, HomeEventItem, UseHomeDataResult } from './useHomeData';
 export { useLeagueDecks } from './useLeagueDecks';
-export { useWizardsData } from './useWizardsData';

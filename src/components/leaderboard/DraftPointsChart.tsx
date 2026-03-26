@@ -1,21 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-} from 'chart.js';
+import '@/lib/chartjs-bar-register';
 import { Bar } from 'react-chartjs-2';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { FaDice, FaRedo } from 'react-icons/fa';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
 const POLL_MS = 45_000;
 

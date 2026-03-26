@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { FaTrophy, FaMedal, FaCrown, FaFire, FaBolt, FaUsers, FaExclamationTriangle, FaRedo } from 'react-icons/fa';
 import type { RealtimeLeaderboardEntry } from '@/types/leaderboard';
+import { resolveCharacterIconForPlayer } from '@/lib/character-sheet-icons';
 
 export type RealtimeLeaderboardVariant = 'standalone' | 'embed';
 
@@ -35,7 +37,12 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
   const [retryCount, setRetryCount] = useState<number>(0);
 
   const getDataHash = useCallback((data: RealtimeLeaderboardEntry[]): string => {
-    return data.map((entry) => `${entry.id}-${entry.points}-${entry.rank}`).join('|');
+    return data
+      .map(
+        (entry) =>
+          `${entry.id}-${entry.points}-${entry.rank}-${entry.commanderPoints ?? ''}-${entry.draftPoints ?? ''}`
+      )
+      .join('|');
   }, []);
 
   useEffect(() => {
@@ -55,7 +62,7 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
           limit: limit.toString(),
           ...(leagueId && { leagueId }),
         });
-        const response = await fetch(`/api/leaderboard/realtime?${params}`);
+        const response = await fetch(`/api/leaderboard/realtime?${params}`, { cache: 'no-store' });
         const data = await response.json();
         const newEntries = data.entries || [];
         const newDataHash = getDataHash(newEntries);
@@ -314,17 +321,25 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-slate-600">
+            <div className="overflow-x-auto rounded-lg border border-slate-600 bg-slate-950/50">
               <table className="w-full min-w-[640px] border-collapse" aria-label="Leaderboard rankings">
                 <thead>
-                  <tr className="border-b border-slate-600 bg-slate-700/50">
+                  <tr className="border-b border-slate-600 bg-slate-900/50">
                     <th scope="col" className="text-left py-3 px-4 text-slate-300 font-semibold text-sm">Rank</th>
                     <th scope="col" className="text-left py-3 px-4 text-slate-300 font-semibold text-sm">Player</th>
                     <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">
                       <span>Points</span>
-                      <span className="block text-xs font-normal text-slate-500">Commander + Draft</span>
+                      <span className="block text-xs font-normal text-slate-500">
+                        Cmd1+Cmd2+Draft1+Draft2 = Total VP
+                      </span>
                     </th>
-                    <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Games</th>
+                    <th
+                      scope="col"
+                      className="text-right py-3 px-4 text-slate-300 font-semibold text-sm"
+                      title="Commander pod games with a recorded placement (draft matches are separate)"
+                    >
+                      Cmd games
+                    </th>
                     <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Record</th>
                     <th scope="col" className="text-right py-3 px-4 text-slate-300 font-semibold text-sm">Win Rate</th>
                   </tr>
@@ -333,10 +348,10 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
                   {leaderboard.map((entry, index) => (
                     <tr
                       key={entry.id}
-                      className={`border-b border-slate-700/80 transition-colors hover:bg-slate-700/40 ${
+                      className={`border-b border-slate-700/80 transition-colors hover:bg-slate-700/50 ${
                         entry.rank <= 3
-                          ? 'bg-gradient-to-r from-amber-900/15 to-orange-900/15'
-                          : 'bg-slate-800/30'
+                          ? 'bg-gradient-to-r from-amber-950/50 to-orange-950/50'
+                          : 'bg-slate-900/50'
                       }`}
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
@@ -348,11 +363,13 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-gradient-to-br from-amber-600 to-orange-600 rounded-full flex items-center justify-center shrink-0">
-                            <span className="text-white font-bold text-sm" aria-hidden>
-                              {entry.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
+                          <Image
+                            src={resolveCharacterIconForPlayer(entry.name).url}
+                            alt={`${entry.name} character icon`}
+                            className="h-9 w-9 rounded-full border border-amber-500/40 object-cover shrink-0"
+                            width={36}
+                            height={36}
+                          />
                           <div>
                             <span className="text-white font-medium">{entry.name}</span>
                             {entry.currentStreak > 0 && (
@@ -368,12 +385,30 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
                         {typeof entry.commanderPoints === 'number' && typeof entry.draftPoints === 'number' ? (
                           <div className="flex flex-col items-end gap-0.5">
                             <span className="font-bold text-amber-400">{entry.points}</span>
-                            <span className="text-xs text-slate-400" title="Commander + Draft = Total">
-                              {entry.commanderPoints} + {entry.draftPoints} = {entry.points}
-                            </span>
+                            {typeof entry.commanderGame1Points === 'number' &&
+                            typeof entry.commanderGame2Points === 'number' &&
+                            typeof entry.draftLeaguePoints1 === 'number' &&
+                            typeof entry.draftLeaguePoints2 === 'number' ? (
+                              <span
+                                className="text-xs text-slate-400 max-w-[min(100%,280px)] text-right leading-snug"
+                                title="Cmd rounds 1–5 + Cmd rounds 6+ + Draft 1 VP + Draft 2 VP (Tim: first draft excluded from total)"
+                              >
+                                {entry.commanderGame1Points}+{entry.commanderGame2Points}+
+                                {entry.draftLeaguePoints1}+{entry.draftLeaguePoints2}={entry.points}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-slate-400" title="Commander + Draft = Total">
+                                {entry.commanderPoints} + {entry.draftPoints} = {entry.points}
+                              </span>
+                            )}
                             {typeof entry.firstDraftPointsPlayedForDan === 'number' && entry.firstDraftPointsPlayedForDan > 0 && (
                               <span className="text-xs text-slate-500" title="First draft: Tim played for Dan; cards to Dan, points not in total">
                                 First draft (played for Dan): {entry.firstDraftPointsPlayedForDan} pts — not in total
+                              </span>
+                            )}
+                            {entry.draftDetail && (
+                              <span className="text-xs text-slate-500 max-w-[220px] text-right leading-snug" title={entry.draftDetail}>
+                                {entry.draftDetail}
                               </span>
                             )}
                           </div>

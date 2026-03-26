@@ -37,7 +37,7 @@ const getOpenAIClient = () => {
   });
 };
 
-// Image specifications from COMPLETE_IMAGE_REQUIREMENTS.md
+// Image specs (aligned with public/images/README.md)
 const IMAGE_SPECS = {
   'medieval-background': {
     path: 'medieval-background.jpg',

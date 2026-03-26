@@ -1,6 +1,8 @@
-# 🎨 Image Assets Guide - MTG Maui League
+# Image assets — MTG Maui League
 
-## 📁 Directory Structure
+**Central paths:** edit `src/lib/site-images.ts` so hero, backgrounds, OG image, and placeholders stay consistent across the app. Use `/images/...` URLs in code or Wizards (e.g. event `imageUrl`).
+
+## Directory layout
 
 Place your images in the following directories for optimal organization:
 

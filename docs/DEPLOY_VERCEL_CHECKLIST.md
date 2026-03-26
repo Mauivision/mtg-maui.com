@@ -1,8 +1,32 @@
 # Vercel Deploy Checklist
 
-Use this when deploying MTG Maui League to Vercel. **Single project only** — one repo (`Mauivision/mtg-maui.com`), one Vercel project; push to `main` overrides production. Run `npm run doctor` before deploy (lint fix + verify).
+Use this when deploying MTG Maui League to Vercel. **Single project only** — one repo, one Vercel project; push to `main` overrides production. Run `npm run doctor` before deploy (lint fix + verify).
 
-## 1. Database (required)
+## 0. Static data vs full database
+
+| Mode | When to use | Env | Build note |
+|------|----------------|-----|------------|
+| **Full database** | Editable Wizards, live Postgres | `DATABASE_URL` (+ optional `SKIP_ADMIN_AUTH=true`) | Default `vercel.json`: `prisma migrate deploy` runs on build. |
+| **Static demo** | No DB; read-only data from `src/data/league-data.json` | `USE_STATIC_LEAGUE_DATA=true` (omit `DATABASE_URL` if possible) | Vercel project **Build Command** must **not** run migrations against a missing DB. Override to: `prisma generate && npm run build` (same as local static mode). |
+
+After first deploy with a real database, seed from your machine: `npx vercel env pull .env.local` then `npm run prisma:seed:maui` (with `DATABASE_URL` set).
+
+## 0b. Custom domain
+
+1. Project → **Settings** → **Domains** → add `www.mtg-maui.com` (or your host).
+2. DNS: CNAME to `cname.vercel-dns.com` as shown in the dashboard.
+3. Optional: redirect apex → `https://www.…`.
+
+## 0c. Deploy from CLI (optional)
+
+```bash
+npm install
+npx vercel login
+npx vercel link    # first time: create or link project
+npx vercel --prod  # or use npm run deploy
+```
+
+## 1. Database (required for Wizards / CRUD)
 
 - **Vercel Postgres:** Project → Storage → Create Database → Postgres. Link it to your project.
 - **`DATABASE_URL`** is auto-injected. Ensure it exists under Settings → Environment Variables for Production (and Preview if you use it).

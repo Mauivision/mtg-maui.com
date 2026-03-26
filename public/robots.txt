@@ -8,7 +8,6 @@ Allow: /
 Allow: /leaderboard
 Allow: /character-sheets
 Allow: /bulletin
-Allow: /wizards
 Allow: /coming-soon
 
 # Disallow admin areas (though they require auth)

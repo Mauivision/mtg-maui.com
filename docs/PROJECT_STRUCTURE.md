@@ -4,178 +4,34 @@
 
 ## 🎯 **Layout**
 
-- **Single home** (`/`): long-scroll with Hero, Leaderboard (points chart + rankings table), Character Charts, News Feed.
+- **Single home** (`/`): long-scroll with Hero, Leaderboard (`RealtimeLeaderboard` table + Commander bar chart + Draft bar chart + `LeagueStatus`), Character Charts, News Feed. Editorial blurbs in `src/lib/home-page.ts`.
 - **Wizards** (`/wizards`): edit panel. Old routes redirect (e.g. `/leaderboard` → `/#leaderboard`, `/admin` → `/wizards`).
 
 ---
 
-## 📂 Directory Structure
+## Directory structure
 
 ```
 mtg-maui-league/
-│
-├── 📁 src/                          # Application source code
-│   ├── app/                         # Next.js app router
-│   │   ├── api/                     # API routes
-│   │   ├── page.tsx                 # Single long-scroll home (Hero, Leaderboard, Character Charts, News)
-│   │   ├── wizards/                 # Edit panel (Wizards Control)
-│   │   └── ...                      # error, not-found, globals
-│   │
-│   ├── components/                  # React components
-│   │   ├── ui/                      # Base UI components
-│   │   ├── admin/                   # Admin components
-│   │   ├── leaderboard/             # Leaderboard components
-│   │   ├── auth/                    # Auth components
-│   │   └── ...                      # Other components
-│   │
-│   ├── contexts/                    # React contexts
-│   ├── hooks/                       # Custom React hooks
-│   ├── lib/                         # Utility functions
-│   ├── styles/                      # Global CSS
-│   └── types/                       # TypeScript types
-│
-├── 📁 prisma/                       # Database
-│   ├── schema.prisma                # Database schema (PostgreSQL)
-│   ├── migrations/                  # Postgres migrations
-│   └── seed.ts                      # Database seeding
-│
-├── 📁 public/                       # Static assets
-│   ├── images/                      # Images
-│   ├── icons/                       # Icons and favicons
-│   ├── leaderboard-standalone.html  # Standalone version
-│   └── manifest.json                # PWA manifest
-│
-├── 📁 docs/                         # Documentation
-│   ├── DEPLOYMENT_GUIDE.md          # Deployment instructions
-│   ├── SETUP_GUIDE.md               # Setup instructions
-│   ├── ADMIN_FEATURES_SUMMARY.md    # Admin features
-│   └── ...                          # Other documentation
-│
-├── 📁 scripts/                      # Utility scripts
-│   ├── deploy-production.js         # Deployment script
-│   └── generate-icons.js            # Icon generation
-│
-├── 📁 .github/                      # GitHub configs
-│   └── workflows/                   # CI/CD workflows
-│
-├── 📄 Configuration Files
-│   ├── next.config.js               # Next.js config
-│   ├── tailwind.config.js           # Tailwind CSS config
-│   ├── tsconfig.json                # TypeScript config
-│   ├── vercel.json                  # Vercel config
-│   ├── .cursorrules                 # Cursor IDE rules
-│   ├── .gitignore                   # Git ignore rules
-│   ├── .vercelignore                # Vercel ignore rules
-│   └── package.json                 # Dependencies
-│
-└── 📄 README.md                     # Main documentation
+├── src/app/           # Next.js App Router (pages + src/app/api/*)
+├── src/components/    # React UI (ui/, admin/, leaderboard/, …)
+├── src/lib/           # prisma, auth, API helpers, logger, site-images
+├── src/contexts/ src/hooks/ src/types/ src/styles/
+├── prisma/            # schema, migrations, seed*.ts
+├── public/            # static assets; images/README.md for asset layout
+├── docs/              # guides (index: docs/README.md)
+├── scripts/           # DB check, CSV export, one-off maintenance
+├── mcp-image-generator/  # optional local tool (excluded from app tsconfig)
+├── .github/workflows/ # CI
+├── package.json vercel.json next.config.* tailwind.config.* tsconfig.json
+└── README.md AGENTS.md
 ```
 
----
-
-## 🗂️ What Changed
-
-### **✅ Cleaned Up:**
-- **50+ MD files** → Moved to `/docs` folder
-- **Large ZIP files** → Removed (200MB+ each)
-- **Deployment folder** → Removed duplicate
-- **Temporary files** → Deleted (populate-db.js, test files)
-- **Build artifacts** → Added to .gitignore
-
-### **✅ Organized:**
-- **Documentation** → `/docs` folder
-- **Scripts** → `/scripts` folder
-- **Source code** → `/src` folder
-- **Database** → `/prisma` folder
-- **Static assets** → `/public` folder
-
-### **✅ Optimized:**
-- **Reduced project size** from 400MB+ to ~20MB
-- **Clean git repository** without build artifacts
-- **Proper .vercelignore** for deployment
-- **Updated .gitignore** for large files
+**Deploy:** Vercel from GitHub; see [DEPLOY_VERCEL_CHECKLIST.md](DEPLOY_VERCEL_CHECKLIST.md). **Optional:** `public/leaderboard-standalone.html` for static hosting without Node.
 
 ---
 
-## 📦 Deployment Package
-
-### **For Vercel:**
-- Only source files are deployed
-- No documentation or test files
-- Minimal deployment size (~5MB)
-
-### **For Traditional Hosting:**
-- Use `public/leaderboard-standalone.html`
-- Self-contained, no build required
-- Works on any web server
-
----
-
-## 🎯 Core Files (Essential)
-
-### **Configuration:**
-- `package.json` - Dependencies and scripts
-- `next.config.js` - Next.js configuration
-- `tailwind.config.js` - Styling configuration
-- `tsconfig.json` - TypeScript configuration
-- `vercel.json` - Deployment configuration
-
-### **Application:**
-- `/src` - All application code
-- `/prisma` - Database schema
-- `/public` - Static assets
-
-### **Documentation:**
-- `README.md` - Main documentation
-- `/docs` - Detailed guides
-
----
-
-## 🚀 Quick Commands
-
-```bash
-# Start development
-npm run dev
-
-# Build for production
-npm run build
-
-# Deploy to Vercel
-vercel --prod
-
-# Database management
-npx prisma studio
-```
-
----
-
-## 📊 Project Size
-
-**Before Cleanup:**
-- Total: ~600MB+
-- ZIP files: 400MB+
-- Deployment folder: 150MB+
-
-**After Cleanup:**
-- Total: ~20MB
-- Essential files only
-- Deployment ready
-
----
-
-## ✨ Result
-
-Your MTG Maui League project is now:
-- **Clean & Organized** - Logical folder structure
-- **Deployment Ready** - Optimized for Vercel
-- **Well Documented** - Clear guides in `/docs`
-- **Small & Fast** - Minimal deployment size
-
-**Ready to import into Vercel!** 🏆⚔️✨
-
----
-
-## 🔧 Conventions & Key Modules (Post‑Rebuild)
+## Conventions & key modules
 
 ### **`src/lib`**
 - **`prisma`** – Shared Prisma client (use `prisma` from `@/lib/prisma`, not `new PrismaClient()`).
@@ -183,13 +39,16 @@ Your MTG Maui League project is now:
 - **`logger`** – `logger.info()`, `logger.warn()`, `logger.error()`, `logger.performance()`. Use instead of `console.*` in API routes (100% migrated).
 - **`api-middleware`** – `withLogging()`, `measureTime()`. Optional wrappers for request/response logging.
 - **`auth-helpers`** – `requireAdmin()`, session helpers for API routes.
+- **`static-league-data`** – When `USE_STATIC_LEAGUE_DATA=true` or no DB URL: reads `src/data/league-data.json` for leaderboard, character sheets, waves.
+- **`leaderboard-db-aggregate`** – Postgres leaderboard totals (Commander + Draft); same VP rules as static JSON path.
+- **`chartjs-bar-register`** – One-time Chart.js registration for bar charts (`SimpleLeaderboardChart`, `DraftPointsChart`).
 
 ### **`src/types`**
 - **`leaderboard`** – `TraditionalLeaderboardEntry`, `ScoringRules`, `PlayerGameHistory`, `RealtimeLeaderboardEntry`, etc.
 - **`league`** – League, membership, and related types.
 
 ### **Leaderboard**
-- **Home** (`/`): **Leaderboard** section uses `RealtimeLeaderboard` + `LeagueStatus`. **Character Charts** use `/api/leagues/[id]/character-sheets`. **News Feed** uses `/api/news` and `/api/events`.
+- **Home** (`/`): **Leaderboard** section uses `RealtimeLeaderboard`, `SimpleLeaderboardChart` (`metric="commander"`), `DraftPointsChart`, and `LeagueStatus`. **Character Charts** use `/api/leagues/[id]/character-sheets`. **News Feed** uses `/api/news` and `/api/events`.
 - **APIs:** `GET /api/leaderboard/realtime`, `GET /api/leagues/[leagueId]/leaderboard`, `GET /api/leagues/status`, `GET /api/leagues/[leagueId]/character-sheets`, `GET /api/news`, `GET /api/events`.
 - **Populate:** `POST /api/admin/populate` (from Wizards) – seeds league, 16 players, sample games.
 
@@ -212,6 +71,7 @@ Your MTG Maui League project is now:
 ### **Components**
 - **`LeagueStatus`** – `/api/leagues/status`; used in home Leaderboard section.
 - **`RealtimeLeaderboard`** – `/api/leaderboard/realtime`; used in home Leaderboard section.
+- **`SimpleLeaderboardChart`** / **`DraftPointsChart`** – Bar charts; poll `/api/leaderboard/realtime` and `/api/drafts/standings`.
 - **`EditableLeaderboardTable`** – Used in Wizards (leaderboard tab); save via `/api/admin/leaderboard/update`.
 
 ### **After clone / rebuild**

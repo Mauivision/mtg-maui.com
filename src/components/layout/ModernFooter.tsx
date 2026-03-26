@@ -6,9 +6,9 @@ import Link from 'next/link';
 const links = [
   { href: '/', label: 'Home' },
   { href: '/#leaderboard', label: 'Leaderboard' },
+  { href: '/score', label: 'Scores & charts' },
   { href: '/#character-charts', label: 'Character Charts' },
   { href: '/#news-feed', label: 'News Feed' },
-  { href: '/wizards', label: 'Edit' },
   { href: '/#hero', label: 'Back to top' },
 ];
 

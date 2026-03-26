@@ -11,20 +11,21 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Target draft VP (including undefeated +1 for Nate) — used only to derive relative match wins. */
 const NAME_AND_SCORES: { name: string; score: number }[] = [
-  { name: 'Zach', score: 6 },
-  { name: 'Nate', score: 5 },
+  { name: 'Nate', score: 7 },
   { name: 'Aaron H', score: 5 },
+  { name: 'Dan', score: 5 },
+  { name: 'Zach', score: 5 },
   { name: 'James', score: 4 },
   { name: 'Tre', score: 4 },
-  { name: 'Tim', score: 5 },
   { name: 'Kevin', score: 4 },
   { name: 'Travis', score: 3 },
   { name: 'Aaron V', score: 3 },
   { name: 'Scott', score: 3 },
   { name: 'Kaipo', score: 3 },
+  { name: 'Ronnie', score: 3 },
   { name: 'April', score: 2 },
-  { name: 'Ronnie', score: 2 },
   { name: 'Aaron S', score: 2 },
   { name: 'Kendra', score: 1 },
   { name: 'Dustin', score: 1 },

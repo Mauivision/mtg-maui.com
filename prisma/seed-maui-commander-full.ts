@@ -33,17 +33,23 @@ const ALL_PLAYERS: Record<string, PlayerInput> = {
   james: { name: 'James', emailKey: 'james', deck: 'Kefka / Grixis (UBR)' },
   tre: { name: 'Tre', emailKey: 'tre', deck: 'Breya / WUBR' },
   dan: { name: 'Dan', emailKey: 'dan', deck: 'Sofka' },
-  nate: { name: 'Nate', emailKey: 'nate', deck: 'Diamond Weapon / BG' },
-  scott: { name: 'Scott', emailKey: 'scott', deck: 'Jodah / 5R' },
-  travis: { name: 'Travis', emailKey: 'travis', deck: 'Soda / Iona RW' },
-  dustin: { name: 'Dustin', emailKey: 'dustin', deck: '5pidey / Tobran FR' },
+  nate: { name: 'Nate', emailKey: 'nate', deck: 'Diamond Weapon / Elizabeth (BS)' },
+  scott: { name: 'Scott', emailKey: 'scott', deck: 'Jodah (B) 5' },
+  travis: { name: 'Travis', emailKey: 'travis', deck: 'Zada / Iona (RW)' },
+  dustin: { name: 'Dustin', emailKey: 'dustin', deck: 'Spidey / Torbran (GR)' },
 };
 
 const GAMES = [
   { date: '2026-01-05', round: 1, pod: 'A', players: ['april', 'ronnie', 'kaipo', 'kevin'], placements: [9, 1, 4, 1] },
   { date: '2026-01-10', round: 2, pod: 'B', players: ['kendra', 'aarons', 'aaronv', 'zach'], placements: [14, 3, 2, 1] },
-  { date: '2026-01-25', round: 3, pod: 'C', players: ['aaronh', 'james', 'tre', 'dan'], placements: [8, 3, 3, 1] },
-  { date: '2026-01-30', round: 4, pod: 'D', players: ['nate', 'scott', 'travis', 'dustin'], placements: [7, 3, 3, 1] },
+  { date: '2026-01-25', round: 3, pod: 'D', players: ['aaronh', 'james', 'tre', 'dan'], placements: [8, 3, 1, 1] },
+  {
+    date: '2026-01-27',
+    round: 4,
+    pod: 'C',
+    players: ['nate', 'travis', 'dustin', 'scott'],
+    placements: [7, 3, 1, 1],
+  },
 ];
 
 async function main() {

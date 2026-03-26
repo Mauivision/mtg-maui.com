@@ -1,17 +1,26 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { FaTrophy, FaUsers, FaCalendar, FaDice, FaNewspaper, FaBook } from 'react-icons/fa';
 import { useLeague } from '@/contexts/LeagueContext';
 import { useHomeData, useCharacterSheets } from '@/hooks';
-import { RealtimeLeaderboard } from '@/components/leaderboard/RealtimeLeaderboard';
 import { SimpleLeaderboardChart } from '@/components/leaderboard/SimpleLeaderboardChart';
 import { DraftPointsChart } from '@/components/leaderboard/DraftPointsChart';
 import { Wave1PodResults } from '@/components/leaderboard/Wave1PodResults';
 import { LeagueStatus } from '@/components/league/LeagueStatus';
+import { siteImages } from '@/lib/site-images';
+import {
+  HOME_FEATURED_COMMANDER_PODS_ITEM,
+  HOME_FEATURED_NEWS_ITEM,
+  HOME_HERO_DRAFT_COUNT,
+  HOME_LEADERBOARD_COMMANDER_NOTE,
+} from '@/lib/home-page';
+import { resolveCharacterIconForPlayer } from '@/lib/character-sheet-icons';
 
 const sectionClass = 'scroll-mt-20 py-16 md:py-24 border-b border-slate-800/60';
 
@@ -20,20 +29,34 @@ export default function HomePage() {
   const { stats, news, events, loading: loadingNews } = useHomeData();
   const { players, loading: loadingChars } = useCharacterSheets(currentLeague?.id ?? null);
   const charsLoading = loadingChars || leagueLoading;
+  const activePlayers = players.filter((p) => p.active !== false);
 
   return (
     <div className="min-h-screen">
-      {/* Hero — no images */}
-      <section id="hero" className={sectionClass} aria-label="Hero">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* Hero — castle sky over global background */}
+      <section id="hero" className={`${sectionClass} relative overflow-hidden`} aria-label="Hero">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50 md:opacity-55"
+          style={{ backgroundImage: `url(${siteImages.backgrounds.home})` }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-slate-950/45 to-slate-950/88"
+        />
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-amber-400/90 text-sm uppercase tracking-widest mb-3">Hawaii&apos;s Premier MTG League</p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
             MTG Maui League
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-            Commander. Draft. Real rankings. One place for leaderboard, character charts, and news.
+            Commander. Draft. Real rankings. Standings and character stats here; charts and scoring rules on{' '}
+            <Link href="/score" className="text-amber-400/95 underline decoration-amber-500/40 underline-offset-2 hover:text-amber-300">
+              Scores
+            </Link>
+            .
           </p>
-          <div className="grid grid-cols-3 gap-6 max-w-md mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-xl mx-auto">
             <div className="flex flex-col items-center group">
               <div className="w-12 h-12 rounded-full bg-sky-600/20 border border-sky-500/40 flex items-center justify-center transition-colors group-hover:border-sky-400/60 group-hover:bg-sky-600/30" aria-hidden>
                 <FaUsers className="w-5 h-5 text-sky-400" />
@@ -54,6 +77,13 @@ export default function HomePage() {
               </div>
               <div className="text-xl font-bold text-white mt-2">{stats.totalGames}</div>
               <div className="text-xs text-slate-400 uppercase">Games</div>
+            </div>
+            <div className="flex flex-col items-center group">
+              <div className="w-12 h-12 rounded-full bg-violet-600/20 border border-violet-500/40 flex items-center justify-center transition-colors group-hover:border-violet-400/60 group-hover:bg-violet-600/30" aria-hidden>
+                <FaDice className="w-5 h-5 text-violet-400" />
+              </div>
+              <div className="text-xl font-bold text-white mt-2">{stats.totalDrafts}</div>
+              <div className="text-xs text-slate-400 uppercase">Drafts</div>
             </div>
           </div>
         </div>
@@ -88,21 +118,33 @@ export default function HomePage() {
           <div className="mb-6">
             <LeagueStatus leagueId={currentLeague?.id} refreshInterval={60_000} />
           </div>
-          <div className="space-y-8">
-            <SimpleLeaderboardChart
-              leagueId={currentLeague?.id ?? undefined}
-              limit={24}
-            />
-            <RealtimeLeaderboard
-              leagueId={currentLeague?.id ?? undefined}
-              gameType="all"
-              limit={20}
-              variant="embed"
-            />
-            <div id="wave1-pods" className="scroll-mt-20">
-              <Wave1PodResults leagueId={currentLeague?.id ?? undefined} />
+          <div className="space-y-6">
+            <Wave1PodResults leagueId={currentLeague?.id} />
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+              <SimpleLeaderboardChart
+                leagueId={currentLeague?.id ?? undefined}
+                limit={24}
+                metric="total"
+              />
+              <DraftPointsChart />
             </div>
-            <DraftPointsChart />
+            <p className="text-center text-sm text-slate-400">
+              <Link
+                href="/score"
+                className="font-medium text-amber-400/95 underline decoration-amber-500/40 underline-offset-2 hover:text-amber-300"
+              >
+                Scores
+              </Link>
+              {' '}
+              — full totals chart, Wave 1 pods, scoring rules, and recent Commander games. See{' '}
+              <Link
+                href="/games"
+                className="font-medium text-amber-400/95 underline decoration-amber-500/40 underline-offset-2 hover:text-amber-300"
+              >
+                Games
+              </Link>{' '}
+              for per-pod tables.
+            </p>
           </div>
         </div>
       </section>
@@ -123,7 +165,7 @@ export default function HomePage() {
               <CardContent className="p-8 text-center text-slate-400">
                 {leagues.length > 0
                   ? 'Select a league above to view character charts.'
-                  : 'No league yet. Create one via Wizards (Edit) to see character charts.'}
+                  : 'No league yet. Seed the database (npm run setup:maui) to see character charts.'}
               </CardContent>
             </Card>
           ) : players.length === 0 ? (
@@ -134,12 +176,23 @@ export default function HomePage() {
             </Card>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {players.slice(0, 16).map((p) => (
+              {activePlayers.slice(0, 17).map((p) => {
+                const icon = resolveCharacterIconForPlayer(p.playerName);
+                return (
                 <Card key={p.id} className="bg-slate-800/50 border-slate-700 transition-shadow hover:shadow-lg hover:shadow-amber-900/20">
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <CardTitle className="text-white text-lg">{p.playerName}</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <Image
+                            src={icon.url}
+                            alt={`${p.playerName} character icon`}
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 rounded-full border border-amber-500/40 object-cover"
+                          />
+                          <CardTitle className="text-white text-lg">{p.playerName}</CardTitle>
+                        </div>
                         <div className="flex items-center gap-2 text-amber-300 text-sm mt-1" aria-label={`Commander: ${p.commander || 'Not specified'}`}>
                           <FaBook className="w-3.5 h-3.5 shrink-0" aria-hidden />
                           <span>{p.commander || '—'}</span>
@@ -149,17 +202,21 @@ export default function HomePage() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Level</span>
-                      <span className="text-amber-400 font-semibold">{p.level}</span>
+                    <div className="flex justify-between gap-2">
+                      <span className="text-slate-400" title="Level equals commander games played">
+                        Level
+                      </span>
+                      <span className="text-amber-400 font-semibold tabular-nums" aria-label={`Level ${p.level}, one per game played`}>
+                        {p.level}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Points</span>
-                      <span className="text-amber-400 font-semibold">{p.totalPoints}</span>
+                      <span className="text-amber-400 font-semibold tabular-nums">{p.totalPoints}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Games</span>
-                      <span className="text-white">{p.gamesPlayed}</span>
+                      <span className="text-slate-400">Games played</span>
+                      <span className="text-white tabular-nums">{p.gamesPlayed}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Win rate</span>
@@ -171,7 +228,8 @@ export default function HomePage() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

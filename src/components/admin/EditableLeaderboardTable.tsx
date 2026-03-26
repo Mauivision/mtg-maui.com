@@ -170,7 +170,9 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
         rank: entry.rank || 0,
         playerId: entry.playerId || entry.id || '',
         playerName: entry.playerName || entry.name || 'Unknown',
-        totalPoints: entry.totalPoints || entry.points || 0,
+        commanderPoints: typeof entry.commanderPoints === 'number' ? entry.commanderPoints : undefined,
+        draftPoints: typeof entry.draftPoints === 'number' ? entry.draftPoints : undefined,
+        totalPoints: entry.totalPoints ?? entry.points ?? 0,
         gamesPlayed: entry.gamesPlayed || 0,
         wins: entry.wins || 0,
         losses: entry.losses || 0,
@@ -305,8 +307,42 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
         const errorData = await response.json().catch(() => ({ error: 'Failed to save changes' }));
         throw new Error(errorData.error || `HTTP ${response.status}`);
       }
-      const result = await response.json();
-      toast.success(result.message || `Successfully updated ${changes.length} player(s)`);
+      const result = await response.json() as {
+        message?: string;
+        results?: Array<{
+          playerId: string;
+          status: string;
+          adjustments?: { points: number; wins: number; note: string | null };
+        }>;
+      };
+      const summaryLines =
+        result.results
+          ?.filter((r) => r.status === 'updated' && r.adjustments)
+          .map((r) => {
+            const name = entries.find((e) => e.playerId === r.playerId)?.playerName ?? r.playerId;
+            const a = r.adjustments!;
+            const parts: string[] = [];
+            if (a.points !== 0) parts.push(`${a.points > 0 ? '+' : ''}${a.points} pts`);
+            if (a.wins !== 0) parts.push(`${a.wins > 0 ? '+' : ''}${a.wins} wins`);
+            const line = parts.length ? `${name}: ${parts.join(', ')}` : `${name}: adjustment recorded`;
+            return a.note ? `${line} — ${a.note}` : line;
+          }) ?? [];
+      const headline = result.message || `Successfully updated ${changes.length} player(s)`;
+      if (summaryLines.length > 0) {
+        toast.success(
+          <div className="text-left max-w-sm">
+            <div className="font-medium">{headline}</div>
+            <ul className="mt-2 space-y-1 text-sm text-slate-200 list-disc list-inside">
+              {summaryLines.map((line, i) => (
+                <li key={i}>{line}</li>
+              ))}
+            </ul>
+          </div>,
+          { duration: 12_000 }
+        );
+      } else {
+        toast.success(headline);
+      }
       await fetchLeaderboard(); // Refresh to get latest data
     } catch (error) {
       logger.error('Error saving leaderboard', error);
@@ -446,16 +482,18 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
           <p className="text-gray-400 text-sm mt-2">
             <span className="text-green-400 font-semibold">Easy editing:</span> Click or double-click any cell to edit.
             Use ↑/↓ arrow keys or the hover ± buttons to adjust numbers. Press Enter to apply, Esc to cancel.
-            Save updates the home leaderboard. <span className="text-yellow-400">*Games</span> is from recorded games and read-only.
+            <span className="text-slate-300"> Totals match the public leaderboard:</span>{' '}
+            <span className="text-amber-200/90">Total = Commander + Draft</span> (draft from 1v1 events). Save writes adjustments via commander games; Cmd/Draft columns are read-only here.{' '}
+            <span className="text-yellow-400">*Games</span> = commander pods with placement, read-only.
           </p>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-b-lg bg-slate-950/50">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-slate-700 border-b border-slate-600">
-                  <th 
-                    className="text-left py-3 px-4 text-white font-semibold border-r border-slate-600 sticky left-0 bg-slate-700 z-10 cursor-pointer hover:bg-slate-600 transition-colors select-none"
+                <tr className="bg-slate-900/50 border-b border-slate-600">
+                  <th
+                    className="text-left py-3 px-4 text-white font-semibold border-r border-slate-600 sticky left-0 bg-slate-900/50 z-10 cursor-pointer hover:bg-slate-800/50 transition-colors select-none"
                     onClick={() => {
                       if (sortBy === 'rank') {
                         setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -492,6 +530,18 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
                       )}
                     </div>
                   </th>
+                  <th
+                    className="text-center py-3 px-4 text-slate-300 font-semibold border-r border-slate-600 min-w-[88px]"
+                    title="Commander pod points (read-only)"
+                  >
+                    Cmd
+                  </th>
+                  <th
+                    className="text-center py-3 px-4 text-slate-300 font-semibold border-r border-slate-600 min-w-[88px]"
+                    title="Draft match points (read-only)"
+                  >
+                    Draft
+                  </th>
                   <th 
                     className="text-center py-3 px-4 text-white font-semibold border-r border-slate-600 min-w-[100px] cursor-pointer hover:bg-slate-600 transition-colors select-none"
                     onClick={() => {
@@ -502,10 +552,10 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
                         setSortDirection('desc');
                       }
                     }}
-                    title="Click to sort by points"
+                    title="Click to sort by total points (Commander + Draft)"
                   >
                     <div className="flex items-center justify-center gap-2">
-                      <span>Points</span>
+                      <span>Total</span>
                       {sortBy === 'points' && (
                         <span className="text-amber-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
@@ -513,7 +563,7 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
                   </th>
                   <th
                     className="text-center py-3 px-4 text-white font-semibold border-r border-slate-600 min-w-[100px]"
-                    title="Games played is calculated from actual games"
+                    title="Commander games with a recorded placement"
                   >
                     Games*
                   </th>
@@ -550,18 +600,18 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
               <tbody>
                 {filteredAndSortedEntries.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-8 text-gray-400">
+                    <td colSpan={10} className="text-center py-8 text-gray-400">
                       {searchQuery ? 'No players found matching your search.' : 'No players in leaderboard. Add players to get started.'}
                     </td>
                   </tr>
                 ) : (
-                  filteredAndSortedEntries.map((entry, index) => (
+                  filteredAndSortedEntries.map((entry) => (
                     <tr
                       key={entry.playerId}
-                      className="border-b border-slate-700 hover:bg-slate-700/30 transition-colors"
+                      className="border-b border-slate-700 bg-slate-900/50 hover:bg-slate-800/50 transition-colors"
                     >
-                      <td className="py-2 px-4 text-gray-300 border-r border-slate-700 sticky left-0 bg-slate-800 z-10">
-                        {index + 1}
+                      <td className="py-2 px-4 text-gray-300 border-r border-slate-700 sticky left-0 bg-slate-900/50 z-10 tabular-nums">
+                        {entry.rank}
                       </td>
                       <td className="py-2 px-0 border-r border-slate-700">
                         <EditableCell
@@ -569,6 +619,12 @@ export const EditableLeaderboardTable: React.FC<EditableLeaderboardTableProps> =
                           onSave={value => updateCell(entry.playerId, 'playerName', value)}
                           type="text"
                         />
+                      </td>
+                      <td className="py-2 px-4 text-center text-slate-400 tabular-nums border-r border-slate-700">
+                        {entry.commanderPoints ?? '—'}
+                      </td>
+                      <td className="py-2 px-4 text-center text-slate-400 tabular-nums border-r border-slate-700">
+                        {entry.draftPoints ?? '—'}
                       </td>
                       <td className="py-2 px-0 border-r border-slate-700">
                         <EditableCell

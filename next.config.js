@@ -1,5 +1,8 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingRoot: path.join(__dirname),
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'cards.scryfall.io' },
@@ -31,7 +34,7 @@ const nextConfig = {
       { source: '/leaderboard', destination: '/#leaderboard', permanent: true },
       { source: '/character-sheets', destination: '/#character-charts', permanent: true },
       { source: '/bulletin', destination: '/#news-feed', permanent: true },
-      { source: '/admin', destination: '/wizards', permanent: true },
+      { source: '/admin', destination: '/', permanent: true },
       { source: '/analytics', destination: '/', permanent: true },
       { source: '/commander', destination: '/', permanent: true },
       { source: '/rules', destination: '/', permanent: true },

@@ -6,11 +6,25 @@ export interface CharacterSheetPlayer {
   id: string;
   playerName: string;
   commander?: string;
+  active?: boolean;
   rank: number;
   level: number;
   totalPoints: number;
   gamesPlayed: number;
   wins?: number;
+  losses?: number;
+  winRate?: number;
+  averagePlacement?: number;
+  goldObjectives?: number;
+  silverObjectives?: number;
+  achievements?: string[];
+  stats?: {
+    power?: number;
+    consistency?: number;
+    victoryRate?: number;
+    adaptability?: number;
+    experience?: number;
+  };
 }
 
 export interface UseCharacterSheetsResult {

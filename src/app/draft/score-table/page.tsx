@@ -74,7 +74,7 @@ function DraftScoreTableContent() {
   const [importingScores, setImportingScores] = useState(false);
   const [showImportStandings, setShowImportStandings] = useState(false);
   const [importStandingsText, setImportStandingsText] = useState(
-    `Zach 6\nNate 5\nAaron H 5\nJames 4\nTre 4\nTim 5\nKevin 4\nTravis 3\nAaron V 3\nScott 3\nKaipo 3\nApril 2\nRonnie 2\nAaron S 2\nKendra 1\nDustin 1`
+    `Nate 6+1\nZach 5\nAaron H 5\nJames 4\nTre 4\nDan 5\nKevin 4\nTravis 3\nAaron V 3\nScott 3\nKaipo 3\nApril 2\nRonnie 3\nAaron S 2\nKendra 1\nDustin 1\nTim 0`
   );
   const [importingStandings, setImportingStandings] = useState(false);
 
@@ -357,11 +357,11 @@ function DraftScoreTableContent() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex items-center gap-4 mb-6">
           <Link
-            href="/wizards"
+            href="/"
             className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-300 transition-colors"
           >
             <FaArrowLeft className="w-4 h-4" />
-            Back to Wizards
+            Back to home
           </Link>
         </div>
 
@@ -447,11 +447,11 @@ function DraftScoreTableContent() {
 
             {!loading && scoreTable && scoreTable.participants.length > 0 && (
               <>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto rounded-lg border border-slate-600 bg-slate-950/50 p-3">
                   <h3 className="text-lg font-semibold text-white mb-2">Standings</h3>
                   <table className="w-full border border-slate-600 rounded-lg overflow-hidden">
                     <thead>
-                      <tr className="bg-slate-700 text-left">
+                      <tr className="bg-slate-900/50 text-left">
                         <th className="px-4 py-2 text-gray-200">#</th>
                         <th className="px-4 py-2 text-gray-200">Player</th>
                         <th className="px-4 py-2 text-center text-gray-200">Points earned (draft games)</th>
@@ -459,7 +459,7 @@ function DraftScoreTableContent() {
                     </thead>
                     <tbody>
                       {scoreTable.standings.map((s, i) => (
-                        <tr key={s.participantId} className="border-t border-slate-600 bg-slate-800/50">
+                        <tr key={s.participantId} className="border-t border-slate-600 bg-slate-900/50">
                           <td className="px-4 py-2 text-gray-300">{i + 1}</td>
                           <td className="px-4 py-2 text-white">{s.name}</td>
                           <td className="px-4 py-2 text-center font-medium text-amber-400">{s.matchPoints}</td>

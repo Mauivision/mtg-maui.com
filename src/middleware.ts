@@ -19,6 +19,6 @@ export const config = {
     '/profile/:path*',
     '/players/:path*',
     '/stats/:path*',
-    // /admin and /wizards use simple Admin/12345 login; not NextAuth
+    // Admin API routes may use simple-admin cookie or SKIP_ADMIN_AUTH; not NextAuth for panel UI
   ],
 };

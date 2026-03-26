@@ -15,10 +15,11 @@ export async function GET() {
       return NextResponse.json(getStaticStats());
     }
 
-    const [totalUsers, totalGames, totalLeagues, totalEvents, newsCount] = await Promise.all([
+    const [totalUsers, totalGames, totalLeagues, totalDrafts, totalEvents, newsCount] = await Promise.all([
       prisma.user.count(),
       prisma.leagueGame.count(),
       prisma.league.count(),
+      prisma.draftEvent.count(),
       prisma.event.count(),
       prisma.news.count(),
     ]);
@@ -27,6 +28,7 @@ export async function GET() {
       totalUsers,
       totalGames,
       totalLeagues,
+      totalDrafts,
       totalEvents,
       newsCount,
     });

@@ -25,8 +25,10 @@ export async function GET() {
     });
     return NextResponse.json({ leagues });
   } catch (error) {
-    logger.error('Error fetching leagues', error);
-    return handleApiError(error);
+    logger.warn('Leagues DB unavailable; using static league-data.json', {
+      err: error instanceof Error ? error.message : String(error),
+    });
+    return NextResponse.json({ leagues: getStaticLeagues(), source: 'static-json' as const });
   }
 }
 

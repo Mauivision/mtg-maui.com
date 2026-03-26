@@ -44,13 +44,6 @@ export const ModernHeader: React.FC = () => {
               );
             })}
           </nav>
-
-          <Link
-            href="/wizards"
-            className="text-slate-400 hover:text-amber-400 focus:text-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950 rounded text-sm font-medium transition-colors"
-          >
-            Edit
-          </Link>
         </div>
 
 <nav className="md:hidden flex flex-wrap gap-2 py-3 border-t border-slate-800" aria-label="Mobile navigation">
@@ -67,9 +60,6 @@ export const ModernHeader: React.FC = () => {
                 </a>
               );
             })}
-          <Link href="/wizards" className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-amber-400 focus:text-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950">
-            Edit
-          </Link>
         </nav>
       </div>
     </header>

@@ -18,14 +18,5 @@ export type {
   Deck,
 } from './mtg';
 
-// Wizards types (excluding ScoringRules which exists in leaderboard.ts)
-export type {
-  WizardPlayer,
-  WizardGame,
-  WizardGamePlayer,
-  GoldObjective,
-  FormErrors,
-} from './wizards';
-
 // NextAuth types
 export * from './next-auth';

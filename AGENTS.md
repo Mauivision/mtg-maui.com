@@ -28,7 +28,8 @@ DATABASE_URL="postgresql://mtguser:mtgpass@localhost:5432/mtg_maui" npm run pris
 - **Seed scripts don't load `.env`**: The `ts-node` seed scripts (e.g. `npm run prisma:seed:maui`) do not automatically load `.env`. You must either export `DATABASE_URL` or prefix the command: `DATABASE_URL="..." npm run prisma:seed:maui`.
 - **Raw SQL quoting**: PostgreSQL table names created by Prisma are case-sensitive (quoted). All `$queryRaw` calls must use `Prisma.sql` with double-quoted table/column names (e.g. `"LeagueGameDeck"`, not `LeagueGameDeck`). Unquoted identifiers get lowercased by PostgreSQL, causing "relation does not exist" errors.
 - **Static data mode**: Set `USE_STATIC_LEAGUE_DATA=true` in `.env` (and omit `DATABASE_URL`) to run without a database. This provides read-only demo data from `src/data/league-data.json`.
-- **Auth is off by default**: `SKIP_ADMIN_AUTH=true` in `.env` means the Wizards admin panel is open without login.
+- **Auth is off by default**: `SKIP_ADMIN_AUTH=true` in `.env` means admin API routes accept requests without NextAuth (tighten for production).
+- **Postgres scores vs `league-data.json`**: Run `DATABASE_URL="..." npm run prisma:sync:league-json` to upsert all Commander pods from `src/data/league-data.json` (updates existing rounds when scores change). With Postgres, when the DB league **name** matches the JSON league name, draft VP on the public leaderboard is taken from the bundled JSON so totals match `draftStandings` / `secondDraftStandings` (Commander VP still comes from `LeagueGame`). Set `DISABLE_JSON_DRAFT_MERGE=true` to use only `DraftEvent` match math for draft points.
 
 ### Standard commands
 

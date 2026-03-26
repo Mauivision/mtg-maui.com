@@ -24,6 +24,8 @@ interface PodResult {
 }
 
 interface Pod {
+  /** Stable id when from DB (cuid); optional for static JSON. */
+  id?: string;
   pod: string;
   date: string;
   round: number | null;
@@ -134,11 +136,11 @@ export const Wave1PodResults: React.FC<Wave1PodResultsProps> = ({ leagueId }) =>
   }
 
   return (
-    <div className="space-y-8" role="region" aria-label="Players and Wave 1 pod results" aria-busy="false">
+    <div className="space-y-8" role="region" aria-label="Players and Commander pod results" aria-busy="false">
       {/* Header with refresh */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h2 id="wave1-heading" className="text-xl font-bold text-white">
-          Players &amp; Wave 1 Pod Results
+          Players &amp; Commander pod results
         </h2>
         <Button
           variant="outline"
@@ -205,11 +207,11 @@ export const Wave1PodResults: React.FC<Wave1PodResultsProps> = ({ leagueId }) =>
         <div>
           <h3 id="wave1-pods-heading" className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <FaTrophy className="w-5 h-5 text-amber-400" aria-hidden />
-            Wave 1 — Game 1 per Pod
+            All Commander pods (chronological)
           </h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {data.pods.map((pod) => (
-              <Card key={pod.pod} className="bg-slate-800/50 border-slate-700">
+              <Card key={pod.id ?? `${pod.pod}-${pod.round ?? pod.date}`} className="bg-slate-800/50 border-slate-700">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-white text-base flex items-center justify-between">
                     <span>Pod {pod.pod}</span>

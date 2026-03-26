@@ -1,1 +1,552 @@
-{"draftStandings":{"draftName":"First Draft (1v1)","standings":[{"name":"Zach","points":6},{"name":"Nate","points":5},{"name":"Aaron H","points":5},{"name":"James","points":4},{"name":"Tre","points":4},{"name":"Tim","points":5},{"name":"Kevin","points":4},{"name":"Travis","points":3},{"name":"Aaron V","points":3},{"name":"Scott","points":3},{"name":"Kaipo","points":3},{"name":"April","points":2},{"name":"Ronnie","points":2},{"name":"Aaron S","points":2},{"name":"Kendra","points":1},{"name":"Dustin","points":1}]},"league":{"id":"maui-commander-static","name":"Maui Commander League","description":"Maui Commander League — Pod Score Sheet","format":"commander","status":"active","startDate":"2026-01-01","endDate":null},"players":[{"id":"april","name":"April","commander":"Loica Cole"},{"id":"kaipo","name":"Kaipo","commander":"Spectacular Spider-Man / Tormod"},{"id":"ronnie","name":"Ronnie","commander":"Toph / Arcanis"},{"id":"kevin","name":"Kevin","commander":"Infinite Guideline Station"},{"id":"kendra","name":"Kendra","commander":"Commander Deck"},{"id":"aarons","name":"Aaron S.","commander":"Commander Deck"},{"id":"aaronv","name":"Aaron V.","commander":"Commander Deck"},{"id":"zach","name":"Zach","commander":"Commander Deck"},{"id":"aaronh","name":"Aaron H.","commander":"Yannik / Esper","active":false},{"id":"james","name":"James","commander":"Kefka / Grixis"},{"id":"tre","name":"Tre","commander":"Breya"},{"id":"dan","name":"Dan","commander":"Sofka"},{"id":"nate","name":"Nate","commander":"Diamond Weapon"},{"id":"scott","name":"Scott","commander":"Jodah"},{"id":"travis","name":"Travis","commander":"Soda / Iona"},{"id":"dustin","name":"Dustin","commander":"5pidey / Tobran"},{"id":"tim","name":"Tim","commander":"Tim's Deck","active":true}],"games":[{"date":"2026-01-05","round":1,"pod":"A","results":[{"playerId":"april","place":1,"points":9},{"playerId":"ronnie","place":2,"points":1},{"playerId":"kaipo","place":3,"points":4},{"playerId":"kevin","place":4,"points":1}]},{"date":"2026-01-10","round":2,"pod":"B","results":[{"playerId":"kendra","place":1,"points":14},{"playerId":"aarons","place":2,"points":3},{"playerId":"aaronv","place":3,"points":2},{"playerId":"zach","place":4,"points":1}]},{"date":"2026-01-25","round":3,"pod":"C","results":[{"playerId":"aaronh","place":1,"points":8},{"playerId":"james","place":2,"points":3},{"playerId":"tre","place":3,"points":3},{"playerId":"dan","place":4,"points":1}]},{"date":"2026-01-30","round":4,"pod":"D","results":[{"playerId":"nate","place":1,"points":7},{"playerId":"scott","place":2,"points":3},{"playerId":"travis","place":3,"points":3},{"playerId":"dustin","place":4,"points":1}]},{"date":"2026-02-22","round":5,"pod":"Pod 1 (Feb 22)","results":[{"playerId":"ronnie","place":1,"points":12},{"playerId":"nate","place":2,"points":2},{"playerId":"tre","place":3,"points":2},{"playerId":"aaronv","place":4,"points":1}]},{"date":"2026-02-22","round":6,"pod":"Pod 2 (2/22/26)","results":[{"playerId":"dan","place":1,"points":15},{"playerId":"dustin","place":2,"points":6},{"playerId":"kendra","place":3,"points":1},{"playerId":"kaipo","place":4,"points":0}]},{"date":"2026-02-16","round":7,"pod":"Pod 3 (Feb 16)","results":[{"playerId":"james","place":1,"points":7},{"playerId":"april","place":2,"points":2},{"playerId":"scott","place":3,"points":2},{"playerId":"aarons","place":4,"points":0}]},{"date":"2026-02-16","round":8,"pod":"Pod 4 (Feb 16)","results":[{"playerId":"kevin","place":1,"points":8},{"playerId":"travis","place":2,"points":2},{"playerId":"zach","place":3,"points":1},{"playerId":"tim","place":4,"points":1}]}]}
+{
+  "draftStandings": {
+    "draftName": "First Draft (1v1)",
+    "standings": [
+      {
+        "name": "Nate",
+        "points": 6,
+        "bonusPoints": 1,
+        "note": "Undefeated"
+      },
+      {
+        "name": "Aaron H",
+        "points": 5
+      },
+      {
+        "name": "Dan",
+        "points": 5
+      },
+      {
+        "name": "Zach",
+        "points": 5
+      },
+      {
+        "name": "James",
+        "points": 4
+      },
+      {
+        "name": "Kevin",
+        "points": 4
+      },
+      {
+        "name": "Tre",
+        "points": 4
+      },
+      {
+        "name": "Aaron V",
+        "points": 3
+      },
+      {
+        "name": "Kaipo",
+        "points": 3
+      },
+      {
+        "name": "Ronnie",
+        "points": 3
+      },
+      {
+        "name": "Scott",
+        "points": 3
+      },
+      {
+        "name": "Travis",
+        "points": 3
+      },
+      {
+        "name": "April",
+        "points": 2
+      },
+      {
+        "name": "Aaron S",
+        "points": 2
+      },
+      {
+        "name": "Dustin",
+        "points": 1
+      },
+      {
+        "name": "Kendra",
+        "points": 1
+      },
+      {
+        "name": "Tim",
+        "points": 0
+      }
+    ]
+  },
+  "league": {
+    "id": "maui-commander-static",
+    "name": "Maui Commander League",
+    "description": "Maui Commander League — Pod Score Sheet",
+    "format": "commander",
+    "status": "active",
+    "startDate": "2026-01-01",
+    "endDate": null
+  },
+  "players": [
+    {
+      "id": "april",
+      "name": "April",
+      "commander": "Loica Cole"
+    },
+    {
+      "id": "kaipo",
+      "name": "Kaipo",
+      "commander": "Spectacular Spider-Man / Tormod"
+    },
+    {
+      "id": "ronnie",
+      "name": "Ronnie",
+      "commander": "Toph / Arcanis"
+    },
+    {
+      "id": "kevin",
+      "name": "Kevin",
+      "commander": "Infinite Guideline Station"
+    },
+    {
+      "id": "kendra",
+      "name": "Kendra",
+      "commander": "Kykar, Zephyr / Jeskai"
+    },
+    {
+      "id": "aarons",
+      "name": "Aaron S.",
+      "commander": "Korvold, Fae-Cursed / Simic"
+    },
+    {
+      "id": "aaronv",
+      "name": "Aaron V.",
+      "commander": "Arang Crossroads / Bant"
+    },
+    {
+      "id": "zach",
+      "name": "Zach",
+      "commander": "Jor Kadeen / Boros"
+    },
+    {
+      "id": "aaronh",
+      "name": "Aaron H.",
+      "commander": "Yannik / Esper",
+      "active": false
+    },
+    {
+      "id": "james",
+      "name": "James",
+      "commander": "Kefka / Grixis"
+    },
+    {
+      "id": "tre",
+      "name": "Tre",
+      "commander": "Breya"
+    },
+    {
+      "id": "dan",
+      "name": "Dan",
+      "commander": "Sofka"
+    },
+    {
+      "id": "nate",
+      "name": "Nate",
+      "commander": "Diamond Weapon / Elizabeth (BS)"
+    },
+    {
+      "id": "scott",
+      "name": "Scott",
+      "commander": "Jodah (B) 5"
+    },
+    {
+      "id": "travis",
+      "name": "Travis",
+      "commander": "Zada / Iona (RW)"
+    },
+    {
+      "id": "dustin",
+      "name": "Dustin",
+      "commander": "Spidey / Torbran (GR)"
+    },
+    {
+      "id": "tim",
+      "name": "Tim",
+      "commander": "Tim's Deck",
+      "active": true
+    }
+  ],
+  "games": [
+    {
+      "date": "2026-01-05",
+      "round": 1,
+      "pod": "B",
+      "results": [
+        {
+          "playerId": "april",
+          "place": 1,
+          "points": 8
+        },
+        {
+          "playerId": "kaipo",
+          "place": 2,
+          "points": 4
+        },
+        {
+          "playerId": "ronnie",
+          "place": 3,
+          "points": 1
+        },
+        {
+          "playerId": "kevin",
+          "place": 4,
+          "points": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-01-10",
+      "round": 2,
+      "pod": "A",
+      "results": [
+        {
+          "playerId": "kendra",
+          "place": 1,
+          "points": 13
+        },
+        {
+          "playerId": "aarons",
+          "place": 2,
+          "points": 3
+        },
+        {
+          "playerId": "aaronv",
+          "place": 3,
+          "points": 2
+        },
+        {
+          "playerId": "zach",
+          "place": 4,
+          "points": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-01-25",
+      "round": 3,
+      "pod": "C",
+      "results": [
+        {
+          "playerId": "nate",
+          "place": 1,
+          "points": 7
+        },
+        {
+          "playerId": "travis",
+          "place": 2,
+          "points": 3
+        },
+        {
+          "playerId": "scott",
+          "place": 3,
+          "points": 2
+        },
+        {
+          "playerId": "dustin",
+          "place": 4,
+          "points": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-01-25",
+      "round": 3,
+      "pod": "D",
+      "results": [
+        {
+          "playerId": "aaronh",
+          "place": 1,
+          "points": 7
+        },
+        {
+          "playerId": "james",
+          "place": 2,
+          "points": 3
+        },
+        {
+          "playerId": "tre",
+          "place": 3,
+          "points": 1
+        },
+        {
+          "playerId": "dan",
+          "place": 4,
+          "points": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-02-22",
+      "round": 5,
+      "pod": "A",
+      "results": [
+        {
+          "playerId": "ronnie",
+          "place": 1,
+          "points": 11
+        },
+        {
+          "playerId": "nate",
+          "place": 2,
+          "points": 2
+        },
+        {
+          "playerId": "tre",
+          "place": 3,
+          "points": 2
+        },
+        {
+          "playerId": "aaronv",
+          "place": 4,
+          "points": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-02-22",
+      "round": 6,
+      "pod": "B",
+      "results": [
+        {
+          "playerId": "dan",
+          "place": 1,
+          "points": 15
+        },
+        {
+          "playerId": "kaipo",
+          "place": 2,
+          "points": 1
+        },
+        {
+          "playerId": "dustin",
+          "place": 3,
+          "points": 0
+        },
+        {
+          "playerId": "kendra",
+          "place": 4,
+          "points": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-02-16",
+      "round": 7,
+      "pod": "C",
+      "results": [
+        {
+          "playerId": "james",
+          "place": 1,
+          "points": 7
+        },
+        {
+          "playerId": "april",
+          "place": 2,
+          "points": 2
+        },
+        {
+          "playerId": "scott",
+          "place": 3,
+          "points": 2
+        },
+        {
+          "playerId": "aarons",
+          "place": 4,
+          "points": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-02-16",
+      "round": 8,
+      "pod": "D",
+      "results": [
+        {
+          "playerId": "kevin",
+          "place": 1,
+          "points": 7
+        },
+        {
+          "playerId": "travis",
+          "place": 2,
+          "points": 2
+        },
+        {
+          "playerId": "zach",
+          "place": 3,
+          "points": 1
+        },
+        {
+          "playerId": "tim",
+          "place": 4,
+          "points": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-03-17",
+      "round": 9,
+      "pod": "Pod 5 (3/17/26)",
+      "results": [
+        {
+          "playerId": "kevin",
+          "place": 1,
+          "points": 8
+        },
+        {
+          "playerId": "kendra",
+          "place": 2,
+          "points": 2
+        },
+        {
+          "playerId": "james",
+          "place": 4,
+          "points": 1
+        },
+        {
+          "playerId": "nate",
+          "place": 3,
+          "points": 2
+        }
+      ]
+    },
+    {
+      "date": "2026-03-22",
+      "round": 10,
+      "pod": "Pod 6 (3/22/26)",
+      "results": [
+        {
+          "playerId": "ronnie",
+          "place": 1,
+          "points": 8
+        },
+        {
+          "playerId": "aarons",
+          "place": 2,
+          "points": 1
+        },
+        {
+          "playerId": "dan",
+          "place": 3,
+          "points": 2
+        },
+        {
+          "playerId": "travis",
+          "place": 4,
+          "points": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-03-22",
+      "round": 11,
+      "pod": "Pod 7 (3/22/26)",
+      "results": [
+        {
+          "playerId": "tre",
+          "place": 1,
+          "points": 10
+        },
+        {
+          "playerId": "kaipo",
+          "place": 2,
+          "points": 2
+        },
+        {
+          "playerId": "scott",
+          "place": 3,
+          "points": 1
+        },
+        {
+          "playerId": "zach",
+          "place": 4,
+          "points": 0
+        }
+      ]
+    }
+  ],
+  "secondDraftStandings": {
+    "draftName": "Second Draft (1v1)",
+    "standings": [
+      {
+        "name": "Zach",
+        "points": 6,
+        "bonusPoints": 1,
+        "note": "Undefeated"
+      },
+      {
+        "name": "Tim",
+        "points": 6,
+        "bonusPoints": 1,
+        "note": "Undefeated"
+      },
+      {
+        "name": "Aaron V",
+        "points": 5
+      },
+      {
+        "name": "Tre",
+        "points": 5
+      },
+      {
+        "name": "Kaipo",
+        "points": 4
+      },
+      {
+        "name": "Kendra",
+        "points": 4
+      },
+      {
+        "name": "Aaron S",
+        "points": 4
+      },
+      {
+        "name": "Nate",
+        "points": 3
+      },
+      {
+        "name": "James",
+        "points": 3
+      },
+      {
+        "name": "Ronnie",
+        "points": 3
+      },
+      {
+        "name": "April",
+        "points": 2
+      },
+      {
+        "name": "Dustin",
+        "points": 2
+      },
+      {
+        "name": "Kevin",
+        "points": 1
+      },
+      {
+        "name": "Aaron H",
+        "points": 0,
+        "note": "Dropped from league"
+      },
+      {
+        "name": "Travis",
+        "points": 3
+      },
+      {
+        "name": "Scott",
+        "points": 0
+      },
+      {
+        "name": "Dan",
+        "points": 0
+      }
+    ]
+  }
+}

@@ -156,7 +156,7 @@ Once your code is on GitHub:
 3. **Select your repository**
 4. **Deploy automatically!**
 
-See `VERCEL_QUICKSTART.md` for Vercel deployment steps.
+See [DEPLOY_VERCEL_CHECKLIST.md](DEPLOY_VERCEL_CHECKLIST.md) for Vercel deployment.
 
 ---
 

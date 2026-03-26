@@ -3,10 +3,10 @@
  *
  * Run: npx ts-node --project tsconfig.seed.json prisma/seed-commander-pods-feb-2026.ts
  *
- * Pod 1 (Feb 22): Ronnie (12), Aaron V (1), Nate (2), Tre (2)
- * Pod 2 (2/22/26): Dan (15), Dustin (6), Kendra (1), Kaipo (0)
- * Pod 3 (Feb 16): James (7), April (2), Aaron S (0), Scott (2)
- * Pod 4 (Feb 16): Kevin (8), Travis (2), Zach (1), Tim (1)
+ * Pod A (Feb 22) — 2nd commander game: Ronnie (12), Nate (2), Tre (2), Aaron V (1)
+ * Pod B (Feb 22): Dan (15), Kaipo (1), Dustin (0), Kendra (0)
+ * Pod C (Feb 16): James (6), April (2), Scott (2), Aaron S (0)
+ * Pod D (Feb 16) — 2nd commander game: Kevin (7), Travis (2), Zach (1), Tim (1)
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -20,40 +20,40 @@ const PODS: Array<{
   players: Array<{ name: string; points: number }>;
 }> = [
   {
-    name: 'Pod 1 (Feb 22)',
+    name: 'Pod A (Feb 22)',
     date: '2026-02-22',
     players: [
       { name: 'Ronnie', points: 12 },
-      { name: 'Aaron V', points: 1 },
       { name: 'Nate', points: 2 },
       { name: 'Tre', points: 2 },
+      { name: 'Aaron V', points: 1 },
     ],
   },
   {
-    name: 'Pod 2 (2/22/26)',
+    name: 'Pod B (Feb 22)',
     date: '2026-02-22',
     players: [
       { name: 'Dan', points: 15 },
-      { name: 'Dustin', points: 6 },
-      { name: 'Kendra', points: 1 },
-      { name: 'Kaipo', points: 0 },
+      { name: 'Kaipo', points: 1 },
+      { name: 'Dustin', points: 0 },
+      { name: 'Kendra', points: 0 },
     ],
   },
   {
-    name: 'Pod 3 (Feb 16)',
+    name: 'Pod C (Feb 16)',
     date: '2026-02-16',
     players: [
-      { name: 'James', points: 7 },
+      { name: 'James', points: 6 },
       { name: 'April', points: 2 },
-      { name: 'Aaron S', points: 0 },
       { name: 'Scott', points: 2 },
+      { name: 'Aaron S', points: 0 },
     ],
   },
   {
-    name: 'Pod 4 (Feb 16)',
+    name: 'Pod D (Feb 16)',
     date: '2026-02-16',
     players: [
-      { name: 'Kevin', points: 8 },
+      { name: 'Kevin', points: 7 },
       { name: 'Travis', points: 2 },
       { name: 'Zach', points: 1 },
       { name: 'Tim', points: 1 },

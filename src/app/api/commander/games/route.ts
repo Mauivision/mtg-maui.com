@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
         name: gameName,
         totalPlayers,
         createdAt: game.date.toISOString(),
+        notes: game.notes?.trim() || null,
         winner: winner
           ? {
               id: winner.deck.membership.user.id,

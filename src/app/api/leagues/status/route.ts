@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
+import { aggregateLeaderboardFromDatabase } from '@/lib/leaderboard-db-aggregate';
 import { isStaticLeagueDataMode, getStaticLeagueStatus } from '@/lib/static-league-data';
 
 const querySchema = z.object({
@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(data);
     }
 
+    try {
     const league = leagueId
       ? await prisma.league.findUnique({ where: { id: leagueId } })
       : await prisma.league.findFirst({ where: { status: 'active' } });
@@ -63,18 +64,15 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const topPlayers = await prisma.$queryRaw<
-      Array<{ playerId: string; playerName: string; totalPoints: number }>
-    >(Prisma.sql`
-      SELECT lgd."playerId", u.name as "playerName", SUM(lgd.points) as "totalPoints"
-      FROM "LeagueGameDeck" lgd
-      JOIN "User" u ON lgd."playerId" = u.id
-      JOIN "LeagueGame" lg ON lgd."gameId" = lg.id
-      WHERE lg."leagueId" = ${league.id}
-      GROUP BY lgd."playerId", u.name
-      ORDER BY "totalPoints" DESC
-      LIMIT 3
-    `);
+    const leaderboardRows = await aggregateLeaderboardFromDatabase({
+      leagueId: league.id,
+      gameType: 'all',
+    });
+    const topPlayers = leaderboardRows.slice(0, 3).map((r) => ({
+      id: r.id,
+      name: r.name,
+      points: r.points,
+    }));
 
     return NextResponse.json({
       league: {
@@ -100,12 +98,16 @@ export async function GET(request: NextRequest) {
         date: g.date.toISOString(),
         participants: g.gameDecks.length,
       })),
-      topPlayers: topPlayers.map((p) => ({
-        id: p.playerId,
-        name: p.playerName,
-        points: Number(p.totalPoints),
-      })),
+      topPlayers,
     });
+    } catch (dbErr) {
+      logger.warn('League status DB unavailable; using static league-data.json', {
+        err: dbErr instanceof Error ? dbErr.message : String(dbErr),
+      });
+      const data = getStaticLeagueStatus(leagueId);
+      if (!data) return NextResponse.json({ error: 'No active league found' }, { status: 404 });
+      return NextResponse.json({ ...data, source: 'static-json' as const });
+    }
   } catch (error) {
     logger.error('League status API error', error);
     return handleApiError(error);

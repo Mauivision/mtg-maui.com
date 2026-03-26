@@ -1,13 +1,13 @@
 /**
- * Seed: Maui Commander League — Pod C game, Jan 25, 2026
+ * Seed: Maui Commander League — Pod D (1st game), Jan 25, 2026
  *
  * Run: npm run prisma:seed:game:c
  *
  * Game results:
- * - 1st: Aaron H. (8 VP) — Win, 1 Elim, Heads-Up, 1 Silver (A)
- * - 2nd: James (3 VP) — Heads-Up, 1 Silver (O)
- * - 3rd: Tre (3 VP) — 1 Elim, 1 Silver (I)
- * - 4th: Dan (1 VP) — 1 Silver (V)
+ * - 1st: Aaron H. (8 VP) — Win, 1 elim, Heads-up, Silver A (First Blood)
+ * - 2nd: James (3 VP) — 1 elim, Heads-up, Silver T (First to copy spell)
+ * - 3rd: Tre (1 VP) — 1 elim
+ * - 4th: Dan (1 VP) — Silver O (First Commander out)
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -18,12 +18,12 @@ const prisma = new PrismaClient();
 const PLAYERS = [
   { name: 'Aaron H.', emailKey: 'aaronh', deck: 'Yannik / Esper (UBW)', points: 8, place: 1 },
   { name: 'James', emailKey: 'james', deck: 'Kefka / Grixis (UBR)', points: 3, place: 2 },
-  { name: 'Tre', emailKey: 'tre', deck: 'Breya / WUBR', points: 3, place: 3 },
+  { name: 'Tre', emailKey: 'tre', deck: 'Breya / WUBR', points: 1, place: 3 },
   { name: 'Dan', emailKey: 'dan', deck: 'Sofka', points: 1, place: 4 },
 ] as const;
 
 async function main() {
-  console.log('🌱 Seeding Maui Commander League — Pod C, Jan 25, 2026...');
+  console.log('🌱 Seeding Maui Commander League — Pod D, Jan 25, 2026...');
 
   // Get or create admin for recordedBy
   const adminPassword = await bcrypt.hash('12345', 10);
@@ -157,15 +157,14 @@ async function main() {
       players: JSON.stringify(playerIds),
       placements: JSON.stringify(placements),
       commanderObjectives: JSON.stringify({
-        golden: { roll: 3, description: 'Win on turn 6 or before', claimed: false },
+        golden: { roll: 0, description: 'Golden not claimed', claimed: false },
         silver: [
-          { code: 'V', description: 'First return creature from graveyard', claimedBy: 'Dan' },
-          { code: 'O', description: 'First commander on battlefield', claimedBy: 'James' },
-          { code: 'A', description: 'First blood', claimedBy: 'Aaron H.' },
-          { code: 'I', description: 'Control opponent permanent', claimedBy: 'Tre' },
+          { code: 'A', description: 'First Blood', claimedBy: 'Aaron H.' },
+          { code: 'T', description: 'First to copy spell', claimedBy: 'James' },
+          { code: 'O', description: 'First Commander out', claimedBy: 'Dan' },
         ],
       }),
-      notes: 'Pod C. Winner: Aaron H. (flying damage). Elim order: Dan, Tre, James.',
+      notes: 'Pod D (1/25/26). Aaron H 8, James 3, Tre 1, Dan 1. No Golden claimed.',
     },
   });
 
@@ -182,7 +181,7 @@ async function main() {
     });
   }
 
-  console.log('\n🎉 Seeded game: Maui Commander League — Pod C, Jan 25, 2026');
+  console.log('\n🎉 Seeded game: Maui Commander League — Pod D, Jan 25, 2026');
   console.log('   Leaderboard will update after refresh.');
 }
 

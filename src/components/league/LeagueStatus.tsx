@@ -15,7 +15,6 @@ import {
   FaSpinner,
   FaRedo,
 } from 'react-icons/fa';
-import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 
 interface LeagueStatusStats {
@@ -126,15 +125,7 @@ export function LeagueStatus({
           <p className="text-slate-400 text-sm">
             {error?.includes('DATABASE_URL')
               ? 'Set DATABASE_URL in .env and run npm run setup:maui'
-              : 'Only admins can create leagues. Sign in at '}
-            {!error?.includes('DATABASE_URL') && (
-              <>
-                <Link href="/wizards" className="text-amber-400 hover:underline">
-                  /wizards
-                </Link>{' '}
-                (Admin / 12345) to create league records.
-              </>
-            )}
+              : 'Create league data with Prisma: npm run setup:maui (or prisma migrate + seed). See docs/DATABASE_RESET_AND_POPULATE.md.'}
           </p>
           <Button
             variant="outline"

@@ -17,7 +17,7 @@ export const SkipLinks: React.FC = () => {
           Skip to leaderboard
         </a>
         <a
-          href="#wave1-pods"
+          href="/score#wave1-pods"
           className="inline-flex w-fit rounded-lg bg-slate-700 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-colors hover:bg-slate-600 focus:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950"
         >
           Skip to pod results

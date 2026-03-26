@@ -33,6 +33,8 @@ export { AnalyticsDashboard } from './analytics/AnalyticsDashboard';
 
 // Leaderboard Components
 export { RealtimeLeaderboard } from './leaderboard/RealtimeLeaderboard';
+export { SimpleLeaderboardChart } from './leaderboard/SimpleLeaderboardChart';
+export { DraftPointsChart } from './leaderboard/DraftPointsChart';
 export { LeaderboardFilters } from './leaderboard/LeaderboardFilters';
 export { Wave1PodResults } from './leaderboard/Wave1PodResults';
 
@@ -45,10 +47,6 @@ export { AdvancedSearch } from './admin/AdvancedSearch';
 export { SeasonManager } from './admin/SeasonManager';
 
 // Wizard Components
-export { WizardsDashboard } from './wizards/WizardsDashboard';
-export { WizardsPlayerTable } from './wizards/WizardsPlayerTable';
-export { WizardsGamesTable } from './wizards/WizardsGamesTable';
-export { WizardsScoringRules } from './wizards/WizardsScoringRules';
 
 // Player Components
 export { PlayerProfile } from './player/PlayerProfile';

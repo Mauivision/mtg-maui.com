@@ -94,12 +94,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-title" content="MTG Maui" />
         <meta name="application-name" content="MTG Maui League" />
       </head>
-      <body className="font-sans text-gray-100 antialiased bg-gradient-to-b from-slate-950 via-slate-900/40 to-slate-950">
+      <body className="relative font-sans text-gray-100 antialiased bg-slate-950">
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 z-0 bg-slate-950 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${siteImages.backgrounds.default})` }}
+        />
         <SkipLinks />
         <PageProgress />
         <ErrorBoundary>
           <Providers>
-            <div className="min-h-screen bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950/80">
+            <div className="relative z-10 min-h-screen bg-gradient-to-b from-slate-950/82 via-slate-950/72 to-slate-950/85">
               <header id="navigation">
                 <ModernHeader />
               </header>

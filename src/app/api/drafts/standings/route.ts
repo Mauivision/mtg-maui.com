@@ -87,7 +87,20 @@ export async function GET() {
       { headers: NO_STORE }
     );
   } catch (error) {
-    logger.error('Draft standings API error', error);
-    return handleApiError(error);
+    logger.warn('Draft standings DB unavailable; using static league-data.json', {
+      err: error instanceof Error ? error.message : String(error),
+    });
+    const staticData = getStaticDraftStandings();
+    if (staticData) {
+      return NextResponse.json(
+        {
+          draftName: staticData.draftName,
+          standings: staticData.standings.map((s) => ({ name: s.name, points: s.points })),
+          source: 'static-json' as const,
+        },
+        { headers: NO_STORE }
+      );
+    }
+    return NextResponse.json({ draftName: null, standings: [], source: 'static-json' as const }, { headers: NO_STORE });
   }
 }

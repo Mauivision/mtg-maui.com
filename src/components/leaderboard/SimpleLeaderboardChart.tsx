@@ -1,22 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-} from 'chart.js';
+import '@/lib/chartjs-bar-register';
 import { Bar } from 'react-chartjs-2';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { FaRedo, FaTrophy } from 'react-icons/fa';
 import type { RealtimeLeaderboardEntry } from '@/types/leaderboard';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
 const POLL_MS = 45_000;
 
@@ -27,11 +18,14 @@ function formatUpdatedAt(d: Date): string {
 interface SimpleLeaderboardChartProps {
   leagueId?: string;
   limit?: number;
+  /** total = league VP (default); commander = Commander pod VP only. */
+  metric?: 'total' | 'commander';
 }
 
 export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
   leagueId,
   limit = 16,
+  metric = 'total',
 }) => {
   const [entries, setEntries] = useState<RealtimeLeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -131,6 +125,17 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
     );
   }
 
+  const chartTitle = metric === 'commander' ? 'Commander — Pod VP' : 'Points';
+
+  const chartEntries =
+    metric === 'commander'
+      ? [...entries].sort(
+          (a, b) =>
+            (typeof b.commanderPoints === 'number' ? b.commanderPoints : 0) -
+            (typeof a.commanderPoints === 'number' ? a.commanderPoints : 0)
+        )
+      : entries;
+
   if (error || entries.length === 0) {
     return (
       <Card className="bg-slate-800/50 border-slate-700">
@@ -138,7 +143,7 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
           <div className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="text-white flex items-center gap-2">
               <FaTrophy className="w-5 h-5 text-amber-500" />
-              Points
+              {chartTitle}
             </CardTitle>
             {headerActions}
           </div>
@@ -154,23 +159,26 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
     );
   }
 
-  const labels = entries.map((e) => e.name);
-  const points = entries.map((e) => e.points);
+  const labels = chartEntries.map((e) => e.name);
+  const points =
+    metric === 'commander'
+      ? chartEntries.map((e) => (typeof e.commanderPoints === 'number' ? e.commanderPoints : 0))
+      : chartEntries.map((e) => e.points);
   const maxPoints = Math.max(...points, 1);
 
   const chartData = {
     labels,
     datasets: [
       {
-        label: 'Points',
+        label: metric === 'commander' ? 'Commander VP' : 'Points',
         data: points,
-        backgroundColor: entries.map((_, i) => {
+        backgroundColor: chartEntries.map((_, i) => {
           if (i === 0) return 'rgba(234, 179, 8, 0.7)';
           if (i === 1) return 'rgba(156, 163, 175, 0.7)';
           if (i === 2) return 'rgba(217, 119, 6, 0.7)';
           return 'rgba(148, 163, 184, 0.5)';
         }),
-        borderColor: entries.map((_, i) => {
+        borderColor: chartEntries.map((_, i) => {
           if (i === 0) return 'rgb(234, 179, 8)';
           if (i === 1) return 'rgb(156, 163, 175)';
           if (i === 2) return 'rgb(217, 119, 6)';
@@ -195,11 +203,21 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
         borderWidth: 1,
         callbacks: {
           afterLabel: (tooltipItem: { dataIndex: number }) => {
-            const e = entries[tooltipItem.dataIndex];
+            const e = chartEntries[tooltipItem.dataIndex];
             if (!e) return '';
             const parts = [`Rank #${e.rank} · ${e.wins}W-${e.losses}L`];
-            if (typeof e.commanderPoints === 'number' && typeof e.draftPoints === 'number') {
+            if (metric === 'commander') {
+              if (typeof e.commanderPoints === 'number') {
+                parts.push(`Commander VP: ${e.commanderPoints}`);
+              }
+              if (typeof e.draftPoints === 'number' && typeof e.points === 'number') {
+                parts.push(`Draft: ${e.draftPoints} · League total: ${e.points}`);
+              }
+            } else if (typeof e.commanderPoints === 'number' && typeof e.draftPoints === 'number') {
               parts.push(`Commander: ${e.commanderPoints} · Draft: ${e.draftPoints} · Total: ${e.points}`);
+            }
+            if (e.draftDetail) {
+              parts.push(e.draftDetail);
             }
             return parts;
           },
@@ -229,7 +247,7 @@ export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
         <div className="flex flex-row items-center justify-between gap-2">
           <CardTitle className="text-white flex items-center gap-2">
             <FaTrophy className="w-5 h-5 text-amber-500" />
-            Points
+            {chartTitle}
           </CardTitle>
           {headerActions}
         </div>

@@ -117,6 +117,6 @@ npm run prisma:seed:maui    # Seed only (after migrate). See docs/SCORE_ENTRY_GU
 
 ---
 
-**Other root `.md` files** (e.g. `COMPLETE_IMPROVEMENTS_SUMMARY`, `MTG_MAUI_LEAGUE_MASTER_DOCUMENTATION`) are legacy; see [docs/ARCHIVE.md](docs/ARCHIVE.md).
+Legacy docs that were removed are listed in [docs/ARCHIVE.md](docs/ARCHIVE.md).
 
 © MTG Maui League

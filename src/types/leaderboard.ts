@@ -10,8 +10,16 @@ export interface RealtimeLeaderboardEntry {
   points: number;
   /** Commander pod points (included in points when present). */
   commanderPoints?: number;
+  /** Commander VP from pods in rounds 1–5 (season first half). */
+  commanderGame1Points?: number;
+  /** Commander VP from pods in rounds 6+ (season second half). */
+  commanderGame2Points?: number;
   /** Draft 1v1 points (included in points when present). */
   draftPoints?: number;
+  /** Draft 1 match VP counted toward league total (Tim’s first draft is 0 here). */
+  draftLeaguePoints1?: number;
+  /** Draft 2 match VP counted toward league total. */
+  draftLeaguePoints2?: number;
   wins: number;
   losses: number;
   gamesPlayed: number;
@@ -26,6 +34,8 @@ export interface RealtimeLeaderboardEntry {
   silverObjectives?: number;
   /** First draft points when player played for someone else (e.g. Tim for Dan); shown but not in total. */
   firstDraftPointsPlayedForDan?: number;
+  /** Optional per-player draft breakdown (static / API), e.g. draft bonuses. */
+  draftDetail?: string;
 }
 
 /**
@@ -57,6 +67,8 @@ export interface EditableLeaderboardEntry {
   playerId: string;
   playerName: string;
   totalPoints: number;
+  commanderPoints?: number;
+  draftPoints?: number;
   gamesPlayed: number;
   wins: number;
   losses: number;

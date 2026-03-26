@@ -1,6 +1,6 @@
 # MTG Maui League — Documentation
 
-**Start here:** [DIRECTION_AND_CONTROLS.md](DIRECTION_AND_CONTROLS.md) — pages, controls, offline vs online.
+**Start here:** [DIRECTION_AND_CONTROLS.md](DIRECTION_AND_CONTROLS.md) — pages, controls, static vs database.
 
 ---
 
@@ -8,20 +8,27 @@
 
 | Doc | Purpose |
 |-----|---------|
-| [DIRECTION_AND_CONTROLS.md](DIRECTION_AND_CONTROLS.md) | **Direction, pages, controls, offline vs online** |
-| [DEPLOY_VERCEL_CHECKLIST.md](DEPLOY_VERCEL_CHECKLIST.md) | Vercel deploy + verify |
+| [DIRECTION_AND_CONTROLS.md](DIRECTION_AND_CONTROLS.md) | Direction, pages, controls, offline vs online |
+| [DEPLOY_VERCEL_CHECKLIST.md](DEPLOY_VERCEL_CHECKLIST.md) | **Deploy:** Vercel, env, static vs DB, domain, CLI |
 | [VERCEL_POSTGRES_SETUP.md](VERCEL_POSTGRES_SETUP.md) | Postgres (Vercel + local) |
 | [DATABASE_AND_PRISMA.md](DATABASE_AND_PRISMA.md) | DB, Prisma, migrations |
-| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Project layout & modules |
+| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Project layout |
 | [EDITABLE_DATA_GUIDE.md](EDITABLE_DATA_GUIDE.md) | What you can edit and how |
-| [FUTURE_FEATURES.md](FUTURE_FEATURES.md) | Login, Join League (restore later) |
-| [DEVELOPMENT_WORKFLOW.md](DEVELOPMENT_WORKFLOW.md) | Local dev, scripts, conventions |
+| [DEVELOPMENT_WORKFLOW.md](DEVELOPMENT_WORKFLOW.md) | Local dev, scripts |
 | [GITHUB_SETUP.md](GITHUB_SETUP.md) | GitHub repo & workflow |
+| [ENV_VARIABLES.md](ENV_VARIABLES.md) | Environment variables |
+| [STATIC_LEAGUE_DATA.md](STATIC_LEAGUE_DATA.md) | No-database demo mode |
+| [SUPABASE_SETUP.md](SUPABASE_SETUP.md) | Supabase as `DATABASE_URL` |
+| [DATABASE_RESET_AND_POPULATE.md](DATABASE_RESET_AND_POPULATE.md) | Reset DB, seed |
+| [UPDATE_GAMES_AND_DRAFTS.md](UPDATE_GAMES_AND_DRAFTS.md) | Update games / draft scores |
+| [SIMPLE_LEADERBOARD.md](SIMPLE_LEADERBOARD.md) | Leaderboard model |
+| [SCORE_ENTRY_GUIDE.md](SCORE_ENTRY_GUIDE.md) | Scores via seeds / Wizards |
+| [VERIFY_SCORES_AND_DRAFT.md](VERIFY_SCORES_AND_DRAFT.md) | Verify scoring |
+| [FUTURE_FEATURES.md](FUTURE_FEATURES.md) | Login, join league (later) |
+| [EXPORT_SCORES_TO_SUPABASE.md](EXPORT_SCORES_TO_SUPABASE.md) | Export workflow |
 
 ---
 
-## Other
+## Archive
 
-- [DEPLOY_NOW.md](DEPLOY_NOW.md), [VERCEL_QUICKSTART.md](VERCEL_QUICKSTART.md), [DEPLOY_MTG_MAUI_TO_VERCEL.md](DEPLOY_MTG_MAUI_TO_VERCEL.md) — older deploy notes; **use [DEPLOY_VERCEL_CHECKLIST](DEPLOY_VERCEL_CHECKLIST.md) as primary**.
-- [ARCHIVE](ARCHIVE.md) — list of legacy root & docs files.
-- [CLEANUP_SUMMARY](CLEANUP_SUMMARY.md), [FIXES_APPLIED](FIXES_APPLIED.md), [IMPROVEMENTS_COMPLETE](IMPROVEMENTS_COMPLETE.md), [PROJECT_STATUS_FIXED](PROJECT_STATUS_FIXED.md), [PROJECT_ORGANIZATION](PROJECT_ORGANIZATION.md) — historical; **current direction is in [DIRECTION_AND_CONTROLS](DIRECTION_AND_CONTROLS.md)**.
+Removed duplicate deploy notes and historical status docs are summarized in [ARCHIVE.md](ARCHIVE.md).

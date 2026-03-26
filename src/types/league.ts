@@ -201,6 +201,10 @@ export interface LeaderboardEntry {
   playerId: string;
   playerName: string;
   totalPoints: number;
+  /** Commander pod points (subset of total when draft is tracked). */
+  commanderPoints?: number;
+  /** Draft match points (subset of total when commander is tracked). */
+  draftPoints?: number;
   gamesPlayed: number;
   wins: number;
   losses?: number;

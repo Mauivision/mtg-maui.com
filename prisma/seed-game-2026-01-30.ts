@@ -1,13 +1,13 @@
 /**
- * Seed: Maui Commander League — Pod D game, ca. Jan 30, 2026
+ * Seed: Maui Commander League — Pod C, Jan 27, 2026 (Game 1)
  *
  * Run: npm run prisma:seed:game:d
  *
- * Game results:
- * - 1st: Nate (7 VP) — Win, 1 Elim, 1 Silver (M)
- * - 2nd: Scott (3 VP) — Heads-Up, 1 Silver (A)
- * - 3rd: Travis (3 VP) — 1 Elim, 1 Silver (P)
- * - 4th: Dustin (1 VP) — 1 Silver (O)
+ * Game results (v2.5 sheet):
+ * - 1st: Nate (7 VP) — Win, 1 elim, Silvers M, A, P
+ * - 2nd: Travis (3 VP) — 1 elim, Silver O (First Commander)
+ * - 3rd: Dustin (1 VP) — 1 elim
+ * - 4th: Scott (1 VP) — 1 elim
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -16,14 +16,14 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 const PLAYERS = [
-  { name: 'Nate', emailKey: 'nate', deck: 'Diamond Weapon / BG', points: 7, place: 1 },
-  { name: 'Scott', emailKey: 'scott', deck: 'Jodah / 5R', points: 3, place: 2 },
-  { name: 'Travis', emailKey: 'travis', deck: 'Soda / Iona RW', points: 3, place: 3 },
-  { name: 'Dustin', emailKey: 'dustin', deck: '5pidey / Tobran FR', points: 1, place: 4 },
+  { name: 'Nate', emailKey: 'nate', deck: 'Diamond Weapon / Elizabeth (BS)', points: 7, place: 1 },
+  { name: 'Travis', emailKey: 'travis', deck: 'Zada / Iona (RW)', points: 3, place: 2 },
+  { name: 'Dustin', emailKey: 'dustin', deck: 'Spidey / Torbran (GR)', points: 1, place: 3 },
+  { name: 'Scott', emailKey: 'scott', deck: 'Jodah (B) 5', points: 1, place: 4 },
 ] as const;
 
 async function main() {
-  console.log('🌱 Seeding Maui Commander League — Pod D, Jan 30, 2026...');
+  console.log('🌱 Seeding Maui Commander League — Pod C, Jan 27, 2026...');
 
   // Get or create admin for recordedBy
   const adminPassword = await bcrypt.hash('12345', 10);
@@ -123,8 +123,8 @@ async function main() {
   }
 
   // Check if this game already exists (by date + league)
-  const dayStart = new Date('2026-01-30T00:00:00');
-  const dayEnd = new Date('2026-01-30T23:59:59');
+  const dayStart = new Date('2026-01-27T00:00:00');
+  const dayEnd = new Date('2026-01-27T23:59:59');
   const existingGame = await prisma.leagueGame.findFirst({
     where: {
       leagueId: league!.id,
@@ -134,7 +134,7 @@ async function main() {
   });
 
   if (existingGame) {
-    console.log('\n⏭️ Game for Jan 30, 2026 already exists. Skipping to avoid duplicate.');
+    console.log('\n⏭️ Game for Jan 27, 2026 already exists. Skipping to avoid duplicate.');
     return;
   }
 
@@ -152,20 +152,20 @@ async function main() {
       gameType: 'commander',
       tournamentPhase: 'swiss',
       round: 4,
-      date: new Date('2026-01-30'),
+      date: new Date('2026-01-27'),
       recordedBy: admin.id,
       players: JSON.stringify(playerIds),
       placements: JSON.stringify(placements),
       commanderObjectives: JSON.stringify({
-        golden: { roll: 5, description: 'Eliminate whole table on one turn', claimed: false },
+        golden: { roll: 3, description: '(not specified on sheet)', claimed: false },
         silver: [
-          { code: 'M', description: '4+ lands enter during your turn', claimedBy: 'Nate' },
-          { code: 'A', description: 'First blood', claimedBy: 'Scott' },
-          { code: 'P', description: '5 of same creature type', claimedBy: 'Travis' },
-          { code: 'O', description: 'First commander on battlefield', claimedBy: 'Dustin' },
+          { code: 'M', description: 'Have 4 or more lands', claimedBy: 'Nate' },
+          { code: 'A', description: 'First Blood', claimedBy: 'Nate' },
+          { code: 'P', description: '5 of same creature type', claimedBy: 'Nate' },
+          { code: 'O', description: 'First Commander', claimedBy: 'Travis' },
         ],
       }),
-      notes: 'Pod D. Winner: Nate. Elim order: Travis, Dustin, Scott.',
+      notes: 'Pod C (1/27/26). Winner: Nate. Elim order / win line not filled on sheet.',
     },
   });
 
@@ -182,7 +182,7 @@ async function main() {
     });
   }
 
-  console.log('\n🎉 Seeded game: Maui Commander League — Pod D, Jan 30, 2026');
+  console.log('\n🎉 Seeded game: Maui Commander League — Pod C, Jan 27, 2026');
   console.log('   Leaderboard will update after refresh.');
 }
 

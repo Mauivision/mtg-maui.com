@@ -46,7 +46,7 @@ export const LeagueProvider: React.FC<LeagueProviderProps> = ({ children }) => {
       setError(null);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
-      const response = await fetch('/api/leagues', { signal: controller.signal });
+      const response = await fetch('/api/leagues', { signal: controller.signal, cache: 'no-store' });
       clearTimeout(timeoutId);
 
       if (!response.ok) {
