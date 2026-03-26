@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ events });
   } catch (error) {
-    logger.error('Error fetching events', error);
-    return handleApiError(error);
+    logger.warn('Events DB unavailable; serving empty static events', {
+      err: error instanceof Error ? error.message : String(error),
+    });
+    return NextResponse.json({ events: [], source: 'static-empty' as const });
   }
 }
