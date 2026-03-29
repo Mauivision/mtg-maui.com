@@ -12,6 +12,7 @@ import { ErrorReporter } from '@/components/analytics/ErrorReporter';
 import { SkipLinks } from '@/components/ui/SkipLinks';
 import { HiddenRelics } from '@/components/ui/HiddenRelics';
 import { siteImages } from '@/lib/site-images';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 
 const inter = Inter({
@@ -121,6 +122,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OrganizationStructuredData />
         <WebVitals />
         <ErrorReporter />
+        <SpeedInsights />
       </body>
     </html>
   );
