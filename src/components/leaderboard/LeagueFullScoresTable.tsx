@@ -129,7 +129,7 @@ export const LeagueFullScoresTable: React.FC<LeagueFullScoresTableProps> = ({
                   <th scope="col" className="px-3 py-2.5 text-right font-semibold text-amber-200/95">
                     Total
                   </th>
-                  <th scope="col" className="hidden px-3 py-2.5 text-left font-semibold text-slate-400 md:table-cell">
+                  <th scope="col" className="px-3 py-2.5 text-left font-semibold text-slate-400">
                     Draft notes
                   </th>
                 </tr>
@@ -186,7 +186,7 @@ export const LeagueFullScoresTable: React.FC<LeagueFullScoresTableProps> = ({
                           </span>
                         )}
                     </td>
-                    <td className="hidden max-w-[280px] px-3 py-2 text-xs leading-snug text-slate-500 md:table-cell">
+                    <td className="max-w-[280px] px-3 py-2 text-xs leading-snug text-slate-500">
                       {e.draftDetail && <span title={e.draftDetail}>{e.draftDetail}</span>}
                       {!e.draftDetail &&
                         typeof e.firstDraftPointsPlayedForDan === 'number' &&

@@ -288,7 +288,7 @@ export function getStaticLeagueStatus(leagueId?: string) {
   };
 }
 
-export function getStaticLeaderboard(leagueId?: string, limit = 20) {
+export function getStaticLeaderboard(leagueId?: string, limit?: number) {
   const d = loadData();
   const activeIds = new Set(d.players.filter((p) => p.active !== false).map((p) => p.id));
   const nameMap = new Map(d.players.map((p) => [p.id, p.name]));
@@ -371,8 +371,9 @@ export function getStaticLeaderboard(leagueId?: string, limit = 20) {
       return wb - wa;
     });
 
+  const rowLimit = typeof limit === 'number' ? limit : sorted.length;
   let rank = 0;
-  return sorted.slice(0, limit).map((row) => {
+  return sorted.slice(0, rowLimit).map((row) => {
     rank += 1;
     const winRate = row.gamesPlayed > 0 ? Math.round((row.wins / row.gamesPlayed) * 1000) / 10 : 0;
     const draftDetail = buildDraftDetailLine(d, row.name);

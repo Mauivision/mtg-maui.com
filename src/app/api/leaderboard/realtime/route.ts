@@ -11,7 +11,7 @@ import {
 const querySchema = z.object({
   gameType: z.enum(['all', 'commander', 'draft', 'standard']).default('all'),
   leagueId: z.string().optional(),
-  limit: z.coerce.number().min(1).max(100).default(10),
+  limit: z.coerce.number().min(1).max(500).default(100),
 });
 
 const NO_STORE = { 'Cache-Control': 'no-store, must-revalidate' as const };
