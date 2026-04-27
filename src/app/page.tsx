@@ -124,7 +124,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
               <SimpleLeaderboardChart
                 leagueId={currentLeague?.id ?? undefined}
-                limit={24}
+                limit={100}
                 metric="total"
               />
               <DraftPointsChart />
@@ -137,7 +137,7 @@ export default function HomePage() {
               <RealtimeLeaderboard
                 leagueId={currentLeague?.id ?? undefined}
                 gameType="all"
-                limit={10}
+                limit={100}
                 variant="embed"
               />
             </div>
@@ -189,7 +189,7 @@ export default function HomePage() {
             </Card>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activePlayers.slice(0, 17).map((p) => {
+              {activePlayers.map((p) => {
                 const icon = resolveCharacterIconForPlayer(p.playerName);
                 return (
                 <Card key={p.id} className="bg-slate-800/50 border-slate-700 transition-shadow hover:shadow-lg hover:shadow-amber-900/20">
@@ -265,7 +265,7 @@ export default function HomePage() {
                 <div>
                   <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Events</h3>
                   <div className="space-y-2">
-                    {events.slice(0, 5).map((ev) => (
+                    {events.map((ev) => (
                       <Card key={ev.id} className="bg-slate-800/50 border-slate-700">
                         <CardContent className="py-3 px-4 flex flex-wrap items-center justify-between gap-2">
                           <span className="font-medium text-white">{ev.title}</span>
@@ -283,7 +283,7 @@ export default function HomePage() {
                 <div>
                   <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">News</h3>
                   <div className="space-y-2">
-                    {news.slice(0, 10).map((n) => (
+                    {news.map((n) => (
                       <Card key={n.id} className="bg-slate-800/50 border-slate-700">
                         <CardContent className="py-3 px-4">
                           <div className="font-medium text-white">{n.title}</div>
