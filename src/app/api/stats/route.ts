@@ -13,7 +13,18 @@ export async function GET() {
   try {
     if (isStaticLeagueDataMode()) {
       const { getStaticStats } = await import('@/lib/static-league-data');
-      return NextResponse.json(getStaticStats());
+      const { getDemoStats } = await import('@/lib/league-hq/demo-data');
+      const staticStats = getStaticStats();
+      const demo = getDemoStats();
+      return NextResponse.json({
+        totalUsers: staticStats.totalUsers || demo.totalUsers,
+        totalGames: staticStats.totalGames || demo.totalGames,
+        totalLeagues: staticStats.totalLeagues || demo.totalLeagues,
+        totalDrafts: staticStats.totalDrafts || demo.totalDrafts,
+        totalEvents: demo.totalEvents,
+        newsCount: demo.newsCount,
+        source: 'static-json' as const,
+      });
     }
 
     const [totalUsers, totalGames, totalLeagues, totalDrafts, totalEvents, newsCount] = await Promise.all([
@@ -39,7 +50,18 @@ export async function GET() {
     });
     try {
       const { getStaticStats } = await import('@/lib/static-league-data');
-      return NextResponse.json({ ...getStaticStats(), source: 'static-json' as const });
+      const { getDemoStats } = await import('@/lib/league-hq/demo-data');
+      const staticStats = getStaticStats();
+      const demo = getDemoStats();
+      return NextResponse.json({
+        totalUsers: staticStats.totalUsers || demo.totalUsers,
+        totalGames: staticStats.totalGames || demo.totalGames,
+        totalLeagues: staticStats.totalLeagues || demo.totalLeagues,
+        totalDrafts: staticStats.totalDrafts || demo.totalDrafts,
+        totalEvents: demo.totalEvents,
+        newsCount: demo.newsCount,
+        source: 'static-json' as const,
+      });
     } catch {
       // If even static loading fails, fall back to a stable shape.
       return NextResponse.json({

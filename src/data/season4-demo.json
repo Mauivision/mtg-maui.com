@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "season": 4,
+    "leagueName": "MTG Maui Season 4",
+    "disclaimer": "Example demo standings — not live Season 3 results. Edit your league on /leagues."
+  },
+  "stats": {
+    "totalUsers": 8,
+    "totalLeagues": 1,
+    "totalGames": 6,
+    "totalDrafts": 2,
+    "totalEvents": 3,
+    "newsCount": 1
+  },
+  "standings": [
+    { "id": "demo-1", "name": "Morgan (demo)", "commanderPoints": 18, "draftPoints": 12 },
+    { "id": "demo-2", "name": "Jordan (demo)", "commanderPoints": 15, "draftPoints": 14 },
+    { "id": "demo-3", "name": "Casey (demo)", "commanderPoints": 14, "draftPoints": 9 },
+    { "id": "demo-4", "name": "Riley (demo)", "commanderPoints": 11, "draftPoints": 11 },
+    { "id": "demo-5", "name": "Quinn (demo)", "commanderPoints": 10, "draftPoints": 8 },
+    { "id": "demo-6", "name": "Avery (demo)", "commanderPoints": 8, "draftPoints": 10 },
+    { "id": "demo-7", "name": "Skyler (demo)", "commanderPoints": 6, "draftPoints": 7 },
+    { "id": "demo-8", "name": "Jamie (demo)", "commanderPoints": 5, "draftPoints": 6 }
+  ],
+  "events": [
+    {
+      "id": "s4-kickoff",
+      "title": "Season 4 kickoff — Chaos Commander pod",
+      "date": "2026-09-06T18:00:00.000Z",
+      "location": "Maui · casual table",
+      "description": "First Season 4 Commander night. Bring a deck built from your pool."
+    },
+    {
+      "id": "s4-chaos-draft",
+      "title": "Chaos-pack draft night",
+      "date": "2026-09-20T18:00:00.000Z",
+      "location": "Maui · draft table",
+      "description": "Chaos-pack draft or pick-2 four-player chaos draft — league choice per table."
+    },
+    {
+      "id": "s4-midseason",
+      "title": "Mid-season Commander + draft doubleheader",
+      "date": "2026-10-04T17:00:00.000Z",
+      "location": "Maui",
+      "description": "Commander pods in the afternoon, chaos draft in the evening."
+    }
+  ],
+  "news": [
+    {
+      "id": "s4-welcome",
+      "title": "Season 4 is casual Chaos Commander",
+      "excerpt": "Season 3 is finished. Season 4 focuses on relaxed Commander pods and chaos drafts — no growing deck size or letter-die objectives.",
+      "category": "League",
+      "publishedAt": "2026-08-01T12:00:00.000Z"
+    }
+  ]
+}
