@@ -1,12 +1,12 @@
 import {
   canBeCommander,
   categorizeCard,
+  categoryPickScore,
   colorIdentitySubset,
   formatColorIdentity,
   isBasicLand,
-  synergyScore,
 } from './categorize';
-import { MIN_POOL_CARDS_100, MIN_POOL_CARDS_70, SKELETON_100, SKELETON_70 } from './constants';
+import { FLAGSHIP_COMMANDER, MIN_POOL_CARDS_100, MIN_POOL_CARDS_70, SKELETON_100, SKELETON_70 } from './constants';
 import { parsePoolText, totalPoolCount } from './parse-pool';
 import { lookupPoolCards } from './scryfall';
 import type {
@@ -60,6 +60,13 @@ function pickSuggestedCommander(cards: PoolCard[], mode: DeckMode): PoolCard | n
   const commanders = legalCommanders(cards);
   if (commanders.length === 0) return null;
 
+  const storm = findCommanderCard(cards, FLAGSHIP_COMMANDER);
+  if (storm && canBeCommander(storm)) {
+    if (mode !== 'twoColor70' || storm.colorIdentity.length === 2) {
+      return storm;
+    }
+  }
+
   let best: PoolCard | null = null;
   let bestCount = -1;
 
@@ -108,7 +115,7 @@ function pickCards(
     .filter((a) => categorizeCard(a.card, commander.name) === category)
     .map((a) => ({
       ...a,
-      score: category === 'synergy' ? synergyScore(a.card, commander) : 0,
+      score: categoryPickScore(a.card, commander, category),
     }))
     .sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;

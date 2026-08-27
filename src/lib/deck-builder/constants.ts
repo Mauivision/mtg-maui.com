@@ -21,6 +21,9 @@ export const SKELETON_70: DeckSkeleton = {
 export const MIN_POOL_CARDS_100 = 100;
 export const MIN_POOL_CARDS_70 = 70;
 
+/** Season 4 flagship commander — Marvel Mutant Hero, GW flying / targeted-spell tribal. */
+export const FLAGSHIP_COMMANDER = 'Storm, Windrider';
+
 export const BASIC_LAND_NAMES = new Set([
   'Plains',
   'Island',

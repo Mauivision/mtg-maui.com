@@ -1,4 +1,4 @@
-import { BASIC_LAND_NAMES } from './constants';
+import { BASIC_LAND_NAMES, FLAGSHIP_COMMANDER } from './constants';
 import type { CardCategory, PoolCard } from './types';
 
 const REMOVAL_PATTERNS = [
@@ -72,7 +72,90 @@ export function categorizeCard(card: PoolCard, commanderName: string): CardCateg
   return 'synergy';
 }
 
+export function isStormWindrider(commander: PoolCard): boolean {
+  return commander.name.toLowerCase() === FLAGSHIP_COMMANDER.toLowerCase();
+}
+
+export function hasFlying(card: PoolCard): boolean {
+  if (card.keywords.some((k) => k.toLowerCase() === 'flying')) return true;
+  const type = card.typeLine.toLowerCase();
+  if (!type.includes('creature')) return false;
+  return (card.oracleText || '').toLowerCase().includes('flying');
+}
+
+/** Storm keyword / copy-for-each-spell mechanic — not the card Storm, Windrider. */
+export function isStormCountMechanic(card: PoolCard): boolean {
+  if (card.name.toLowerCase() === FLAGSHIP_COMMANDER.toLowerCase()) return false;
+  if (card.keywords.some((k) => k.toLowerCase() === 'storm')) return true;
+  const text = card.oracleText || '';
+  return /copy (it|this spell) for each.*spell cast before/i.test(text);
+}
+
+export function targetsCreatures(card: PoolCard): boolean {
+  const text = card.oracleText || '';
+  const type = card.typeLine.toLowerCase();
+  if (type.includes('aura') || /enchant creature/i.test(text)) return true;
+  return (
+    /target creature/i.test(text) ||
+    /target up to [^.]* creature/i.test(text) ||
+    /targets? one or more creatures/i.test(text) ||
+    /target creature(s)? you control/i.test(text) ||
+    (/exile target creature you control/i.test(text) && /return.*battlefield/i.test(text))
+  );
+}
+
+export function stormWindriderSynergyScore(card: PoolCard): number {
+  let score = 0;
+  const oracle = (card.oracleText || '').toLowerCase();
+  const type = card.typeLine.toLowerCase();
+
+  if (targetsCreatures(card)) score += 10;
+  if (type.includes('aura') || oracle.includes('enchant creature')) score += 8;
+  if (/creatures you control get|creatures you control gain|each creature you control gets/i.test(oracle)) {
+    score += 7;
+  }
+  if (
+    (/can't be blocked|hexproof|indestructible|protection from|ward/i.test(oracle) ||
+      type.includes('equipment')) &&
+    (targetsCreatures(card) || type.includes('equipment'))
+  ) {
+    score += 5;
+  }
+  if (/exile target creature you control/i.test(oracle) && /return.*battlefield/i.test(oracle)) {
+    score += 6;
+  }
+
+  if (isStormCountMechanic(card)) {
+    score += targetsCreatures(card) ? 1 : -15;
+  }
+
+  if (oracle.includes('draw')) score += 2;
+
+  return score;
+}
+
+export function stormWindriderCreatureScore(card: PoolCard): number {
+  if (!isCreature(card)) return 0;
+  return hasFlying(card) ? 10 : 0;
+}
+
+export function categoryPickScore(
+  card: PoolCard,
+  commander: PoolCard,
+  category: CardCategory
+): number {
+  if (category === 'synergy') return synergyScore(card, commander);
+  if (category === 'creature' && isStormWindrider(commander)) {
+    return stormWindriderCreatureScore(card);
+  }
+  return 0;
+}
+
 export function synergyScore(card: PoolCard, commander: PoolCard): number {
+  if (isStormWindrider(commander)) {
+    return stormWindriderSynergyScore(card);
+  }
+
   let score = 0;
   const oracle = (card.oracleText || '').toLowerCase();
   const cmdName = commander.name.toLowerCase();

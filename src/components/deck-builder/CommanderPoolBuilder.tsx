@@ -29,6 +29,7 @@ import {
   uniquePoolCount,
   MIN_POOL_CARDS_100,
   MIN_POOL_CARDS_70,
+  FLAGSHIP_COMMANDER,
   type DeckBuilderState,
   type GeneratedDeck,
 } from '@/lib/deck-builder';
@@ -73,6 +74,11 @@ export function CommanderPoolBuilder() {
       try {
         const cards = await lookupPoolCards(poolEntries);
         const names = cards.filter(canBeCommander).map((c) => c.name);
+        names.sort((a, b) => {
+          if (a === FLAGSHIP_COMMANDER) return -1;
+          if (b === FLAGSHIP_COMMANDER) return 1;
+          return a.localeCompare(b);
+        });
         setPoolCommanders(names);
         if (names.length === 1) {
           update({ selectedCommander: names[0] });
@@ -152,7 +158,9 @@ export function CommanderPoolBuilder() {
                 Commander Deck Builder
               </h1>
               <p className="hidden text-xs text-slate-400 sm:block sm:text-sm">
-                Build a deck from cards you already own — nothing outside your pool
+                Build from cards you own — tuned for{' '}
+                <span className="text-amber-300/90">{FLAGSHIP_COMMANDER}</span> (Selesnya flying + targeted-spell
+                tribal) when she&apos;s in your pool
               </p>
             </div>
           </div>
@@ -160,7 +168,9 @@ export function CommanderPoolBuilder() {
 
         <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-950/20 px-4 py-3 text-sm text-amber-100/90">
           <strong className="text-amber-300">Season 4</strong> is casual Chaos Commander plus chaos-pack or pick-2
-          drafts. Use this tool to assemble lists from your collection — no shopping for staples you do not own.
+          drafts. Paste your collection — if <strong className="text-amber-200">{FLAGSHIP_COMMANDER}</strong> is in
+          the pool, she&apos;s auto-selected as commander. Synergy picks favor flying creatures and spells that target
+          creatures, not storm-count cards.
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -174,16 +184,16 @@ export function CommanderPoolBuilder() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-slate-400">
-                Paste or upload your collection. One card per line —{' '}
-                <code className="rounded bg-slate-900 px-1.5 py-0.5 text-amber-200/90">1 Card Name</code> or plain{' '}
-                <code className="rounded bg-slate-900 px-1.5 py-0.5 text-amber-200/90">Card Name</code>. CSV uploads
-                supported.
+                Paste or upload your collection. Example commander:{' '}
+                <strong className="font-medium text-amber-200/90">{FLAGSHIP_COMMANDER}</strong> — Selesnya flying
+                creatures plus pumps, auras, and combat tricks that target them. One card per line:{' '}
+                <code className="rounded bg-slate-900 px-1.5 py-0.5 text-amber-200/90">1 Card Name</code>
               </p>
 
               <textarea
                 value={state.poolText}
                 onChange={(e) => update({ poolText: e.target.value })}
-                placeholder={'1 Sol Ring\n1 Command Tower\n1 Arcane Signet\n...'}
+                placeholder={`1 ${FLAGSHIP_COMMANDER}\n1 Birds of Paradise\n1 Swift Response\n1 Command Tower\n...`}
                 rows={14}
                 className="w-full rounded-lg border border-slate-600 bg-slate-900/80 px-3 py-2 font-mono text-sm text-slate-100 placeholder:text-slate-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                 aria-label="Card pool"
@@ -232,8 +242,10 @@ export function CommanderPoolBuilder() {
                       className="mt-1"
                     />
                     <span>
-                      <span className="block text-sm font-medium text-white">70-card two-color</span>
-                      <span className="text-xs text-slate-400">Scaled skeleton · two-color commander required</span>
+                      <span className="block text-sm font-medium text-white">70-card two-color (GW)</span>
+                      <span className="text-xs text-slate-400">
+                        Scaled skeleton · {FLAGSHIP_COMMANDER} fits when she&apos;s in the pool
+                      </span>
                     </span>
                   </label>
                 </div>
@@ -247,7 +259,7 @@ export function CommanderPoolBuilder() {
                     checked={state.autoSuggestCommander}
                     onChange={(e) => update({ autoSuggestCommander: e.target.checked, selectedCommander: null })}
                   />
-                  Auto-suggest best commander from pool
+                  Auto-select {FLAGSHIP_COMMANDER} when in pool, else best match
                 </label>
                 {!state.autoSuggestCommander && (
                   <select
@@ -332,9 +344,10 @@ export function CommanderPoolBuilder() {
                       <p className="mt-4 text-sm">Looking up cards and building your list…</p>
                     </>
                   ) : (
-                    <p className="text-sm">
-                      Add your pool and generate. Every card will come from cards you listed — no EDHREC staples
-                      injected.
+                    <p className="max-w-sm text-sm">
+                      Paste 100+ cards from your collection and generate. Built around{' '}
+                      <strong className="text-amber-300/90">{FLAGSHIP_COMMANDER}</strong> when she&apos;s in the pool
+                      — flying creatures, targeted spells, and GW two-color lists. Every card comes from your pool only.
                     </p>
                   )}
                 </div>

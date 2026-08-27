@@ -52,7 +52,12 @@ export default function HomePage() {
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-6">
             Season 3 is in the books. Season 4 is casual Chaos Commander plus chaos-pack or pick-2 drafts.
-            Standings and character stats here; charts and scoring rules on{' '}
+            The{' '}
+            <Link href="/decks" className="text-amber-400/95 underline decoration-amber-500/40 underline-offset-2 hover:text-amber-300">
+              deck helper
+            </Link>{' '}
+            builds lists from cards you own (auto-picks Storm, Windrider when she&apos;s in your pool). Standings and
+            character stats here; charts on{' '}
             <Link href="/score" className="text-amber-400/95 underline decoration-amber-500/40 underline-offset-2 hover:text-amber-300">
               Scores
             </Link>
@@ -63,7 +68,7 @@ export default function HomePage() {
             className="inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-5 py-2.5 text-sm font-medium text-amber-200 transition-colors hover:border-amber-400/60 hover:bg-amber-500/20 hover:text-amber-100 mb-10"
           >
             <FaBook className="h-4 w-4" aria-hidden />
-            Build a deck from your collection
+            Deck builder — from your collection
           </Link>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-xl mx-auto mt-10">
             <div className="flex flex-col items-center group">
