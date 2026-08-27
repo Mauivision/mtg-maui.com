@@ -10,6 +10,7 @@ import {
   FaUpload,
   FaExclamationTriangle,
   FaCheckCircle,
+  FaExternalLinkAlt,
 } from 'react-icons/fa';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -30,6 +31,8 @@ import {
   MIN_POOL_CARDS_100,
   MIN_POOL_CARDS_70,
   FLAGSHIP_COMMANDER,
+  OFFICIAL_STORM_MOXFIELD_URL,
+  OFFICIAL_STORM_POOL_TEXT,
   type DeckBuilderState,
   type GeneratedDeck,
 } from '@/lib/deck-builder';
@@ -92,6 +95,11 @@ export function CommanderPoolBuilder() {
 
     return () => clearTimeout(timer);
   }, [poolEntries, state.autoSuggestCommander, update]);
+
+  const handleLoadOfficialStormList = () => {
+    setError(null);
+    update({ poolText: OFFICIAL_STORM_POOL_TEXT, lastGenerated: null });
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -169,8 +177,17 @@ export function CommanderPoolBuilder() {
         <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-950/20 px-4 py-3 text-sm text-amber-100/90">
           <strong className="text-amber-300">Season 4</strong> is casual Chaos Commander plus chaos-pack or pick-2
           drafts. Paste your collection — if <strong className="text-amber-200">{FLAGSHIP_COMMANDER}</strong> is in
-          the pool, she&apos;s auto-selected as commander. Synergy picks favor flying creatures and spells that target
-          creatures, not storm-count cards.
+          the pool, she&apos;s auto-selected as commander. Official list:{' '}
+          <a
+            href={OFFICIAL_STORM_MOXFIELD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-amber-300 underline decoration-amber-500/40 underline-offset-2 hover:text-amber-200"
+          >
+            {FLAGSHIP_COMMANDER} on Moxfield
+            <FaExternalLinkAlt className="h-3 w-3" aria-hidden />
+          </a>
+          .
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -207,6 +224,13 @@ export function CommanderPoolBuilder() {
                     Upload file
                   </span>
                 </label>
+                <button
+                  type="button"
+                  onClick={handleLoadOfficialStormList}
+                  className="inline-flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-200 hover:border-amber-400/60 hover:bg-amber-500/20"
+                >
+                  Load official Storm list
+                </button>
                 <Badge variant="secondary">
                   {poolTotal} cards ({poolUnique} unique)
                 </Badge>
