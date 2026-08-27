@@ -3,12 +3,12 @@ import { prisma } from '@/lib/prisma';
 import { handleApiError } from '@/lib/api-error';
 import { logger } from '@/lib/logger';
 import { isStaticLeagueDataMode } from '@/lib/static-league-data';
+import { getDemoEvents } from '@/lib/league-hq/demo-data';
 
-// Public endpoint to get events for homepage
 export async function GET(request: NextRequest) {
   try {
     if (isStaticLeagueDataMode()) {
-      return NextResponse.json({ events: [] });
+      return NextResponse.json({ events: getDemoEvents(), source: 'season4-demo' as const });
     }
     const events = await prisma.event.findMany({
       where: {
@@ -17,14 +17,14 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: { date: 'asc' },
-      take: 10, // Limit to upcoming events
+      take: 10,
     });
 
     return NextResponse.json({ events });
   } catch (error) {
-    logger.warn('Events DB unavailable; serving empty static events', {
+    logger.warn('Events DB unavailable; serving Season 4 demo events', {
       err: error instanceof Error ? error.message : String(error),
     });
-    return NextResponse.json({ events: [], source: 'static-empty' as const });
+    return NextResponse.json({ events: getDemoEvents(), source: 'season4-demo' as const });
   }
 }
