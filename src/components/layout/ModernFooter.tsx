@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 const links = [
   { href: '/', label: 'Home' },
+  { href: '/decks', label: 'Deck Builder' },
   { href: '/#leaderboard', label: 'Leaderboard' },
   { href: '/score', label: 'Scores & charts' },
   { href: '/#character-charts', label: 'Character Charts' },

@@ -46,18 +46,26 @@ export default function HomePage() {
           className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-slate-950/45 to-slate-950/88"
         />
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-amber-400/90 text-sm uppercase tracking-widest mb-3">Hawaii&apos;s Premier MTG League</p>
+          <p className="text-amber-400/90 text-sm uppercase tracking-widest mb-3">Season 4 · Chaos Commander</p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
             MTG Maui League
           </h1>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-            Commander. Draft. Real rankings. Standings and character stats here; charts and scoring rules on{' '}
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-6">
+            Season 3 is in the books. Season 4 is casual Chaos Commander plus chaos-pack or pick-2 drafts.
+            Standings and character stats here; charts and scoring rules on{' '}
             <Link href="/score" className="text-amber-400/95 underline decoration-amber-500/40 underline-offset-2 hover:text-amber-300">
               Scores
             </Link>
             .
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-xl mx-auto">
+          <Link
+            href="/decks"
+            className="inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-5 py-2.5 text-sm font-medium text-amber-200 transition-colors hover:border-amber-400/60 hover:bg-amber-500/20 hover:text-amber-100 mb-10"
+          >
+            <FaBook className="h-4 w-4" aria-hidden />
+            Build a deck from your collection
+          </Link>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-xl mx-auto mt-10">
             <div className="flex flex-col items-center group">
               <div className="w-12 h-12 rounded-full bg-sky-600/20 border border-sky-500/40 flex items-center justify-center transition-colors group-hover:border-sky-400/60 group-hover:bg-sky-600/30" aria-hidden>
                 <FaUsers className="w-5 h-5 text-sky-400" />
