@@ -73,7 +73,7 @@ export default function ScorePage() {
             <LeagueFullScoresTable leagueId={currentLeague?.id ?? undefined} limit={100} />
           </div>
           <div className="space-y-8">
-            <SimpleLeaderboardChart leagueId={currentLeague?.id ?? undefined} limit={24} />
+            <SimpleLeaderboardChart leagueId={currentLeague?.id ?? undefined} limit={100} />
             <div id="wave1-pods" className="scroll-mt-20">
               <Wave1PodResults leagueId={currentLeague?.id ?? undefined} />
             </div>

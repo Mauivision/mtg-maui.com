@@ -22,7 +22,7 @@ interface RealtimeLeaderboardProps {
 export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
   leagueId,
   gameType = 'all',
-  limit = 10,
+  limit = 100,
   variant = 'standalone',
 }) => {
   const isEmbed = variant === 'embed';
@@ -201,7 +201,7 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
 
   const MobileEmbedList = () => (
     <div className="sm:hidden space-y-2" role="list" aria-label="Leaderboard rankings (mobile)">
-      {leaderboard.slice(0, limit).map((entry) => (
+      {leaderboard.map((entry) => (
         <div
           key={entry.id}
           role="listitem"

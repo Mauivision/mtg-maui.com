@@ -24,7 +24,7 @@ interface SimpleLeaderboardChartProps {
 
 export const SimpleLeaderboardChart: React.FC<SimpleLeaderboardChartProps> = ({
   leagueId,
-  limit = 16,
+  limit = 100,
   metric = 'total',
 }) => {
   const [entries, setEntries] = useState<RealtimeLeaderboardEntry[]>([]);

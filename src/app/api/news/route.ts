@@ -29,7 +29,6 @@ export async function GET(request: NextRequest) {
     }
     const news = await prisma.news.findMany({
       orderBy: { publishedAt: 'desc' },
-      take: 10, // Limit to recent news
     });
 
     return NextResponse.json({ news });

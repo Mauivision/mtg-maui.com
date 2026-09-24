@@ -11,13 +11,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ events: [] });
     }
     const events = await prisma.event.findMany({
-      where: {
-        status: {
-          in: ['upcoming', 'ongoing'],
-        },
-      },
       orderBy: { date: 'asc' },
-      take: 10, // Limit to upcoming events
     });
 
     return NextResponse.json({ events });
