@@ -3,10 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaHome, FaTrophy, FaDice, FaNewspaper, FaChartLine } from 'react-icons/fa';
+import { FaHome, FaTrophy, FaDice, FaNewspaper, FaChartLine, FaMagic } from 'react-icons/fa';
 
 const nav = [
   { name: 'Home', href: '/', anchor: '#hero', icon: FaHome },
+  { name: 'Deck Builder', href: '/decks', anchor: '/decks', icon: FaMagic, isRoute: true },
   { name: 'Leaderboard', href: '/#leaderboard', anchor: '#leaderboard', icon: FaTrophy },
   { name: 'Scores', href: '/score', anchor: '#score', icon: FaChartLine },
   { name: 'Character Charts', href: '/#character-charts', anchor: '#character-charts', icon: FaDice },
@@ -40,12 +41,19 @@ export const ModernHeader: React.FC = () => {
           <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
             {nav.map((item) => {
               const Icon = item.icon;
+              const className =
+                'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:text-amber-300 hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950 transition-all duration-200' +
+                (item.isRoute ? ' text-amber-300 bg-amber-500/10 border border-amber-500/30' : '');
+              if (item.isRoute) {
+                return (
+                  <Link key={item.anchor} href={item.href} className={className}>
+                    <Icon className="w-4 h-4" aria-hidden />
+                    {item.name}
+                  </Link>
+                );
+              }
               return (
-                <a
-                  key={item.anchor}
-                  href={item.href}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:text-amber-300 hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950 transition-all duration-200"
-                >
+                <a key={item.anchor} href={item.href} className={className}>
                   <Icon className="w-4 h-4" aria-hidden />
                   {item.name}
                 </a>
@@ -54,20 +62,26 @@ export const ModernHeader: React.FC = () => {
           </nav>
         </div>
 
-<nav className="md:hidden flex flex-wrap gap-2 py-3 border-t border-slate-800" aria-label="Mobile navigation">
-            {nav.map((item) => {
-              const Icon = item.icon;
+        <nav className="md:hidden flex flex-wrap gap-2 py-3 border-t border-slate-800" aria-label="Mobile navigation">
+          {nav.map((item) => {
+            const Icon = item.icon;
+            const className =
+              'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950';
+            if (item.isRoute) {
               return (
-                <a
-                  key={item.anchor}
-                  href={item.href}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-950"
-                >
+                <Link key={item.anchor} href={item.href} className={className}>
                   <Icon className="w-4 h-4" aria-hidden />
                   {item.name}
-                </a>
+                </Link>
               );
-            })}
+            }
+            return (
+              <a key={item.anchor} href={item.href} className={className}>
+                <Icon className="w-4 h-4" aria-hidden />
+                {item.name}
+              </a>
+            );
+          })}
         </nav>
       </div>
     </header>
